@@ -8,13 +8,13 @@ A collection of tiny machine learning models for IoT devices, written in Julia/F
 
 UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4 and UNet2 have, respectively, four and two. Number of channels can be modulated to increase/decrease size.
 
-The standard implementation follows the paper "U-Net: Convolutional Networks for Biomedical Image Segmentation" (arXiv:1505.04597). Paper credits: Ronnenberger, Olaf; Fischer, Philipp; Brox, Thomas.
+The standard implementation follows the paper "U-Net: Convolutional Networks for Biomedical Image Segmentation" (arXiv:1505.04597). Paper credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
 
 ### Mobile-Unet
 
 Mobile-Unet utilizes inverted residual bottleneck blocks and pointwise convolution.
 
-Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" (arXiv:xxx). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; Zhang, Huanhuan.
+Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" (arXiv:xxx). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
 
 ### ESPNet
 
