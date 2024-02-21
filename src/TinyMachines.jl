@@ -16,5 +16,8 @@ include("./unet5.jl")
 include("./unet4.jl")
 include("./unet2.jl")
 
+# espnet
+include("./espnet.jl")
+
 
 end   # module
