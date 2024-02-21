@@ -2,7 +2,11 @@
 
 [![Build Status](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
+<<<<<<< HEAD
 A collection of tiny machine learning models for IoT devices, written in Julia/Flux.
+=======
+A collection of tiny mchine learning models for IoT devices, written in Julia/Flux.
+>>>>>>> main
 
 ### UNet5, UNet4, UNet2
 
