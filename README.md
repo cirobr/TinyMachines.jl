@@ -12,7 +12,9 @@ The standard implementation follows the paper "U-Net: Convolutional Networks for
 
 ### Mobile-Unet
 
-Mobile-Unet follows the implementation with inverted residual bottleneck blocks. Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" (arXiv:xxx). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; Zhang, Huanhuan.
+Mobile-Unet utilizes inverted residual bottleneck blocks and pointwise convolution.
+
+Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" (arXiv:xxx). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; Zhang, Huanhuan.
 
 ### ESPNet
 
@@ -24,5 +26,5 @@ Shapiro, Linda; and Hajishirzi, Hannaneh.
 ### Credits
 Credits for the original architectures go to the papers' authors, as aforementioned.
 
-Credits for the implementations in Julia/Flux go to Ciro B Rosa (cirobr@github).
+Credits for this implementation in Julia/Flux go to Ciro B Rosa (cirobr@github).
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
