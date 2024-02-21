@@ -39,4 +39,11 @@ function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity)
 end
 
 
+function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
+    kgain = kf * √(w2 * ch_in)
+    return ConvTranspose((4,4), ch_in => ch_out, activation; stride=2, pad=1,
+                         init=kaiming_normal(gain=kgain))
+end
+
+
 MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)

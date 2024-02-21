@@ -15,5 +15,8 @@
 @test size(TinyMachines.ConvTranspK2(1, 1)(x1)) == (512,512,1,1)
 @test size(TinyMachines.ConvTranspK2(3, 1)(x3)) == (512,512,1,1)
 
+@test size(TinyMachines.ConvTranspK4(1,1)(x1)) == (512,512,1,1)
+@test size(TinyMachines.ConvTranspK4(3,1)(x3)) == (512,512,1,1)
+
 @test size(TinyMachines.MaxPoolK2(x1)) == (128,128,1,1)
 @test size(TinyMachines.MaxPoolK2(x3)) == (128,128,3,1)
