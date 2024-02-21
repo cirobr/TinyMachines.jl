@@ -10,7 +10,6 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              Scale, DepthwiseConv, Parallel,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
-include("./activations.jl")
 include("./convolutions.jl")
 include("./irblocks.jl")   # inverted residual blocks
 
@@ -22,9 +21,6 @@ include("./unet2.jl")
 
 # mobile unet
 include("./mobileunet.jl")
-
-# espnet
-include("./espnet.jl")
 
 
 end   # module
