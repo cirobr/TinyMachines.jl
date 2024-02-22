@@ -14,7 +14,7 @@ include("./convolutions.jl")
 include("./irblocks.jl")   # inverted residual blocks
 
 # unets
-const defaultChannels = [32, 64, 128, 256, 512]
+const defaultChannels = [64, 128, 256, 512, 1024]
 include("./unet5.jl")
 include("./unet4.jl")
 include("./unet2.jl")
