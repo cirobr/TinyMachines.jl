@@ -7,22 +7,30 @@ const kf = 1.f-2
 
 function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w1 * ch_in)
+
     return Conv((1,1), ch_in => ch_out, activation; stride=1, pad=0,
+                bias=true,   ##### considerar bias=false #####
                 init=kaiming_normal(gain=kgain))
 end
+PointwiseConv(ch_in::Int, ch_out::Int, activation=identity) = ConvK1(ch_in, ch_out, activation)
 
 
 function ConvK2(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
-    return Conv((2,2), ch_in => ch_out, activation; stride=2, pad=0,
+
+    return Conv((2,2), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+                bias=true,
                 init=kaiming_normal(gain=kgain))
 end
 
 
-function ConvK3(ch_in::Int, ch_out::Int, activation=identity; stride::Int=1)
-    if stride ∉ [1,2]   return -1   end
+function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
+                stride::Int=1)
+    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
-    return Conv((3,3), ch_in => ch_out, activation; stride=stride, pad=1,
+    
+    return Conv((3,3), ch_in => ch_out, activation; stride=stride, pad=SamePad(),
+                bias=true,
                 init=kaiming_normal(gain=kgain))
 end
 
@@ -34,16 +42,29 @@ end
 
 function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
-    return ConvTranspose((2,2), ch_in => ch_out, activation; stride=2, pad=0,
+    
+    return ConvTranspose((2,2), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+                         bias=true,
                          init=kaiming_normal(gain=kgain))
 end
 
 
 function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
-    return ConvTranspose((4,4), ch_in => ch_out, activation; stride=2, pad=1,
+    
+    return ConvTranspose((4,4), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+                         bias=true,
                          init=kaiming_normal(gain=kgain))
 end
 
 
 MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)
+
+
+function DilatedConv(ksize::Tuple{Int, Int}, ch_in::Int, ch_out::Int, activation=identity)
+    kgain = kf * √(ksize[1] * ksize[2] * ch_in)
+    
+    return Conv(ksize, ch_in => ch_out, activation; stride=1, pad=SamePad(),
+                bias=true,
+                init=kaiming_normal(gain=kgain))
+end

@@ -6,7 +6,7 @@ export MobUNet
 export ESPNet
 
 import Flux
-import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout,
+import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              Scale, DepthwiseConv, Parallel,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
