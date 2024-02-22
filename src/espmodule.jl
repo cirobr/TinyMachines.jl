@@ -1,24 +1,10 @@
-using TinyMachines
+using TinyMachines; tm=TinyMachines
 using Flux
 
 
-struct ESPNet
+struct ESPmodule
     chain::Chain
     K::Int
-end
-
-
-# calculates kernel size for the kth dilated convolution with input channel M
-n(M::Int, k::Int) = (M-1)*2^(k-1) + 1
-
-
-# calculates kernel sizes for K parallel dilated convolutions with input channel M
-function kernel_sizes(M::Int, K::Int)
-    sizes = Vector{Int}(undef, K)
-    for i in 1:K
-        sizes[i] = n(M, i)
-    end
-    return sizes
 end
 
 
@@ -26,28 +12,28 @@ end
 K = number of parallel dilated convolutions = height of pyramid
 d = number of input/output channels for all parallel dilated convolutions
 """
-function ESPNet(ch_in::Int, K::Int)
-    d = ch_in / K
-    if !isinteger(d)   return error("Number of input channels must be divisible by K.")   end
-    d = d |> Int
+function ESPmodule(ch_in::Int, K::Int)
+    d = 2^(K-1)
+    dilated_convs = [tm.DilatedConvK3(d, d, identity; dilation=2^(i-1)) for i in 1:K]
 
-    ks = kernel_sizes(ch_in, K)
-    dilated_convs = [TinyMachines.DilatedConv((ks[i], ks[i]), d, d) for i in 1:K]
-
-    res =  Chain(TinyMachines.PointwiseConv(ch_in, d),
+    res =  Chain(tm.PointwiseConv(ch_in, d),
                  Parallel(dilated_convs...)
     )
 
-    return ESPNet(res, K)
+    # display(res)
+    return ESPmodule(res, K)
 end
 
-Flux.@functor ESPNet
+Flux.@functor ESPmodule
 
 
-ESPNet(8, 4)
+function (m::ESPmodule)(x)
 
-
-function (m::ESPNet)(x)
-
-    return m.chain(x)
+    return m.chain[1](x)
 end
+
+
+
+x=rand(Float32, (64,64,8,1))
+model = ESPmodule(8,5)
+model(x)

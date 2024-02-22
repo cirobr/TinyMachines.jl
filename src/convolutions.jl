@@ -61,10 +61,12 @@ end
 MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)
 
 
-function DilatedConv(ksize::Tuple{Int, Int}, ch_in::Int, ch_out::Int, activation=identity)
-    kgain = kf * √(ksize[1] * ksize[2] * ch_in)
+function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
+                       dilation::Int)
+    kgain = kf * √(w3 * ch_in)
     
-    return Conv(ksize, ch_in => ch_out, activation; stride=1, pad=SamePad(),
+    return Conv((3,3), ch_in => ch_out, activation; stride=1, pad=SamePad(),
                 bias=true,
+                dilation=dilation,
                 init=kaiming_normal(gain=kgain))
 end
