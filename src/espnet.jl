@@ -1,11 +1,11 @@
-struct ESPnet
+struct ESPNet
     encoder::Chain
     bridge::Chain
     decoder::Chain
 end
 
 
-function ESPnet(ch_in::Int=3, ch_out::Int=1)
+function ESPNet(ch_in::Int=3, ch_out::Int=1)
     # encoder & bridge
     e1 = Chain(ConvK3(ch_in, 16), BatchNorm(16, prelu2))
     # concat(x, e1, dims=3) 19 channels out
@@ -20,16 +20,17 @@ function ESPnet(ch_in::Int=3, ch_out::Int=1)
     # decoder
 
 
+
     # output
     encoder = Chain(e1, e2, e3)
     bridge  = Chain(br1, br2, br3)
     # decoder = 
 
-    return ESPnet(encoder, bridge, decoder)
+    return ESPNet(encoder, bridge, decoder)
 end
 
 
-function (m::ESPnet)(x::Array{Float32, 4})
+function (m::ESPNet)(x::Array{Float32, 4})
 
     return yhat
 end
