@@ -8,9 +8,13 @@ const kf = 1.f-2
 function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w1 * ch_in)
 
-    return Conv((1,1), ch_in => ch_out, activation; stride=1, pad=0,
+    return Conv((1,1), ch_in => ch_out, activation;
+                stride=1,
+                pad=0,
                 bias=true,   ##### considerar bias=false #####
-                init=kaiming_normal(gain=kgain))
+                dilation=1,
+                init=kaiming_normal(gain=kgain)
+    )
 end
 PointwiseConv(ch_in::Int, ch_out::Int, activation=identity) = ConvK1(ch_in, ch_out, activation)
 
@@ -18,9 +22,13 @@ PointwiseConv(ch_in::Int, ch_out::Int, activation=identity) = ConvK1(ch_in, ch_o
 function ConvK2(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
 
-    return Conv((2,2), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+    return Conv((2,2), ch_in => ch_out, activation;
+                stride=2,
+                pad=SamePad(),
                 bias=true,
-                init=kaiming_normal(gain=kgain))
+                dilation=1,
+                init=kaiming_normal(gain=kgain)
+    )
 end
 
 
@@ -29,9 +37,13 @@ function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
     if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
     
-    return Conv((3,3), ch_in => ch_out, activation; stride=stride, pad=SamePad(),
+    return Conv((3,3), ch_in => ch_out, activation;
+                stride=stride,
+                pad=SamePad(),
                 bias=true,
-                init=kaiming_normal(gain=kgain))
+                dilation=1,
+                init=kaiming_normal(gain=kgain)
+    )
 end
 
 
@@ -43,30 +55,40 @@ end
 function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
     
-    return ConvTranspose((2,2), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+    return ConvTranspose((2,2), ch_in => ch_out, activation;
+                         stride=2,
+                         pad=SamePad(),
                          bias=true,
-                         init=kaiming_normal(gain=kgain))
+                         dilation=1,
+                         init=kaiming_normal(gain=kgain)
+    )
 end
 
 
 function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
     kgain = kf * √(w2 * ch_in)
     
-    return ConvTranspose((4,4), ch_in => ch_out, activation; stride=2, pad=SamePad(),
+    return ConvTranspose((4,4), ch_in => ch_out, activation;
+                         stride=2,
+                         pad=SamePad(),
                          bias=true,
-                         init=kaiming_normal(gain=kgain))
+                         dilation=1,
+                         init=kaiming_normal(gain=kgain)
+    )
 end
 
 
 MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)
 
 
-function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
-                       dilation::Int)
+function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity; dilation::Int)
     kgain = kf * √(w3 * ch_in)
     
-    return Conv((3,3), ch_in => ch_out, activation; stride=1, pad=SamePad(),
+    return Conv((3,3), ch_in => ch_out, activation;
+                stride=1,
+                pad=SamePad(),
                 bias=true,
                 dilation=dilation,
-                init=kaiming_normal(gain=kgain))
+                init=kaiming_normal(gain=kgain)
+    )
 end
