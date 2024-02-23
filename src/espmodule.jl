@@ -1,32 +1,30 @@
-using TinyMachines; tm=TinyMachines
-using Flux
-
-
-struct ESPmod
+struct ESPmodule
     pointwise
     dilated
     K::Int
+    add::Bool
 end
 
 
 """
 K = number of parallel dilated convolutions = height of pyramid
 d = number of input/output channels for all parallel dilated convolutions
+add = true requires ch_in == ch_out (not checked by code)
 """
-function ESPmod(ch_in::Int, ch_out::Int, K::Int)
+function ESPmodule(ch_in::Int, ch_out::Int, K::Int; add=false)
     d = ch_out / K
     if !isinteger(d)   error("ch_out must be divisible by K")   end
     d = d |> Int
 
-    pointwise = tm.PointwiseConv(ch_in, d)
-    dilated_convs = [tm.DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
-    dilated   = Chain(dilated_convs...)
+    pointwise = tm.ConvK1(ch_in, d)
+    dilated   = [tm.DilatedConvK3(d, d; dilation=2^(k-1)) for k in 1:K]
+    dilated   = Chain(dilated...)
 
-    return ESPmod(pointwise, dilated, K)
+    return ESPmodule(pointwise, dilated, K, add)
 end
 
 
-function (m::ESPmod)(x)
+function (m::ESPmodule)(x)
     # pointwise convolution
     pw = m.pointwise(x)
 
@@ -44,17 +42,8 @@ function (m::ESPmod)(x)
     cat_sums = reshape(sums, (h, w, C*m.K, 1))
 
     # sum concatenation with input tensor
-
-    
+    if m.add  return x + cat_sums   end
+    return cat_sums
 end
 
-Flux.@functor ESPmod
-
-
-x = rand(Float32, (256,256,3,1))
-c1  = tm.ConvK3(3,16; stride=2)(x)
-ds1 = tm.ConvK3(3,3;  stride=2)(x)
-ct1 = cat(c1, ds1, dims=3)        # 19ch OK
-yhat = ESPmod(19, 64, 4)(ct1)     # 64ch OK
-size(yhat)
-
+Flux.@functor ESPmodule
