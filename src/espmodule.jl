@@ -22,16 +22,17 @@ function ESPmod(ch_in::Int, K::Int)
     return ESPmod(pointwise, dilated, K)
 end
 
-Flux.@functor ESPmod
-
 
 function (m::ESPmod)(x)
+    # pointwise convolution
     pw = m.pointwise(x)
 
+    # dilated convolutions
     h, w, C = size(pw)[1:3]
     convs = Array{Float32}(undef, (h, w, C, m.K))
     for i in 1:m.K   convs[:,:,:,i] = m.dilated[i](pw)   end
 
+    # sums of dilated convolutions
     sums = Array{Float32}(undef, (h, w, C, m.K))
     sums[:,:,:,1] = convs[:,:,:,1]
     for i in 2:m.K   sums[:,:,:,i] = convs[:,:,:,i] + sums[:,:,:,i-1]   end
@@ -42,6 +43,7 @@ function (m::ESPmod)(x)
     @show size(sums)
 end
 
+Flux.@functor ESPmod
 
 
 x=rand(Float32, (64,64,8,1))
