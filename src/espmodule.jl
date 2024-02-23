@@ -37,10 +37,16 @@ function (m::ESPmod)(x)
     sums[:,:,:,1] = convs[:,:,:,1]
     for i in 2:m.K   sums[:,:,:,i] = convs[:,:,:,i] + sums[:,:,:,i-1]   end
 
-    @show size(x)
-    @show size(pw)
-    @show size(convs)
-    @show size(sums)
+    # concatenate sums by its last dimension
+
+
+    # sum with the input
+
+    
+    # @show size(x)
+    # @show size(pw)
+    # @show size(convs)
+    # @show size(sums)
 end
 
 Flux.@functor ESPmod
@@ -48,4 +54,5 @@ Flux.@functor ESPmod
 
 x=rand(Float32, (64,64,8,1))
 model = ESPmod(8,5)
-model(x)
+yhat = model(x)
+Flux.cat(yhat, dims=4) == yhat
