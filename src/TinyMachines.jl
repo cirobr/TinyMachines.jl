@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, UNet2
 export MobUNet
-export ESPNet
+export ESPNet, ESPmodule
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
@@ -24,6 +24,7 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
+include("./espmodule.jl")
 include("./espnet.jl")
 
 

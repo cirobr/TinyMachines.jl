@@ -9,15 +9,18 @@ end
 """
 K = number of parallel dilated convolutions = height of pyramid
 d = number of input/output channels for all parallel dilated convolutions
-add = true requires ch_in == ch_out (not checked by code)
 """
-function ESPmodule(ch_in::Int, ch_out::Int, K::Int; add=false)
+function ESPmodule(ch_in::Int, ch_out::Int; K::Int=5, add=false)
+    if add && ch_in != ch_out
+        error("ch_in must equal ch_out when add=true")
+    end
+
     d = ch_out / K
     if !isinteger(d)   error("ch_out must be divisible by K")   end
     d = d |> Int
 
-    pointwise = ConvK1(ch_in, d)
-    dilated   = [DilatedConvK3(d, d; dilation=2^(k-1)) for k in 1:K]
+    pointwise = ConvK1(ch_in, d, identity)
+    dilated   = [DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
     dilated   = Chain(dilated...)
 
     return ESPmodule(pointwise, dilated, K, add)
