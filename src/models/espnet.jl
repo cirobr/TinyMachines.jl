@@ -33,7 +33,7 @@ function ESPNet(ch_in::Int, ch_out::Int; K=5)
 
     # decoder
     # TODO deconv
-    deconv = ConvTranspK2(ch_out, ch_out, identity)
+    deconv = ConvTranspK2(ch_out, ch_out, identity; stride=1)
     espdec  = ESPmodule(2*ch_out, ch_out; K=K, add=false)
     outconv = ConvK1(2*ch_out, ch_out, identity)
 
@@ -64,20 +64,20 @@ function (m::ESPNet)(x)
     # bridges
     b19 = m.bridge[:bridge19](ct1)
     b131 = m.bridge[:bridge131](ct2)
-    b256 = m.bridge[:bridge256](ct3); @show size(b256)
+    b256 = m.bridge[:bridge256](ct3)#; @show size(b256)
 
     # decoder
-    out6 = m.decoder[:deconv](b256); @show size(out6)
-    # ct4 = cat(b131, out6, dims=3)
+    out6 = m.decoder[:deconv](b256)#; @show size(out6)
+    ct4 = cat(b131, out6, dims=3)
 
-    # out7 = m.decoder[:espdec](ct4)
-    # out8 = m.decoder[:deconv](out7)
-    # ct5 = cat(b19, out8, dims=3)
+    out7 = m.decoder[:espdec](ct4)
+    out8 = m.decoder[:deconv](out7)
+    ct5 = cat(b19, out8, dims=3)
 
-    # out9 = m.decoder[:outconv](ct5)
-    # yhat = m.decoder[:deconv](out9)
+    out9 = m.decoder[:outconv](ct5)
+    yhat = m.decoder[:deconv](out9)
 
-    # return yhat
+    return yhat
 end
 
 Flux.@functor ESPNet
