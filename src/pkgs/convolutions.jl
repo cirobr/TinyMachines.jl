@@ -53,11 +53,26 @@ function UpConvK2(ch_in::Int, ch_out::Int, activation=identity)
 end
 
 
-function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity)
+# function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity)
+#     kgain = kf * √(w2 * ch_in)
+    
+#     return ConvTranspose((2,2), ch_in => ch_out, activation;
+#                          stride=2,
+#                          pad=SamePad(),
+#                          bias=true,
+#                          dilation=1,
+#                          init=kaiming_normal(gain=kgain)
+#     )
+# end
+
+
+function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity;
+                      stride::Int=1)
+    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w2 * ch_in)
     
     return ConvTranspose((2,2), ch_in => ch_out, activation;
-                         stride=2,
+                         stride=stride,
                          pad=SamePad(),
                          bias=true,
                          dilation=1,

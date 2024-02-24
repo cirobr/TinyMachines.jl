@@ -39,19 +39,19 @@ chs = alpha .* defaultChannels .|> Int
     
 
     # expansive path
-    e4 = Chain(ConvTranspK2(chs[4], chs[3]), BatchNorm(chs[3], activation),
+    e4 = Chain(ConvTranspK2(chs[4], chs[3]; stride=2), BatchNorm(chs[3], activation),
     )
 
     e3 = Chain(ConvK3(chs[4], chs[3], activation),
                Dropout(0.2),
                ConvK3(chs[3], chs[3], activation),
-               ConvTranspK2(chs[3], chs[2]), BatchNorm(chs[2], activation)
+               ConvTranspK2(chs[3], chs[2]; stride=2), BatchNorm(chs[2], activation)
     )
     
     e2 = Chain(ConvK3(chs[3], chs[2], activation),
                Dropout(0.15),
                ConvK3(chs[2], chs[2], activation),
-               ConvTranspK2(chs[2], chs[1]), BatchNorm(chs[1], activation)
+               ConvTranspK2(chs[2], chs[1]; stride=2), BatchNorm(chs[1], activation)
     )
     
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
