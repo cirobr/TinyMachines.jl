@@ -7,9 +7,11 @@ export ESPNet, ESPmodule
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
-             Scale, DepthwiseConv, Parallel,
+             DepthwiseConv, Parallel, Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
+
+# packages
 include("./pkgs/activations.jl")
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")   # inverted residual blocks
