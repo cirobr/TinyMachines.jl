@@ -39,20 +39,21 @@ function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
-    enc = Chain(c1, c2)
-    dec = Chain(e2, e1, e0)
+    enc = Chain(c1=c1, c2=c2)
+    dec = Chain(e2=e2, e1=e1, e0=e0)
+
     return UNet2(enc, dec, verbose)   # struct with encoder and decoder
 end
 
 
 function (m::UNet2)(x)
-    enc1 = m.enc[1](x)
-    enc2 = m.enc[2](enc1)
+    enc1 = m.enc[:c1](x)
+    enc2 = m.enc[:c2](enc1)
 
-    dec2 = m.dec[1](enc2)
-    dec1 = m.dec[2](cat(enc1, dec2; dims=3))
+    dec2 = m.dec[:e2](enc2)
+    dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
 
-    yhat   = m.dec[end](dec1)
+    yhat   = m.dec[:e0](dec1)
     logits = [enc1, enc2, dec2, dec1]
 
     if m.verbose   return yhat, logits   # logits output

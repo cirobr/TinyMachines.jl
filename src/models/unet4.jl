@@ -63,24 +63,25 @@ chs = alpha .* defaultChannels .|> Int
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
-    enc = Chain(c1, c2, c3, c4)
-    dec = Chain(e4, e3, e2, e1, e0)
+    enc = Chain(c1=c1, c2=c2, c3=c3, c4=c4)
+    dec = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0)
+
     return UNet4(enc, dec, verbose)   # struct with encoder and decoder
 end
 
 
 function (m::UNet4)(x)
-    enc1 = m.enc[1](x)
-    enc2 = m.enc[2](enc1)
-    enc3 = m.enc[3](enc2)
-    enc4 = m.enc[4](enc3)
+    enc1 = m.enc[:c1](x)
+    enc2 = m.enc[:c2](enc1)
+    enc3 = m.enc[:c3](enc2)
+    enc4 = m.enc[:c4](enc3)
 
-    dec4 = m.dec[1](enc4)
-    dec3 = m.dec[2](cat(enc3, dec4; dims=3))
-    dec2 = m.dec[3](cat(enc2, dec3; dims=3))
-    dec1 = m.dec[4](cat(enc1, dec2; dims=3))
+    dec4 = m.dec[:e4](enc4)
+    dec3 = m.dec[:e3](cat(enc3, dec4; dims=3))
+    dec2 = m.dec[:e2](cat(enc2, dec3; dims=3))
+    dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
 
-    yhat   = m.dec[end](dec1)
+    yhat   = m.dec[:e0](dec1)
     logits = [enc1, enc2, enc3, enc4, dec4, dec3, dec2, dec1]
 
     if m.verbose   return yhat, logits   # logits output
