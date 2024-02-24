@@ -16,8 +16,8 @@ function ESPmodule(ch_in::Int, ch_out::Int, K::Int; add=false)
     if !isinteger(d)   error("ch_out must be divisible by K")   end
     d = d |> Int
 
-    pointwise = tm.ConvK1(ch_in, d)
-    dilated   = [tm.DilatedConvK3(d, d; dilation=2^(k-1)) for k in 1:K]
+    pointwise = ConvK1(ch_in, d)
+    dilated   = [DilatedConvK3(d, d; dilation=2^(k-1)) for k in 1:K]
     dilated   = Chain(dilated...)
 
     return ESPmodule(pointwise, dilated, K, add)

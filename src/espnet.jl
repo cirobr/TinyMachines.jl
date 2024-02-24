@@ -1,38 +1,42 @@
 struct ESPNet
-    encoder::Chain
-    bridge::Chain
-    decoder::Chain
+    ds
+    encoder
+    bridge
+    decoder
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1)
-    # encoder & bridge
-    e1 = Chain(ConvK3(ch_in, 16), BatchNorm(16, prelu2))
-    # concat(x, e1, dims=3) 19 channels out
-    br1 = ConvK1(19, ch_out)
-    # e2 = Chain(ESPmodule(19, 64), ESPmodule(64, 64; α=2))
-    # concat(x, e2[1], e2[2], dims=3) 131 channels out
-    br2 = ConvK1(131, ch_out)
-    # e3 = Chain(ESPmodule(131, 128), ESPmodule(128, 128; α=3))
-    # concat(e3[1], e3[2]) 256 channels out
-    br3 = ConvK1(256, ch_out)
+function ESPNet(ch_in::Int, ch_out::Int; K=5)
+    # downsample
+    ds = Convk3(ch_in, 3, identity)
+
+    # encoder
+    in   = ConvK3(ch_in, 16, identity)
+    esps = Chain( ESPmodule(19, 64, K; add=false),  ESPmodule(131, 128, K, add=false) )
+    esp2 = Chain( ESPmodule(64, 64, K; add=true),   ESPmodule(64, 64, K; add=true) )
+    esp3 = Chain( ESPmodule(128, 128, K; add=true), ESPmodule(128, 128, K; add=true), ESPmodule(128, 128, K; add=true) )
+
+    # bridge
+    bridge = Chain( ConvK1(19, ch_out, identity), ConvK1(131, ch_out, identity), ConvK1(256, ch_out, identity) )
 
     # decoder
+    espd = ESPModule(2*ch_out, ch_out, K; add=false)
+    out  = Chain( ConvK1(2*ch_out, ch_out, identity), deconv_cc )
 
+    # output chains
+    encoder = Chain(in, esps, esp2, esp3)
+    decoder = Chain(espd, out)
 
-
-    # output
-    encoder = Chain(e1, e2, e3)
-    bridge  = Chain(br1, br2, br3)
-    # decoder = 
-
-    return ESPNet(encoder, bridge, decoder)
+    return ESPNet(ds, encoder, bridge, decoder)
 end
 
 
-function (m::ESPNet)(x::Array{Float32, 4})
+function (m::ESPNet)(x)
+    out1 = m.in(x)
+    ds1  = m.ds(x)
+    ct1 = cat(out1, ds1, dims=3)
+    out2 = m.esps(ct1)
+    out2 = m.esp2(out2)
 
-    return yhat
+    return
 end
-
-
