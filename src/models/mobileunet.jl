@@ -77,20 +77,18 @@ function (m::MobUNet)(x)
 
     # decoder
     l1 = m.ct[1](x5)
-    # size(l1), size(x4)
     l2 = m.ir[1](cat(l1, x4; dims=3))
     l3 = m.ct[2](l2)
-    # size(l3), size(x3)
     l4 = m.ir[2](cat(l3, x3; dims=3))
     l5 = m.ct[3](l4)
-    # size(l5), size(x2)
     l6 = m.ir[3](cat(l5, x2; dims=3))
     l7 = m.ct[4](l6)
     l8 = m.ir[4](cat(l7, x1; dims=3))
+    l9 = m.ct[5](l8)
 
     # output
-    l9 = m.ct[5](l8)
-    return m.ir[5](l9)
+    yhat = m.ir[end](l9)
+    return yhat
 end
 
 @functor MobUNet
