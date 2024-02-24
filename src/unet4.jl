@@ -57,7 +57,7 @@ chs = alpha .* defaultChannels .|> Int
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
                Dropout(0.1),
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
-               ConvK1(chs[1], ch_out)
+               ConvK1(chs[1], ch_out, identity)
     )
     
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
