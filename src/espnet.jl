@@ -32,15 +32,15 @@ function ESPNet(ch_in::Int, ch_out::Int; K=5)
 
 
     # decoder
-    ### deconv_cc
+    ### TODO deconv
     espdec = ESPModule(2*ch_out, ch_out; K=K, add=false)
-    out    = Chain(ConvK1(2*ch_out, ch_out, identity), deconv_cc)
+    out    = ConvK1(2*ch_out, ch_out, identity)
 
 
     # output chains
     encoder = Chain(in=in, esp19=esp19, esp131=esp131, esp2x=esp2x, esp3x=esp3x)
     bridge  = Chain(bridge19=bridge19, bridge131=bridge131, bridge256=bridge256)
-    decoder = Chain(espdec=espdec, out=out)
+    decoder = Chain(deconv=deconv, espdec=espdec, out=out)
 
     return ESPNet(downsample, encoder, bridge, decoder)
 end
@@ -51,9 +51,11 @@ function (m::ESPNet)(x)
     out1 = m.encoder[:in](x)
     ds1  = m.downsample(x)
     ct1 = cat(ds1, out1, dims=3)
+
     out2 = m.encoder[:esp19](ct1)
     out3 = m.encoder[:esp2x](out2)
     ct2 = cat(ds1, out2, out3, dims=3)
+    
     out4 = m.encoder[:esp131](ct2)
     out5 = m.encoder[:esp3x](out4)
     ct3 = cat(out4, out5, dims=3)
@@ -64,7 +66,17 @@ function (m::ESPNet)(x)
     b256 = m.bridge[:bridge256](ct3)
 
     # decoder
-    
+    out6 = m.decoder[:deconv](b256)
+    ct4 = cat(b131, out6, dims=3)
 
-    return
+    out7 = m.decoder[:espdec](ct4)
+    out8 = m.decoder[:deconv](out7)
+    ct5 = cat(b19, out8, dims=3)
+
+    out9 = m.decoder[:out](ct5)
+    yhat = m.decoder[:deconv](out9)
+
+    return yhat
 end
+
+Flux.@functor ESPNet
