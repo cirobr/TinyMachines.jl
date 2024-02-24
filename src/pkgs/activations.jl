@@ -10,7 +10,7 @@ prelu1 = Scale(1, relu, bias=false)
 
 ##### PReLU version 2
 struct PReLU
-    scale::Vector{Float32}
+    scale::Vector
 end
 
 PReLU(scale::Float32=1.f0) = PReLU([scale])
