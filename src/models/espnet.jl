@@ -8,33 +8,31 @@ end
 
 function ESPNet(ch_in::Int, ch_out::Int; K=5)
     # downsample
-    downsample = ConvK3(ch_in, 3, identity)
+    downsample = Chain(ConvK3(ch_in, 3, identity), BatchNorm(3), prelu2)
 
 
     # encoder
-    inconv = ConvK3(ch_in, 16, identity)
-    esp19  = ESPmodule(19, 64; K=K, add=false)
-    esp131 = ESPmodule(131, 128; K=K, add=false)
-
-    esp2x  = Chain(ESPmodule(64, 64; K=K, add=true),
-                   ESPmodule(64, 64; K=K, add=true)
+    inconv = Chain(ConvK3(ch_in, 16, identity), BatchNorm(16), prelu2)
+    esp19  = Chain(ESPmodule(19, 64; K=K, add=false), BatchNorm(64), prelu2)
+    esp131 = Chain(ESPmodule(131, 128; K=K, add=false), BatchNorm(128), prelu2)
+    esp2x  = Chain(ESPmodule(64, 64; K=K, add=true), BatchNorm(64), prelu2,
+                   ESPmodule(64, 64; K=K, add=true), BatchNorm(64), prelu2
     )
-    esp3x  = Chain(ESPmodule(128, 128; K=K, add=true),
-                   ESPmodule(128, 128; K=K, add=true),
-                   ESPmodule(128, 128; K=K, add=true)
+    esp3x  = Chain(ESPmodule(128, 128; K=K, add=true), BatchNorm(128), prelu2,
+                   ESPmodule(128, 128; K=K, add=true), BatchNorm(128), prelu2,
+                   ESPmodule(128, 128; K=K, add=true), BatchNorm(128), prelu2
     )
 
 
     # bridges
-    bridge19  = ConvK1(19, ch_out, identity)
-    bridge131 = ConvK1(131, ch_out, identity)
-    bridge256 = ConvK1(256, ch_out, identity)
+    bridge19  = Chain(ConvK1(19, ch_out, identity), BatchNorm(ch_out), prelu2)
+    bridge131 = Chain(ConvK1(131, ch_out, identity), BatchNorm(ch_out), prelu2)
+    bridge256 = Chain(ConvK1(256, ch_out, identity), BatchNorm(ch_out), prelu2)
 
 
     # decoder
-    # TODO deconv
-    deconv = ConvTranspK2(ch_out, ch_out, identity; stride=1)
-    espdec  = ESPmodule(2*ch_out, ch_out; K=K, add=false)
+    deconv  = Chain(ConvTranspK2(ch_out, ch_out, identity; stride=1), BatchNorm(ch_out), prelu2)
+    espdec  = Chain(ESPmodule(2*ch_out, ch_out; K=K, add=false), BatchNorm(ch_out), prelu2)
     outconv = ConvK1(2*ch_out, ch_out, identity)
 
 
