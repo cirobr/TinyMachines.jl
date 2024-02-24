@@ -13,9 +13,10 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
 include("./pkgs/activations.jl")
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")   # inverted residual blocks
+include("./espmodule.jl")       # efficient spatial pyramid module
 
 # unets
-const defaultChannels = [32, 64, 128, 256, 512]
+const defaultChannels = [64, 128, 256, 512, 1024]
 include("./models/unet5.jl")
 include("./models/unet4.jl")
 include("./models/unet2.jl")
@@ -24,7 +25,6 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./espmodule.jl")
 include("./espnet.jl")
 
 
