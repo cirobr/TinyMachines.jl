@@ -26,6 +26,6 @@ Shapiro, Linda; and Hajishirzi, Hannaneh.
 ### Credits
 Credits for the original architectures go to the papers' authors, as aforementioned.
 
-Credits for this implementation in Julia/Flux go to Ciro B Rosa.
+Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * GitHub: https://github.com/cirobr
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
