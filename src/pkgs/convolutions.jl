@@ -2,6 +2,7 @@
 const w1 = 1
 const w2 = 2 * 2
 const w3 = 3 * 3
+const w4 = 4 * 4
 const kf = 1.f-2
 
 
@@ -11,7 +12,7 @@ function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
     return Conv((1,1), ch_in => ch_out, activation;
                 stride=1,
                 pad=0,
-                bias=true,   ##### considerar bias=false #####
+                bias=false,   # original bias=true
                 dilation=1,
                 init=kaiming_normal(gain=kgain)
     )
@@ -66,7 +67,7 @@ end
 
 
 function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
-    kgain = kf * √(w2 * ch_in)
+    kgain = kf * √(w4 * ch_in)
     
     return ConvTranspose((4,4), ch_in => ch_out, activation;
                          stride=2,

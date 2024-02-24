@@ -10,18 +10,18 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              Scale, DepthwiseConv, Parallel,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
-include("./activations.jl")
-include("./convolutions.jl")
-include("./irblocks.jl")   # inverted residual blocks
+include("./pkgs/activations.jl")
+include("./pkgs/convolutions.jl")
+include("./pkgs/irblocks.jl")   # inverted residual blocks
 
 # unets
 const defaultChannels = [32, 64, 128, 256, 512]
-include("./unet5.jl")
-include("./unet4.jl")
-include("./unet2.jl")
+include("./models/unet5.jl")
+include("./models/unet4.jl")
+include("./models/unet2.jl")
 
 # mobile unet
-include("./mobileunet.jl")
+include("./models/mobileunet.jl")
 
 # espnet
 include("./espnet.jl")
