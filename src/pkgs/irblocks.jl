@@ -10,6 +10,7 @@ function irbottleneck(ch_in::Int, ch_out::Int, stride::Int, expand_ratio::Int)
                       stride=stride,
                       pad=1,
                       bias=true,
+                      dilation=1,
                       init=kaiming_normal(gain=kgain)
         ),
         BatchNorm(ch_exp, relu6),
@@ -19,12 +20,12 @@ end
 
 
 # stride 2 block
-irblock2(ch_in, ch_out, expand_ratio=6) = 
+irblock2(ch_in, ch_out, expand_ratio) = 
 irbottleneck(ch_in, ch_out, 2, expand_ratio)
 
 
 # stride 1 block / skip connection
-irblock1(ch_in, ch_out, expand_ratio=6) =
+irblock1(ch_in, ch_out, expand_ratio) =
 Parallel(+,
          irbottleneck(ch_in, ch_out, 1, expand_ratio),   # main branch
          ConvK1(ch_in, ch_out, identity)                 # skip connection
