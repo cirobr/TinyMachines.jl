@@ -9,6 +9,7 @@ function irbottleneck(ch_in::Int, ch_out::Int, stride::Int, expand_ratio::Int)
         DepthwiseConv((3, 3), ch_exp => ch_exp, identity;
                       stride=stride,
                       pad=1,
+                      bias=true,
                       init=kaiming_normal(gain=kgain)
         ),
         BatchNorm(ch_exp, relu6),
