@@ -12,10 +12,10 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              @functor, kaiming_normal
 
 # packages
-include("./pkgs/activations.jl")
+include("./pkgs/activations.jl")    # PReLU
 include("./pkgs/convolutions.jl")
-include("./pkgs/irblocks.jl")   # inverted residual blocks
-include("./pkgs/espmodule.jl")       # efficient spatial pyramid module
+include("./pkgs/irblocks.jl")       # inverted residual blocks
+include("./pkgs/espmodule.jl")      # efficient spatial pyramid module
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
