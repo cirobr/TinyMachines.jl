@@ -34,12 +34,13 @@ function ESPNet(ch_in::Int, ch_out::Int; K=5)
     deconv  = Chain(ConvTranspK2(ch_out, ch_out, identity; stride=1), BatchNorm(ch_out), prelu2)
     espdec  = Chain(ESPmodule(2*ch_out, ch_out; K=K, add=false), BatchNorm(ch_out), prelu2)
     outconv = ConvK1(2*ch_out, ch_out, identity)
+    e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
 
     # output chains
     encoder = Chain(inconv=inconv, esp19=esp19, esp131=esp131, esp2x=esp2x, esp3x=esp3x)
     bridge  = Chain(bridge19=bridge19, bridge131=bridge131, bridge256=bridge256)
-    decoder = Chain(deconv=deconv, espdec=espdec, outconv=outconv)
+    decoder = Chain(deconv=deconv, espdec=espdec, outconv=outconv, e0=e0)
 
     return ESPNet(downsample, encoder, bridge, decoder)
 end
@@ -73,7 +74,8 @@ function (m::ESPNet)(x)
     ct5 = cat(b19, out8, dims=3)
 
     out9 = m.decoder[:outconv](ct5)
-    yhat = m.decoder[:deconv](out9)
+    out10 = m.decoder[:deconv](out9)
+    yhat = m.decoder[:e0](out10)
 
     return yhat
 end
