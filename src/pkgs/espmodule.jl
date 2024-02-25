@@ -32,11 +32,8 @@ function (m::ESPmodule)(x)
     pw = m.pointwise(x)
 
     # dilated convolutions
-    # h, w, C, N = size(pw)
-    sums = pmap(i -> m.dilated[i](pw), 1:m.K)
-    # sums = [m.dilated[i](pw) for i in 1:m.K]   # not working at all
-    # for i in 2:m.K   sums[i] += sums[i-1]   end
-    map!(i -> sums[i] += sums[i-1], sums, 2:m.K)
+    sums = map(i -> m.dilated[i](pw), 1:m.K)
+    for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
     cat_sums = cat(sums..., dims=3)
