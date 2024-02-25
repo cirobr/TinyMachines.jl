@@ -10,6 +10,7 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              DepthwiseConv, Parallel, Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
+import Distributed: pmap
 
 # packages
 include("./pkgs/activations.jl")    # PReLU
