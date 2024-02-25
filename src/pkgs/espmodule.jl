@@ -36,7 +36,7 @@ function (m::ESPmodule)(x)
     sums = pmap(i -> m.dilated[i](pw), 1:m.K)
     # sums = [m.dilated[i](pw) for i in 1:m.K]   # not working at all
     # for i in 2:m.K   sums[i] += sums[i-1]   end
-    pmap!(i -> sums[i] += sums[i-1], sums, 2:m.K)
+    map!(i -> sums[i] += sums[i-1], sums, 2:m.K)
 
     # concatenate sums
     cat_sums = cat(sums..., dims=3)
