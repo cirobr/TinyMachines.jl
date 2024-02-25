@@ -1,3 +1,5 @@
+using Pkg
+Pkg.activate(".")
 using TinyMachines
 using Flux
 using Random

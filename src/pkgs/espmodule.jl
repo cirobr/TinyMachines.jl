@@ -33,16 +33,20 @@ function (m::ESPmodule)(x)
 
     # dilated convolutions
     h, w, C = size(pw)[1:3]
-    dconvs = Array{Float32}(undef, (h, w, C, m.K))
-    for i in 1:m.K   dconvs[:,:,:,i] = m.dilated[i](pw)   end
+    # dconvs = Array{Float32}(undef, (h, w, C, m.K))
+    # for i in 1:m.K   dconvs[:,:,:,i] = m.dilated[i](pw)   end
+    dconvs = map(i -> m.dilated[i](pw), 1:m.K)
 
     # sums of dilated convolutions
-    sums = Array{Float32}(undef, (h, w, C, m.K))
-    sums[:,:,:,1] = dconvs[:,:,:,1]   
-    for i in 2:m.K   sums[:,:,:,i] = dconvs[:,:,:,i] + sums[:,:,:,i-1]   end
+    # sums = Array{Float32}(undef, (h, w, C, m.K))
+    # sums[:,:,:,1] = dconvs[:,:,:,1]   
+    # for i in 2:m.K   sums[:,:,:,i] = dconvs[:,:,:,i] + sums[:,:,:,i-1]   end
+    sums = dconvs
+    for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
-    cat_sums = reshape(sums, (h, w, C*m.K, 1))
+    # cat_sums = reshape(sums, (h, w, C*m.K, 1))
+    cat_sums = cat(sums..., dims=3)
 
     # sum concatenation with input tensor
     if m.add  return x + cat_sums   end
