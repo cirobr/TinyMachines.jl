@@ -37,7 +37,7 @@ function (m::ESPmodule)(x)
     @time for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
-    cat_sums = cat(sums..., dims=3)
+    @time cat_sums = cat(sums..., dims=3)
 
     # sum concatenation with input tensor
     if m.add  return x + cat_sums   end
