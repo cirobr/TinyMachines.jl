@@ -33,10 +33,7 @@ function (m::ESPmodule)(x)
 
     # dilated convolutions
     # h, w, C = size(pw)[1:3]
-    dconvs = map(i -> m.dilated[i](pw), 1:m.K)
-
-    # sums of dilated convolutions
-    sums = dconvs
+    sums = map(i -> m.dilated[i](pw), 1:m.K)
     for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
