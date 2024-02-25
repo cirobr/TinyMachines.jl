@@ -38,7 +38,7 @@ function (m::ESPmodule)(x)
     # concatenate sums
     cat_sums = cat(sums..., dims=3)
 
-    # sum concatenation with input tensor
+    # add concatenation with input tensor
     if m.add  return x + cat_sums   end
     return cat_sums
 end
