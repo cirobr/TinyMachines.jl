@@ -18,7 +18,7 @@ import CUDA: CuArray, has_cuda_gpu
 include("./pkgs/activations.jl")    # PReLU
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")       # inverted residual blocks
-include("./espmodule.jl")      # efficient spatial pyramid module
+include("./pkgs/espmodule.jl")      # efficient spatial pyramid module
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -30,7 +30,7 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./espnet.jl")
+include("./models/espnet.jl")
 
 
 end   # module

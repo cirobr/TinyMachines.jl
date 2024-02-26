@@ -36,11 +36,13 @@ function (m::ESPmodule)(x)
     for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
-    cat_sums = cat(sums..., dims=3)
+    yhat = cat(sums..., dims=3)
 
     # add concatenation with input tensor
-    if m.add  return x + cat_sums   end
-    return cat_sums
+    # @show size(x)
+    # @show size(yhat)
+    if m.add  yhat = x + yhat   end
+    return yhat
 end
 
 Flux.@functor ESPmodule
