@@ -9,14 +9,16 @@ import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              DepthwiseConv, Parallel, Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
+             gpu,
              @functor, kaiming_normal
 import Distributed: pmap
+import CUDA: CuArray, has_cuda_gpu
 
 # packages
 include("./pkgs/activations.jl")    # PReLU
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")       # inverted residual blocks
-include("./espmodule.jl")      # efficient spatial pyramid module
+include("./espmodule-2.jl")      # efficient spatial pyramid module
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]

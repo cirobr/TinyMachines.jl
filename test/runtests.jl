@@ -2,6 +2,7 @@ using Pkg
 Pkg.activate(".")
 using TinyMachines
 using Flux
+using CUDA
 using Random
 using Test
 
