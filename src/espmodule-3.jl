@@ -45,7 +45,7 @@ function (m::ESPmodule)(x)
         sums = Vector{Array{Float32,4}}(undef, m.K)
     end
     map!(i -> m.dilated[i](pw), sums, 1:m.K)
-    for i in 2:m.K   sums[i] += sums[i-1]   end
+    # for i in 2:m.K   sums[i] += sums[i-1]   end
 
     # concatenate sums
     cat_sums = cat(sums..., dims=3)
