@@ -39,8 +39,6 @@ function (m::ESPmodule)(x)
     yhat = cat(sums..., dims=3)
 
     # add concatenation with input tensor
-    # @show size(x)
-    # @show size(yhat)
     if m.add  yhat = x + yhat   end
     return yhat
 end
