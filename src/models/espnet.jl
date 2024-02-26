@@ -49,8 +49,8 @@ end
 function (m::ESPNet)(x)
     # encoder
     out1 = m.encoder[:inconv](x)
-    # ds1  = m.downsample(x)
-    # ct1 = cat(ds1, out1, dims=3)
+    ds1  = m.downsample(x)
+    ct1 = cat(ds1, out1, dims=3)
 
     # out2 = m.encoder[:esp19](ct1)
     # out3 = m.encoder[:esp2x](out2)
@@ -77,7 +77,7 @@ function (m::ESPNet)(x)
     # out10 = m.decoder[:deconv](out9)
     # yhat = m.decoder[:e0](out10)
 
-    yhat = m.decoder[:e0](out1)  # dummy
+    yhat = m.decoder[:e0](ct1)  # dummy
     return yhat
 end
 
