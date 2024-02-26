@@ -16,7 +16,7 @@ import Distributed: pmap
 include("./pkgs/activations.jl")    # PReLU
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")       # inverted residual blocks
-include("./pkgs/espmodule.jl")      # efficient spatial pyramid module
+include("./espmodule.jl")      # efficient spatial pyramid module
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -28,7 +28,7 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./models/espnet.jl")
+include("./espnet.jl")
 
 
 end   # module
