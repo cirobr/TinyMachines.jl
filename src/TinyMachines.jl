@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, UNet2
 export MobUNet
-export ESPNet, ESPmodule
+export ESPNet, ESPmodule, prelu1, prelu2
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
@@ -11,8 +11,6 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              identity, relu, σ, sigmoid, softmax, relu6,
              gpu,
              @functor, kaiming_normal
-import Distributed: pmap
-import CUDA: CuArray, has_cuda_gpu
 
 # packages
 include("./pkgs/activations.jl")    # PReLU
