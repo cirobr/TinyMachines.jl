@@ -20,8 +20,8 @@ function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     d = d |> Int
 
     pointwise = ConvK1(ch_in, d, identity)
-    dilated   = [DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
-    dilated   = Chain(dilated...)
+    temp      = [DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
+    dilated   = Chain(temp...)
 
     return ESPmodule(pointwise, dilated, K, add)
 end
