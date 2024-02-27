@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, UNet2
 export MobUNet
-export ESPNet, ESPmodule, prelu1, prelu2
+# export ESPNet, ESPmodule, prelu1, prelu2
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
