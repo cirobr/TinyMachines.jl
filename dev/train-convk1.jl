@@ -1,6 +1,6 @@
 using TinyMachines
 using Flux
-using Flux: DataLoader, gpu
+using Flux: DataLoader
 
 X = rand(Float32, (256,256,3,1))
 Y = rand(Bool, (256,256,1,1))
