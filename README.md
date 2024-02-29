@@ -18,6 +18,13 @@ Mobile-Unet utilizes inverted residual bottleneck blocks and pointwise convoluti
 Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
 
 
+### ESPNet
+ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity.
+
+Implementation follows the paper "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Paper credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat;
+Shapiro, Linda; and Hajishirzi, Hannaneh.
+
+
 ### Credits
 Credits for the original architectures go to the papers' authors, as aforementioned.
 
