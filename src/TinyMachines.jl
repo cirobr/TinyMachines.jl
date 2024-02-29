@@ -8,6 +8,7 @@ export ESPNet
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              DepthwiseConv, Parallel,
+             Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
              @functor, kaiming_normal
 
@@ -28,7 +29,7 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./espnet-src/espnet.jl")         # model
+include("./espnet-src/espnet.jl")
 
 
 end   # module

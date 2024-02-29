@@ -12,15 +12,15 @@ function ESPNet(ch_in::Int, ch_out::Int; K=1, activation=relu)
 
 
     # encoder
-    inconv = Chain(ConvK3(ch_in, 16, identity),         BatchNorm(16),  activation)
-    esp19  = Chain(ESPmoduleK1(19, 64; K=K, add=false),   BatchNorm(64),  activation)
-    esp131 = Chain(ESPmoduleK1(131, 128; K=K, add=false), BatchNorm(128), activation)
-    esp2x  = Chain(ESPmoduleK1(64, 64; K=K, add=true),    BatchNorm(64),  activation,
-                   ESPmoduleK1(64, 64; K=K, add=true),    BatchNorm(64),  activation
+    inconv = Chain(ConvK3(ch_in, 16, identity),      BatchNorm(16),  activation)
+    esp19  = Chain(ESPmoduleK4(19, 64; add=false),   BatchNorm(64),  activation)
+    esp131 = Chain(ESPmoduleK4(131, 128; add=false), BatchNorm(128), activation)
+    esp2x  = Chain(ESPmoduleK4(64, 64; add=true),    BatchNorm(64),  activation,
+                   ESPmoduleK4(64, 64; add=true),    BatchNorm(64),  activation
     )
-    esp3x  = Chain(ESPmoduleK1(128, 128; K=K, add=true),  BatchNorm(128), activation,
-                   ESPmoduleK1(128, 128; K=K, add=true),  BatchNorm(128), activation,
-                   ESPmoduleK1(128, 128; K=K, add=true),  BatchNorm(128), activation
+    esp3x  = Chain(ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation,
+                   ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation,
+                   ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation
     )
 
 
@@ -32,7 +32,7 @@ function ESPNet(ch_in::Int, ch_out::Int; K=1, activation=relu)
 
     # decoder
     deconv  = Chain(ConvTranspK2(ch_out, ch_out, identity; stride=1), BatchNorm(ch_out), activation)
-    espdec  = Chain(ESPmoduleK1(2*ch_out, ch_out; K=K, add=false),      BatchNorm(ch_out), activation)
+    espdec  = Chain(ESPmoduleK1(2*ch_out, ch_out; add=false),         BatchNorm(ch_out), activation)
     outconv = ConvK1(2*ch_out, ch_out, identity)
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
