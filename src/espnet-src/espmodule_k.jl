@@ -72,14 +72,3 @@ function (m::ESPmoduleK4)(x)
     return yhat
 end
 Flux.@functor ESPmoduleK4
-
-
-# function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
-#     if K == 1
-#         return ESPmoduleK1(ch_in, ch_out; K=K, add=add)
-#     elseif K == 4
-#         return ESPmoduleK4(ch_in, ch_out; K=K, add=add)
-#     else
-#         error("K must be 1 or 4")
-#     end
-# end
