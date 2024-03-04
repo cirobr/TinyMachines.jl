@@ -4,14 +4,14 @@ using Flux: DataLoader
 struct prelu
     a::Vector
 end
-Flux.@functor prelu
 
 function (m::prelu)(x)
-    return m.a[1] .* (x -> relu(x))
+    return alpha[1] * Flux.relu(x)
 end
+Flux.@functor prelu
 
 model=prelu([1])
-Flux.trainable(model)
+# Flux.trainable(model.a)
 Flux.params(model)
 
 loss(yhat, y) = Flux.mse(yhat, y)
