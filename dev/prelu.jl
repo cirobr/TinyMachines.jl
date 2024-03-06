@@ -2,17 +2,20 @@ using Flux
 using Flux: DataLoader
 
 struct prelu
-    alpha::Vector
+    alpha::Vector{Float32}
 end
 
+# function prelu(alpha::Vector{Float32})
+#     return prelu(alpha)
+# end
+
 function (m::prelu)(x)
-    a = m.alpha[1]
-    return a * Flux.relu(x)
+    return m.alpha[1] .* x
 end
 Flux.@functor prelu
 
 model=prelu([1])
-Flux.trainable(model.alpha)
+Flux.trainable(model)
 Flux.params(model)
 
 loss(yhat, y) = Flux.mse(yhat, y)
