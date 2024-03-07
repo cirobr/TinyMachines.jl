@@ -1,31 +1,31 @@
 using Flux
 using Flux: DataLoader
 
-struct prelu
+fn_prelu(x, alpha) = x>0 ? x : alpha * x
+
+struct model_prelu
     alpha::Vector{Float32}
 end
 
-# function prelu(alpha::Vector{Float32})
-#     return prelu(alpha)
-# end
-
-function (m::prelu)(x)
-    return m.alpha[1] .* x
+function (m::model_prelu)(x)
+    return fn_prelu.(x, m.alpha[1])
 end
-Flux.@functor prelu
+Flux.@functor model_prelu
 
-model=prelu([1])
-Flux.trainable(model)
-Flux.params(model)
+prelu=model_prelu([0.f0]); display(prelu.alpha)
+# Flux.trainable(prelu)
+Flux.params(prelu)
 
 loss(yhat, y) = Flux.mse(yhat, y)
 opt = Flux.Adam()
-optstate = Flux.setup(opt, model)
+optstate = Flux.setup(opt, prelu)
 
-X = rand(Float32, (256,256,1,1))
+X = randn(Float32, (256,256,1,1))
 Y = rand(Bool, (256,256,1,1))
 data = DataLoader((X,Y); batchsize=1)
 
-@time Flux.train!(model, data, optstate) do m,x,y
+for i in 1:100 Flux.train!(prelu, data, optstate) do m,x,y
     loss(m(x), y)
-end
+end end
+
+prelu.alpha
