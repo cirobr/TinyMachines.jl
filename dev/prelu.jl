@@ -12,7 +12,11 @@ function (m::model_prelu)(x)
 end
 Flux.@functor model_prelu
 
-prelu=model_prelu([0.f0]); display(prelu.alpha)
+prelu=model_prelu([0.f0])
+
+
+
+display(prelu.alpha)
 # Flux.trainable(prelu)
 Flux.params(prelu)
 
