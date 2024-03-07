@@ -1,10 +1,9 @@
 using TinyMachines
 using Flux
-using Flux: DataLoader
 
 X = rand(Float32, (256,256,3,1))
 Y = rand(Bool, (256,256,1,1))
-data = DataLoader((X,Y); batchsize=1)
+data = Flux.DataLoader((X,Y); batchsize=1)
 
 model = ESPNet(3,1; activation=prelu)
 
