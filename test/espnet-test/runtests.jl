@@ -22,4 +22,9 @@ using Test
     m = ESPNet(3,1; activation=relu)
     yhat = m(x)
     @test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"
+
+    x = rand(Float32, (256,256,3,1))
+    m = ESPNet(3,1; activation=prelu)
+    yhat = m(x)
+    @test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"
 end

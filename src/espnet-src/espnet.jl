@@ -6,7 +6,7 @@ struct ESPNet
 end
 
 
-function ESPNet(ch_in::Int, ch_out::Int; activation=relu)
+function ESPNet(ch_in::Int, ch_out::Int; activation=prelu)
     # downsample
     downsample = Chain(ConvK3(ch_in, 3, identity), BatchNorm(3), activation)
 
