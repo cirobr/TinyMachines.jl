@@ -48,7 +48,6 @@ end
 
 function (m::ESPNet)(x)
     # encoder
-    # x
     out1 = m.encoder[:inconv](x)
     ds1  = m.downsample(x)
     ct1 = cat(ds1, out1, dims=3)
