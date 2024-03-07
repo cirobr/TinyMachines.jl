@@ -2,7 +2,7 @@ module TinyMachines
 
 
 export UNet5, UNet4, UNet2
-export MobUNet
+export MobileUNet
 export ESPNet, ESPmoduleK4, ESPmoduleK1, prelu
 
 import Flux

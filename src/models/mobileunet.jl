@@ -1,10 +1,10 @@
-struct MobUNet
+struct MobileUNet
     d::Chain
     ct::Chain
     ir::Chain
 end
 
-function MobUNet(ch_in, ch_out)
+function MobileUNet(ch_in, ch_out)
     # encoder
     d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
                irblocks(32, 16, n=1, stride=1, expand_ratio=1),
@@ -64,10 +64,10 @@ function MobUNet(ch_in, ch_out)
     ct = Chain(ct1, ct2, ct3, ct4, ct5)
     ir = Chain(ir1, ir2, ir3, ir4, e0)
 
-    return MobUNet(d, ct, ir)
+    return MobileUNet(d, ct, ir)
 end
 
-function (m::MobUNet)(x)
+function (m::MobileUNet)(x)
     # encoder
     x1 = m.d[1](x)
     x2 = m.d[2](x1)
@@ -91,4 +91,4 @@ function (m::MobUNet)(x)
     return yhat
 end
 
-@functor MobUNet
+@functor MobileUNet
