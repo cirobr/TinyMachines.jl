@@ -12,6 +12,8 @@ loss(yhat, y) = Flux.mse(yhat, y)
 opt = Flux.Adam()
 optstate = Flux.setup(opt, model)
 
+@btime model(X);
+
 @btime Flux.train!(model, data, optstate) do m,x,y
     loss(m(x), y)
 end

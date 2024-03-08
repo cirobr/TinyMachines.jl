@@ -6,7 +6,7 @@ X = rand(Float32, (256,256,3,1))
 Y = rand(Bool, (256,256,1,1))
 data = Flux.DataLoader((X,Y); batchsize=1)
 
-model = Conv((1,1), 3=>1, relu)
+model = UNet2(3,1)
 
 loss(yhat, y) = Flux.mse(yhat, y)
 opt = Flux.Adam()
