@@ -1,5 +1,5 @@
 using TinyMachines
-using Flux
+using Flux; import Flux: relu
 using Random
 using Test
 
@@ -11,4 +11,5 @@ x3 = randn(Float32, (256,256,3,1))
     include("./convolutions-tests.jl")   # TODO: DilatedConv
     include("./unets-tests.jl")
     include("./mobileunet-tests.jl")
+    include("./espnet-tests.jl")
 end

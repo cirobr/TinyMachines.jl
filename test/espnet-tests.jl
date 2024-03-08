@@ -1,7 +1,3 @@
-using TinyMachines
-using Flux: relu
-using Test
-
 @testset "espnet" begin
     x = rand(Float32, (256,256,3,4))
     m = ESPmoduleK4(3, 4)
