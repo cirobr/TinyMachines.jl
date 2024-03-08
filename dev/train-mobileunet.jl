@@ -2,8 +2,8 @@ using TinyMachines
 using Flux
 using BenchmarkTools
 
-X = rand(Float32, (256,256,3,1))
-Y = rand(Bool, (256,256,1,1))
+X = rand(Float32, (128,128,3,1)) # 256x256x3x1
+Y = rand(Bool, (128,128,1,1))
 data = Flux.DataLoader((X,Y); batchsize=1)
 
 model = MobileUNet(3,1)
