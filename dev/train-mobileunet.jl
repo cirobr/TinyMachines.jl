@@ -16,4 +16,4 @@ model = MobileUNet(3,1)
 
 # @btime Flux.train!(model, data, optstate) do m,x,y
 #     loss(m(x), y)
-# end
+# end samples=5 seconds=5 gcsample=true
