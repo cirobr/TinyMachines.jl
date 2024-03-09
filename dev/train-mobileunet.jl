@@ -12,7 +12,7 @@ model = MobileUNet(3,1)
 # opt = Flux.Adam()
 # optstate = Flux.setup(opt, model)
 
-# @btime model(X);
+@btime model(X) samples=5 seconds=5 gcsample=true
 
 # @btime Flux.train!(model, data, optstate) do m,x,y
 #     loss(m(x), y)
