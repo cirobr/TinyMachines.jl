@@ -68,7 +68,6 @@ function MobileUNet(ch_in, ch_out)
 end
 
 function (m::MobileUNet)(x)
-    # x
     # encoder
     x1 = m.d[1](x)
     x2 = m.d[2](x1)
