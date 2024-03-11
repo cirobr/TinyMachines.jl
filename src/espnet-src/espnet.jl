@@ -4,6 +4,7 @@ struct ESPNet
     bridge
     decoder
 end
+@layer ESPNet
 
 
 function ESPNet(ch_in::Int, ch_out::Int; activation=prelu)
@@ -79,5 +80,3 @@ function (m::ESPNet)(x)
 
     return yhat
 end
-
-Flux.@functor ESPNet

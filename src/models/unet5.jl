@@ -3,7 +3,7 @@ struct UNet5
     dec::Chain
     verbose::Bool
 end
-@layer UNet5
+@layer UNet5 trainable=(enc, dec)
 
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels

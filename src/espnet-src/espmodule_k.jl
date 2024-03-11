@@ -4,7 +4,7 @@ struct ESPmoduleK1
     K::Int
     add::Bool
 end
-@layer ESPmoduleK1
+@layer ESPmoduleK1 trainable=(pointwise, dilated)
 
 
 struct ESPmoduleK4
@@ -13,7 +13,7 @@ struct ESPmoduleK4
     K::Int
     add::Bool
 end
-@layer ESPmoduleK4
+@layer ESPmoduleK4 trainable=(pointwise, dilated)
 
 
 function ESPmoduleK1(ch_in::Int, ch_out::Int; K::Int=1, add=false)
