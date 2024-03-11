@@ -8,25 +8,25 @@ function MobileUNet(ch_in, ch_out)
     # encoder
     d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
                irblock1(32, 16, n=1, expand_ratio=1),
-            #    Dropout(0.1)
+               Dropout(0.1)
     )
 
     d2 = Chain(irblock2(16, 24, n=2, expand_ratio=6),
-            #    Dropout(0.15)
+               Dropout(0.15)
     )
 
     d3 = Chain(irblock2(24, 32, n=3, expand_ratio=6),
-            #    Dropout(0.2)
+               Dropout(0.2)
      )
 
     d4 = Chain(irblock2(32, 64, n=4, expand_ratio=6),
                irblock1(64, 96, n=3, expand_ratio=6),
-            #    Dropout(0.25)
+               Dropout(0.25)
     )
 
     d5 = Chain(irblock2(96, 160, n=3, expand_ratio=6),
                irblock1(160, 320, n=1, expand_ratio=6),
-            #    Dropout(0.3),
+               Dropout(0.3),
                ConvK1(320, 1280), BatchNorm(1280, relu6)
     )
 
@@ -34,22 +34,22 @@ function MobileUNet(ch_in, ch_out)
     # decoder
     ct1 = ConvTranspK4(1280, 96)
     ir1 = Chain(irblock1(192, 96, n=1, expand_ratio=1),
-                # Dropout(0.25)
+                Dropout(0.25)
     )
 
     ct2 = ConvTranspK4(96, 32)
     ir2 = Chain(irblock1(64, 32, n=1, expand_ratio=1),
-                # Dropout(0.2)
+                Dropout(0.2)
     )
     
     ct3 = ConvTranspK4(32, 24)
     ir3 = Chain(irblock1(48, 24, n=1, expand_ratio=1),
-                # Dropout(0.15)
+                Dropout(0.15)
     )
 
     ct4 = ConvTranspK4(24, 16)
     ir4 = Chain(irblock1(32, 16, n=1, expand_ratio=1),
-                # Dropout(0.1)
+                Dropout(0.1)
     )
 
     ct5 = ConvTranspK4(16, ch_out)
