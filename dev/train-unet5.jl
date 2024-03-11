@@ -10,10 +10,10 @@ model = UNet5(3,1)
 @btime model(X) samples=5 seconds=15 gcsample=true
 
 
-# loss(yhat, y) = Flux.mse(yhat, y)
-# opt = Flux.Adam()
-# optstate = Flux.setup(opt, model)
+loss(yhat, y) = Flux.mse(yhat, y)
+opt = Flux.Adam()
+optstate = Flux.setup(opt, model)
 
-# @btime Flux.train!(model, data, optstate) do m,x,y
-#     loss(m(x), y)
-# end samples=5 seconds=15 gcsample=true
+@btime Flux.train!(model, data, optstate) do m,x,y
+    loss(m(x), y)
+end samples=5 seconds=60 gcsample=true
