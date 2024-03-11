@@ -3,6 +3,7 @@ struct UNet5
     dec::Chain
     verbose::Bool
 end
+@layer UNet5
 
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -101,5 +102,3 @@ function (m::UNet5)(x)
     else           return yhat           # model output
     end
 end
-
-@functor UNet5

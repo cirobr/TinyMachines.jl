@@ -3,6 +3,7 @@ struct UNet2
     dec::Chain
     verbose::Bool
 end
+@layer UNet2
 
 
 function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -60,5 +61,3 @@ function (m::UNet2)(x)
     else           return yhat           # model output
     end
 end
-
-@functor UNet2

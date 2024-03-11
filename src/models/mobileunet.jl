@@ -3,6 +3,8 @@ struct MobileUNet
     ct::Chain
     ir::Chain
 end
+@layer MobileUNet
+
 
 function MobileUNet(ch_in, ch_out)
     # encoder
@@ -90,5 +92,3 @@ function (m::MobileUNet)(x)
     yhat = m.ir[end](l9)
     return yhat
 end
-
-@functor MobileUNet

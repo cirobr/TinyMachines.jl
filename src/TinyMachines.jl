@@ -10,7 +10,7 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              DepthwiseConv, Parallel,
              Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
-             @functor, kaiming_normal
+             @layer, kaiming_normal
 
 # packages
 include("./pkgs/convolutions.jl")

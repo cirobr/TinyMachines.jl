@@ -3,6 +3,7 @@ struct UNet4
     dec::Chain
     verbose::Bool
 end
+@layer UNet4
 
 
 function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -88,5 +89,3 @@ function (m::UNet4)(x)
     else           return yhat           # model output
     end
 end
-
-@functor UNet4
