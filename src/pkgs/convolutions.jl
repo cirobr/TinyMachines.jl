@@ -48,7 +48,8 @@ function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
 end
 
 
-function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity; dilation::Int)
+function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
+                       dilation::Int)
     kgain = kf * √(w3 * ch_in)
     
     return Conv((3,3), ch_in => ch_out, activation;

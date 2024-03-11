@@ -39,10 +39,11 @@ function ESPmoduleK4(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     d = d |> Int
 
     pointwise = ConvK1(ch_in, d, identity)
-    dilated   = Chain(DilatedConvK3(d, d, identity; dilation=2^(1-1)),
-                      DilatedConvK3(d, d, identity; dilation=2^(2-1)),
-                      DilatedConvK3(d, d, identity; dilation=2^(3-1)),
-                      DilatedConvK3(d, d, identity; dilation=2^(4-1)))
+    dilations = 2 .^ [(1-1), (2-1), (3-1), (4-1)]
+    dilated   = Chain(DilatedConvK3(d, d, identity; dilation=dilations[1]),
+                      DilatedConvK3(d, d, identity; dilation=dilations[2]),
+                      DilatedConvK3(d, d, identity; dilation=dilations[3]),
+                      DilatedConvK3(d, d, identity; dilation=dilations[4]))
 
     return ESPmoduleK4(pointwise, dilated, K, add)
 end

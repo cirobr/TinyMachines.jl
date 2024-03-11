@@ -16,4 +16,4 @@ model = ESPmoduleK4(3, 4)
 
 # @btime Flux.train!(model, data, optstate) do m,x,y
 #     loss(m(x), y)
-# end
+# end samples=1 seconds=15 gcsample=true
