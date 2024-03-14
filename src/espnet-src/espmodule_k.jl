@@ -25,7 +25,6 @@ function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
                 pad=SamePad(),
                 bias=true,
                 dilation=dilation,
-                groups=4,
                 init=kaiming_normal(gain=kgain)
     )
 end
@@ -38,7 +37,7 @@ function ESPmoduleK1(ch_in::Int, ch_out::Int; K::Int=1, add=false)
 
     d = ch_out
     pointwise = ConvK1(ch_in, d, identity)
-    dilated   = ConvK3(d, d, identity)
+    dilated   = ConvK3(d, d, identity; stride=1)
 
     return ESPmoduleK1(pointwise, dilated, K, add)
 end
