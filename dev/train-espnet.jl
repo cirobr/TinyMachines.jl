@@ -7,8 +7,7 @@ Y = rand(Bool, (256,256,1,1))
 data = Flux.DataLoader((X,Y); batchsize=1)
 
 model = ESPNet(3,1; activation=relu)
-model(X)
-@btime model(X) samples=5 seconds=15 gcsample=true;
+@btime model(X) samples=5 seconds=15 gcsample=true
 
 
 loss(yhat, y) = Flux.mse(yhat, y)
