@@ -1,5 +1,6 @@
 using TinyMachines
-using Flux; import Flux: relu
+using Flux
+import Flux: relu
 using Random
 using Test
 

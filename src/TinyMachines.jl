@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, UNet2
 export MobileUNet
-export ESPNet, ESPmodule, ESPmoduleK1, prelu
+export ESPNet, ESPmodule, prelu
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
@@ -13,9 +13,9 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
 
 # packages
 include("./pkgs/convolutions.jl")
-include("./pkgs/irblocks.jl")             # inverted residual blocks
-include("./pkgs/prelu.jl")                # PReLU
-include("./espnet-src/espmodule-3.jl")    # espmodule_k preferred
+include("./pkgs/irblocks.jl")       # inverted residual blocks
+include("./pkgs/prelu.jl")          # PReLU
+include("./pkgs/espmodule.jl")      # espmodule_k preferred
 
 
 # unets
@@ -28,7 +28,7 @@ include("./models/unet2.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./espnet-src/espnet.jl")
+include("./models/espnet.jl")
 
 
 end   # module

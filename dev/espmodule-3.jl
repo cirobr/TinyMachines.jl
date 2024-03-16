@@ -7,6 +7,10 @@ end
 @layer ESPmodule trainable=(pointwise, dilated)
 
 
+"""
+K = number of parallel dilated convolutions = height of pyramid
+d = number of input/output channels for all parallel dilated convolutions
+"""
 function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     if add && ch_in != ch_out
         error("ch_in must equal ch_out when add=true")

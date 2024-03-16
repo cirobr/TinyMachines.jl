@@ -4,6 +4,7 @@ struct ESPmodule
     K::Int
     add::Bool
 end
+@layer ESPmodule trainable=(pointwise, dilated)
 
 
 """
@@ -20,20 +21,21 @@ function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     d = d |> Int
 
     pointwise = ConvK1(ch_in, d, identity)
-    temp      = [DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
-    dilated   = Chain(temp...)
+
+    ds = [2^(k-1) for k in 1:K]
+    dilated = [DilatedConvK3(d, d, identity; dilation=ds[k]) for k in 1:K]
+    dilated = Chain(dilated...)
 
     return ESPmodule(pointwise, dilated, K, add)
 end
 
 
 function (m::ESPmodule)(x)
-    pw = m.pointwise(x)                           # pointwise convolution
-    sums = map(k -> m.dilated[k](pw), 1:m.K)      # dilated convolutions
-    for k in 2:m.K   sums[k] += sums[k-1]   end   # hierarchical sums
-    yhat = cat(sums..., dims=3)                   # concatenation
-    if m.add  yhat = x + yhat   end               # residual connection
+    pw   = m.pointwise(x)                               # pointwise convolution
+    sums = map(i -> m.dilated[i](pw), 1:m.K)             # dilated convolutions
+    map!(i -> sums[i] + sums[i-1], sums[2:end], 2:m.K)   # hierarchical sums
+    yhat = cat(sums...; dims=3)                          # concatenate
+
+    if m.add  yhat = x + yhat   end                      # residual connection
     return yhat
 end
-
-Flux.@functor ESPmodule
