@@ -32,7 +32,7 @@ end
 
 function (m::ESPmodule)(x)
     pw   = m.pointwise(x)                                # pointwise convolution
-    sums = map(i -> m.dilated[i](pw), 1:m.K)             # dilated convolutions
+    sums = map(i -> m.dilated[i](pw), 1:m.K)             # dilated convolutions   ### mutating array
     map!(i -> sums[i] + sums[i-1], sums[2:end], 2:m.K)   # hierarchical sums
     yhat = cat(sums...; dims=3)                          # concatenate
 
