@@ -58,12 +58,12 @@ end
 
 
 function (m::ESPmodule)(x)
-    pw    = m.pointwise(x)                        # pointwise convolution
-    sums = Vector{Array{Float32,4}}(undef, m.K)   # dilated convolutions
+    pw    = m.pointwise(x)                               # pointwise convolution
+    sums = Vector{Array{Float32,4}}(undef, m.K)          # dilated convolutions
     sums = map(i -> m.dilated[i](pw), 1:m.K)
-    # hierarchical sum
-    yhat = cat(sums...; dims=3)                   # concatenate
+    map!(i -> sums[i] + sums[i-1], sums[2:end], 2:m.K)   # hierarchical sum
+    yhat = cat(sums...; dims=3)                          # concatenate
 
-    if m.add  yhat = x + yhat   end               # residual connection
+    if m.add  yhat = x + yhat   end                      # residual connection
     return yhat
 end
