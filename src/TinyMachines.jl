@@ -12,10 +12,10 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
              @layer, kaiming_normal
 
 # packages
-include("./pkgs/convolutions.jl")
-include("./pkgs/irblocks.jl")       # inverted residual blocks
-include("./pkgs/prelu.jl")          # PReLU
-include("./pkgs/espmodule.jl")      # espmodule_k preferred
+include("./functions/convolutions.jl")
+include("./functions/irblocks.jl")       # inverted residual blocks
+include("./functions/prelu.jl")          # PReLU
+include("./functions/espmodule.jl")      # espmodule_k preferred
 
 
 # unets
