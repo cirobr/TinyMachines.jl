@@ -1,7 +1,6 @@
 struct ESPmoduleK1
     pointwise
     dilated
-    K::Int
     add::Bool
 end
 @layer ESPmoduleK1 trainable=(pointwise, dilated)
@@ -10,24 +9,9 @@ end
 struct ESPmoduleK4
     pointwise
     dilated
-    K::Int
     add::Bool
 end
 @layer ESPmoduleK4 trainable=(pointwise, dilated)
-
-
-function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
-                       dilation::Int)
-    kgain = kf * √(w3 * ch_in)
-
-    return Conv((3,3), ch_in => ch_out, activation;
-                stride=1,
-                pad=SamePad(),
-                bias=true,
-                dilation=dilation,
-                init=kaiming_normal(gain=kgain)
-    )
-end
 
 
 function ESPmoduleK1(ch_in::Int, ch_out::Int; K::Int=1, add=false)
@@ -39,18 +23,18 @@ function ESPmoduleK1(ch_in::Int, ch_out::Int; K::Int=1, add=false)
     pointwise = ConvK1(ch_in, d, identity)
     dilated   = ConvK3(d, d, identity; stride=1)
 
-    return ESPmoduleK1(pointwise, dilated, K, add)
+    return ESPmoduleK1(pointwise, dilated, add)
 end
 
 
 function ESPmoduleK4(ch_in::Int, ch_out::Int; K::Int=4, add=false)
-    d = ch_out / K
-    if !isinteger(d)   error("ch_out must be divisible by K")   end
-    d = d |> Int
-
     if add && ch_in != ch_out
         error("ch_in must equal ch_out when add=true")
     end
+
+    d = ch_out / K
+    if !isinteger(d)   error("ch_out must be divisible by K")   end
+    d = d |> Int
 
     pointwise = ConvK1(ch_in, d, identity)
     dilations = [2^(k-1) for k in 1:K]
@@ -59,7 +43,7 @@ function ESPmoduleK4(ch_in::Int, ch_out::Int; K::Int=4, add=false)
                       DilatedConvK3(d, d, identity; dilation=dilations[3]),
                       DilatedConvK3(d, d, identity; dilation=dilations[4]))
 
-    return ESPmoduleK4(pointwise, dilated, K, add)
+    return ESPmoduleK4(pointwise, dilated, add)
 end
 
 

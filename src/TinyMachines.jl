@@ -8,14 +8,13 @@ export ESPNet, ESPmoduleK4, ESPmoduleK1, prelu
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              DepthwiseConv, Parallel,
-             Scale,
              identity, relu, σ, sigmoid, softmax, relu6,
              @layer, kaiming_normal
 
 # packages
 include("./pkgs/convolutions.jl")
-include("./pkgs/irblocks.jl")       # inverted residual blocks
-include("./espnet-src/prelu.jl")    # PReLU
+include("./pkgs/irblocks.jl")             # inverted residual blocks
+include("./pkgs/prelu.jl")                # PReLU
 include("./espnet-src/espmodule_k.jl")    # espmodule_k preferred
 
 
