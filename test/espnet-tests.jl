@@ -1,10 +1,10 @@
 x = rand(Float32, (256,256,3,4))
-m = ESPmoduleK4(3, 4)
+m = ESPmodule(3, 4)
 yhat = m(x)
 @test size(yhat) == (256,256,4,4) || @error "size(yhat) == $(size(yhat))"
 
 x = rand(Float32, (256,256,4,4))
-m = ESPmoduleK4(4, 4; add=true)
+m = ESPmodule(4, 4; add=true)
 yhat = m(x)
 @test size(yhat) == (256,256,4,4) || @error "size(yhat) == $(size(yhat))"
 

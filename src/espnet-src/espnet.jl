@@ -13,27 +13,27 @@ function ESPNet(ch_in::Int, ch_out::Int; activation=prelu)
 
 
     # encoder
-    inconv = Chain(ConvK3(ch_in, 16, identity),      BatchNorm(16),  activation)
-    esp19  = Chain(ESPmoduleK4(19, 64; add=false),   BatchNorm(64),  activation)
-    esp131 = Chain(ESPmoduleK4(131, 128; add=false), BatchNorm(128), activation)
-    esp2x  = Chain(ESPmoduleK4(64, 64; add=true),    BatchNorm(64),  activation,
-                   ESPmoduleK4(64, 64; add=true),    BatchNorm(64),  activation
+    inconv = Chain(ConvK3(ch_in, 16, identity),    BatchNorm(16),  activation)
+    esp19  = Chain(ESPmodule(19, 64; add=false),   BatchNorm(64),  activation)
+    esp131 = Chain(ESPmodule(131, 128; add=false), BatchNorm(128), activation)
+    esp2x  = Chain(ESPmodule(64, 64; add=true),    BatchNorm(64),  activation,
+                   ESPmodule(64, 64; add=true),    BatchNorm(64),  activation
     )
-    esp3x  = Chain(ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation,
-                   ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation,
-                   ESPmoduleK4(128, 128; add=true),  BatchNorm(128), activation
+    esp3x  = Chain(ESPmodule(128, 128; add=true),  BatchNorm(128), activation,
+                   ESPmodule(128, 128; add=true),  BatchNorm(128), activation,
+                   ESPmodule(128, 128; add=true),  BatchNorm(128), activation
     )
 
 
     # bridges
-    bridge19  = Chain(ConvK1(19, ch_out, identity),  BatchNorm(ch_out), activation)
+    bridge19  = Chain(ConvK1(19,  ch_out, identity), BatchNorm(ch_out), activation)
     bridge131 = Chain(ConvK1(131, ch_out, identity), BatchNorm(ch_out), activation)
     bridge256 = Chain(ConvK1(256, ch_out, identity), BatchNorm(ch_out), activation)
 
 
     # decoder
     deconv  = Chain(ConvTranspK2(ch_out, ch_out, identity; stride=1), BatchNorm(ch_out), activation)
-    espdec  = Chain(ESPmoduleK1(2*ch_out, ch_out; add=false),         BatchNorm(ch_out), activation)
+    espdec  = Chain(ESPmoduleK1(2*ch_out, ch_out; K=1, add=false),    BatchNorm(ch_out), activation)
     outconv = ConvK1(2*ch_out, ch_out, identity)
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 

@@ -1,15 +1,19 @@
+struct ESPmoduleK1
+    pointwise
+    dilated
+    add::Bool
+end
+@layer ESPmoduleK1 trainable=(pointwise, dilated)
+
+
 struct ESPmodule
     pointwise
     dilated
-    K::Int
     add::Bool
 end
+@layer ESPmodule trainable=(pointwise, dilated)
 
 
-"""
-K = number of parallel dilated convolutions = height of pyramid
-d = number of input/output channels for all parallel dilated convolutions
-"""
 function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     if add && ch_in != ch_out
         error("ch_in must equal ch_out when add=true")
@@ -20,20 +24,50 @@ function ESPmodule(ch_in::Int, ch_out::Int; K::Int=4, add=false)
     d = d |> Int
 
     pointwise = ConvK1(ch_in, d, identity)
-    temp      = [DilatedConvK3(d, d, identity; dilation=2^(k-1)) for k in 1:K]
-    dilated   = Chain(temp...)
 
-    return ESPmodule(pointwise, dilated, K, add)
+    ds = [2^(k-1) for k in 1:K]
+    dilated = [DilatedConvK3(d, d, identity; dilation=ds[k]) for k in 1:K]
+    dilated = Chain(dilated...)
+
+    return ESPmodule(pointwise, dilated, add)
 end
 
 
 function (m::ESPmodule)(x)
-    pw   = m.pointwise(x)                         # pointwise convolution
-    sums = map(k -> m.dilated[k](pw), 1:m.K)      # dilated convolutions
-    for k in 2:m.K  sums[k] += sums[k-1]   end    # hierarchical sums
-    yhat = cat(sums..., dims=3)                   # concatenation
-    if m.add  yhat = x + yhat   end               # residual connection
+    pw    = m.pointwise(x)                           # pointwise convolution
+    
+    sums1 = m.dilated[1](pw)                         # dilated convolutions
+    sums2 = m.dilated[2](pw)
+    sums3 = m.dilated[3](pw)
+    sums4 = m.dilated[4](pw)
+
+    sums2 = sums2 + sums1                            # hierarchical sum
+    sums3 = sums3 + sums2
+    sums4 = sums4 + sums3
+
+    yhat = cat(sums1, sums2, sums3, sums4, dims=3)   # concatenation
+
+    if m.add  yhat = x + yhat   end                  # residual connection
     return yhat
 end
 
-Flux.@functor ESPmodule
+
+function ESPmoduleK1(ch_in::Int, ch_out::Int; K::Int=1, add=false)
+    if add && ch_in != ch_out
+        error("ch_in must equal ch_out when add=true")
+    end
+
+    d = ch_out / K |> Int
+    pointwise = ConvK1(ch_in, d, identity)
+    dilated   = ConvK3(d, d, identity; stride=1)
+
+    return ESPmoduleK1(pointwise, dilated, add)
+end
+
+
+function (m::ESPmoduleK1)(x)
+    pw   = m.pointwise(x)                            # pointwise convolution
+    yhat = m.dilated(pw)                             # dilated convolutions
+    if m.add  yhat = x + yhat   end                  # residual connection
+    return yhat
+end
