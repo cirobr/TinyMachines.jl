@@ -15,7 +15,7 @@ import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, Batc
 include("./pkgs/convolutions.jl")
 include("./pkgs/irblocks.jl")             # inverted residual blocks
 include("./pkgs/prelu.jl")                # PReLU
-include("./espnet-src/espmodule.jl")    # espmodule_k preferred
+include("./espnet-src/espmodule-2.jl")    # espmodule_k preferred
 
 
 # unets
