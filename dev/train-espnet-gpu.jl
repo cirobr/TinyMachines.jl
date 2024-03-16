@@ -1,12 +1,13 @@
 using TinyMachines
 using Flux
 using BenchmarkTools
+using CUDA
 
-X = rand(Float32, (256,256,3,1))
-Y = rand(Bool, (256,256,1,1))
-data = Flux.DataLoader((X,Y); batchsize=1)
+X = rand(Float32, (256,256,3,1)) |> gpu
+Y = rand(Bool, (256,256,1,1)) |> gpu
+data = Flux.DataLoader((X,Y); batchsize=1) |> gpu
 
-model = ESPNet(3,1; activation=relu)
+model = ESPNet(3,1; activation=relu) |> gpu
 @btime model(X) samples=5 seconds=15 gcsample=true
 
 

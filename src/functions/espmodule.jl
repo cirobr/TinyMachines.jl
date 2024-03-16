@@ -72,6 +72,6 @@ function (m::ESPmoduleK4)(x)
 
     yhat = cat(sum1, sum2, sum3, sum4; dims=3)   # concatenate
 
-    if m.add  yhat = x + yhat   end                    # residual connection
+    if m.add  yhat = x + yhat   end              # residual connection
     return yhat
 end
