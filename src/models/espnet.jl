@@ -13,7 +13,7 @@ function ESPNet(ch_in::Int, ch_out::Int; activation=prelu)
 
 
     # encoder
-    inconv = Chain(ConvK3(ch_in, 16, identity),         BatchNorm(16),  activation)
+    inconv = Chain(ConvK3(ch_in, 16, identity),      BatchNorm(16),  activation)
     esp19  = Chain(ESPmoduleK4(19, 64;   add=false), BatchNorm(64),  activation)
     esp131 = Chain(ESPmoduleK4(131, 128; add=false), BatchNorm(128), activation)
     esp2x  = Chain(ESPmoduleK4(64, 64;   add=true),  BatchNorm(64),  activation,
