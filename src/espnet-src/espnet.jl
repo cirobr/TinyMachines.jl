@@ -33,7 +33,7 @@ function ESPNet(ch_in::Int, ch_out::Int; activation=prelu)
 
     # decoder
     deconv  = Chain(ConvTranspK2(ch_out, ch_out, identity; stride=1), BatchNorm(ch_out), activation)
-    espdec  = Chain(ESPmoduleK1(2*ch_out, ch_out; K=1, add=false),    BatchNorm(ch_out), activation)
+    espdec  = Chain(ESPmodule(2*ch_out, ch_out; K=1, add=false),    BatchNorm(ch_out), activation)
     outconv = ConvK1(2*ch_out, ch_out, identity)
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
