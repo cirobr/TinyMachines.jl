@@ -11,7 +11,7 @@ UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4
 The standard implementation follows the paper "U-Net: Convolutional Networks for Biomedical Image Segmentation" ([arXiv](https://arxiv.org/abs/1505.04597)). Paper credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
 
 
-### MobUNet
+### MobileUNet
 
 Mobile-Unet utilizes inverted residual bottleneck blocks and pointwise convolution.
 
