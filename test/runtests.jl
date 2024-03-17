@@ -1,4 +1,4 @@
-using TinyMachines
+using TinyMachines; tm=TinyMachines
 using Flux
 import Flux: relu
 using Random
