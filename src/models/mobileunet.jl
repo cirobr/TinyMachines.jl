@@ -2,11 +2,14 @@ struct MobileUNet
     d::Chain
     ct::Chain
     ir::Chain
+    verbose::Bool
 end
-@layer MobileUNet
+@layer MobileUNet trainable=(d, ct, ir)
 
 
-function MobileUNet(ch_in, ch_out)
+function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+                    verbose::Bool = false,         # output feature maps
+)
     # encoder
     d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
                irblock1(32, 16, n=1, expand_ratio=1),
@@ -66,7 +69,7 @@ function MobileUNet(ch_in, ch_out)
     ct = Chain(ct1, ct2, ct3, ct4, ct5)
     ir = Chain(ir1, ir2, ir3, ir4, e0)
 
-    return MobileUNet(d, ct, ir)
+    return MobileUNet(d, ct, ir, verbose)
 end
 
 function (m::MobileUNet)(x)
@@ -90,5 +93,9 @@ function (m::MobileUNet)(x)
 
     # output
     yhat = m.ir[end](l9)
-    return yhat
+    feature_maps = [x1, x2, x3, x4, x5, l1, l2, l3, l4, l5, l6, l7, l8, l9]
+
+    if m.verbose   return yhat, feature_maps   # feature maps output
+    else           return yhat                 # model output
+    end
 end

@@ -5,7 +5,6 @@ using Random
 using Test
 
 Random.seed!(1234)
-x1 = randn(Float32, (256,256,1,1))
 x3 = randn(Float32, (256,256,3,1))
 
 @testset "TinyMachines.jl" begin

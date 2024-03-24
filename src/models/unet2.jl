@@ -9,7 +9,7 @@ end
 function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                activation    = relu,          # activation function
                alpha         = 1.0,           # feature channels multiplier
-               verbose::Bool = false,         # logits output
+               verbose::Bool = false,         # output feature maps
 )
 
     chs = alpha .* defaultChannels .|> Int
@@ -55,9 +55,9 @@ function (m::UNet2)(x)
     dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
 
     yhat   = m.dec[:e0](dec1)
-    logits = [enc1, enc2, dec2, dec1]
+    feature_maps = [enc1, enc2, dec2, dec1]
 
-    if m.verbose   return yhat, logits   # logits output
-    else           return yhat           # model output
+    if m.verbose   return yhat, feature_maps   # feature maps output
+    else           return yhat                 # model output
     end
 end
