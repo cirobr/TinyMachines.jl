@@ -5,6 +5,8 @@
 @test size(tm.ConvK3(3, 1)(x3)) == (256,256,1,1)
 @test size(tm.ConvK3(3, 1; stride=2)(x3)) == (128,128,1,1)
 
+@test size(tm.DilatedConvK3(3, 1; dilation=4)(x3)) == (256,256,1,1)
+
 @test size(tm.UpConvK2(3, 1)(x3)) == (512,512,1,1)
 
 @test size(tm.ConvTranspK2(3, 1)(x3)) == (256,256,1,1)
