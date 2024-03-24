@@ -31,3 +31,11 @@ Credits for the original architectures go to the papers' authors, as aforementio
 Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * GitHub: https://github.com/cirobr
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
+
+
+### Versions
+
+# v0.0.7
+* UNet5, UNet4, UNet2 are mature models.
+* MobileUNet works well. Needs mode experiments.
+* ESPNet on probation, performance issues need investigation.
