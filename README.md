@@ -33,9 +33,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
 
 
-### Versions
+### Versions:
 
-# v0.0.7
+### v0.0.7
 * UNet5, UNet4, UNet2 are mature models.
 * MobileUNet works well. Needs mode experiments.
 * ESPNet on probation, performance issues need investigation.
