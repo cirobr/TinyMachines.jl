@@ -33,11 +33,11 @@ function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
                Dropout(0.1),
-               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
-               ConvK1(chs[1], ch_out, activation)
+               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
-
-    e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    
+    output_activation = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    e0 = Chain(ConvK1(chs[1], ch_out, identity), output_activation)
 
     # output chains
     enc = Chain(c1=c1, c2=c2)
