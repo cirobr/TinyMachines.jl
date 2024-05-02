@@ -70,7 +70,7 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
                Dropout(0.1),
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
-               ConvK1(chs[1], ch_out, identity)
+               ConvK1(chs[1], ch_out, activation)
     )
 
     e0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
