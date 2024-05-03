@@ -29,7 +29,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 ### Versions:
 
 ### v0.0.9
-* Changed UNets verbose output dimensions.
+* Split output features and logits at UNets.
 
 ### v0.0.8
 * ESPNet temporalily removed, until development is completed.
