@@ -60,12 +60,12 @@ chs = alpha .* defaultChannels .|> Int
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
     
-    output_activation = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
-    e0 = Chain(ConvK1(chs[1], ch_out, identity), output_activation)
+    e0 = ConvK1(chs[1], ch_out, identity)
+    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
     enc = Chain(c1=c1, c2=c2, c3=c3, c4=c4)
-    dec = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0)
+    dec = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0, act=act)
 
     return UNet4(enc, dec, verbose)   # struct with encoder and decoder
 end
@@ -82,10 +82,11 @@ function (m::UNet4)(x)
     dec2 = m.dec[:e2](cat(enc2, dec3; dims=3))
     dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
 
-    yhat         = m.dec[:e0](dec1)
+    logits       = m.dec[:e0](dec1)
+    yhat         = m.dec[:act](logits)
     feature_maps = [enc1, enc2, enc3, enc4, dec4, dec3, dec2, dec1]
 
-    if m.verbose   return yhat, feature_maps   # feature maps output
-    else           return yhat                 # model output
+    if m.verbose   return yhat, feature_maps, logits   # feature maps output
+    else           return yhat                         # model output
     end
 end
