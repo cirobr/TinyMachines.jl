@@ -61,8 +61,7 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
 
     # activation
-    e0  = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
-
+    e0  = ch_out <= 2 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output
     d  = Chain(d1, d2, d3, d4, d5)

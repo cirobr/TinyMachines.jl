@@ -28,6 +28,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
+### v0.0.10
+* Changed output non linearity to sigmoid(1 or 2 output channels) and softmax(3 or more output channels)
+
 ### v0.0.9
 * Split output features and logits at UNets.
 

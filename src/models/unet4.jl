@@ -61,8 +61,8 @@ chs = alpha .* defaultChannels .|> Int
     )
     
     e0 = ConvK1(chs[1], ch_out, identity)
-    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
-
+    act = ch_out <= 2 ? x -> σ(x) : x -> softmax(x; dims=3)
+    
     # output chains
     enc = Chain(c1=c1, c2=c2, c3=c3, c4=c4)
     dec = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0, act=act)
