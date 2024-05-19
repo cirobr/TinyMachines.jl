@@ -95,12 +95,12 @@ function (m::UNet5)(x)
     dec3 = m.dec[:e3](cat(enc3, dec4; dims=3))
     dec2 = m.dec[:e2](cat(enc2, dec3; dims=3))
     dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
+    dec0 = m.dec[:e0](dec1)
 
-    logits       = m.dec[:e0](dec1)
-    yhat         = m.dec[:act](logits)
-    feature_maps = [enc1, enc2, enc3, enc4, enc5, dec5, dec4, dec3, dec2, dec1]
+    yhat         = m.dec[:act](dec0)
+    feature_maps = [enc1, enc2, enc3, enc4, enc5, dec5, dec4, dec3, dec2, dec1, dec0]
 
-    if m.verbose   return yhat, feature_maps, logits   # feature maps output
-    else           return yhat                         # model output
+    if m.verbose   return yhat, feature_maps   # feature maps output
+    else           return yhat                 # model output
     end
 end

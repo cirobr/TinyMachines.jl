@@ -28,8 +28,8 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
-### v0.0.9
-* Split output features and logits at UNets.
+### v0.0.11
+* Intermediate features, besides model output, are made avaliable at UNets.
 
 ### v0.0.8
 * ESPNet temporalily removed, until development is completed.
