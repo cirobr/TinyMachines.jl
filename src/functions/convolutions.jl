@@ -1,4 +1,3 @@
-### convolutions
 const w1 = 1
 const w2 = 2 * 2
 const w3 = 3 * 3
@@ -12,7 +11,7 @@ function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
     return Conv((1,1), ch_in => ch_out, activation;
                 stride=1,
                 pad=0,
-                bias=false,   # original bias=true
+                bias=false,
                 dilation=1,
                 init=kaiming_normal(gain=kgain)
     )
