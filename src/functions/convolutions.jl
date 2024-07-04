@@ -40,6 +40,21 @@ function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
 end
 
 
+function DepthwiseConvK3(ch_in::Int, ch_out::Int, activation=identity;
+    stride::Int=1)
+if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
+kgain = kf * √(w3 * ch_in)
+
+return DepthwiseConv((3,3), ch_in => ch_out, activation;
+    stride=stride,
+    pad=SamePad(),
+    bias=true,
+    dilation=1,
+    init=kaiming_normal(gain=kgain)
+)
+end
+
+
 function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
                        dilation::Int)
     kgain = kf * √(w3 * ch_in)

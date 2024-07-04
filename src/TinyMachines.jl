@@ -1,7 +1,7 @@
 module TinyMachines
 
 
-export UNet5, UNet4, UNet2
+export UNet5, UNet4, UNet2, UNet4dw
 export MobileUNet
 # export ESPNet, prelu
 
@@ -26,6 +26,7 @@ const defaultChannels = [64, 128, 256, 512, 1024]
 include("./models/unet5.jl")
 include("./models/unet4.jl")
 include("./models/unet2.jl")
+include("./models/unet4dw.jl")
 
 # mobile unet
 include("./models/mobileunet.jl")
