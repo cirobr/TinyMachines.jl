@@ -34,12 +34,14 @@ Parallel(+,
 function irblock2(ch_in, ch_out; n=1, expand_ratio=6)
     model_in    =  irb2(ch_in, ch_out, expand_ratio)
     model_chain = [irb1(ch_out, ch_out, expand_ratio) for i in 2:n]
-    return Chain(model_in, model_chain...)
+
+    return n == 1 ? model_in : Chain(model_in, model_chain...)
 end
 
 
 function irblock1(ch_in, ch_out; n=1, expand_ratio=6)
     model_in    =  irb1(ch_in, ch_out, expand_ratio)
     model_chain = [irb1(ch_out, ch_out, expand_ratio) for i in 2:n]
-    return Chain(model_in, model_chain...)
+
+    return n == 1 ? model_in : Chain(model_in, model_chain...)
 end
