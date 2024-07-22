@@ -11,51 +11,39 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                     verbose::Bool = false,         # output feature maps
 )
     # encoder
-    d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
-               n_irblock1(32, 16, n=1, expand_ratio=1),
-            #    Dropout(0.1)
+    d1 = Chain(ConvK3(ch_in, 16, stride=2), BatchNorm(32, relu6),
+               n_irblock1(16, 16, n=1, expand_ratio=1),
     )
 
     d2 = Chain(n_irblock2(16, 24, n=2, expand_ratio=6),
-            #    Dropout(0.15)
     )
 
     d3 = Chain(n_irblock2(24, 32, n=3, expand_ratio=6),
-            #    Dropout(0.2)
      )
 
-    d4 = Chain(n_irblock2(32, 64, n=4, expand_ratio=6),
-               n_irblock1(64, 96, n=3, expand_ratio=6),
-            #    Dropout(0.25)
+    d4 = Chain(n_irblock2(32, 96, n=4, expand_ratio=6),
+               n_irblock1(96, 96, n=3, expand_ratio=6),
     )
 
-    d5 = Chain(n_irblock2(96, 160, n=3, expand_ratio=6),
-               n_irblock1(160, 320, n=1, expand_ratio=6),
-            #    Dropout(0.3),
-               ConvK1(320, 1280), BatchNorm(1280, relu6)
+    d5 = Chain(n_irblock2(96, 128, n=3, expand_ratio=6),  # not sure about ch_out=128
+               n_irblock1(128, 128, n=1, expand_ratio=6), # not sure about ch_out=128
+               n_irblock1(128, 128, n=1, expand_ratio=6), # not sure about this one
+               ConvK1(128, 128, identity)                 # not sure about this one
     )
 
 
     # decoder
-    ct1 = ConvTranspK4(1280, 96)
-    ir1 = Chain(n_irblock1(192, 96, n=1, expand_ratio=1),
-                # Dropout(0.25)
-    )
+    ct1 = ConvTranspK4(128, 96)
+    ir1 = n_irblock1(192, 96, n=1, expand_ratio=1)
 
     ct2 = ConvTranspK4(96, 32)
-    ir2 = Chain(n_irblock1(64, 32, n=1, expand_ratio=1),
-                # Dropout(0.2)
-    )
+    ir2 = n_irblock1(64, 32, n=1, expand_ratio=1)
     
     ct3 = ConvTranspK4(32, 24)
-    ir3 = Chain(n_irblock1(48, 24, n=1, expand_ratio=1),
-                # Dropout(0.15)
-    )
+    ir3 = n_irblock1(48, 24, n=1, expand_ratio=1)
 
     ct4 = ConvTranspK4(24, 16)
-    ir4 = Chain(n_irblock1(32, 16, n=1, expand_ratio=1),
-                # Dropout(0.1)
-    )
+    ir4 = n_irblock1(32, 16, n=1, expand_ratio=1)
 
     ct5 = ConvTranspK4(16, ch_out)
 
