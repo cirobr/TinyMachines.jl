@@ -30,6 +30,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
+### v0.0.12
+* Debug and tuning of the MobileUNet movel.
+
 ### v0.0.11
 * Intermediate features, besides model output, are made avaliable at UNets.
 
