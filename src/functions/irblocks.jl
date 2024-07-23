@@ -4,7 +4,7 @@ function bottleneck_residual_block(ch_in::Int, ch_out::Int, stride::Int, expansi
     kgain  = kf * √(w3 * ch_in)
 
     return Chain(
-        ConvK1(ch_in, ch_exp, relu6),
+        ConvK1(ch_in, ch_exp), BatchNorm(ch_exp, relu6),
         DepthwiseConv((3, 3), ch_exp => ch_exp, relu6;
                       stride=stride,
                       pad=SamePad(),
