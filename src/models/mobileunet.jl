@@ -37,19 +37,24 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
 
     # decoder
-    ct1 = ConvTranspK4(1280, 96, relu6)
+    # ct1 = ConvTranspK4(1280, 96, relu6)
+    ct1 = Chain(ConvTranspK4(1280, 96), BatchNorm(96, relu6))
     ir1 = n_irblock1(192, 96, n=1, expansion_factor=1)
 
-    ct2 = ConvTranspK4(96, 32, relu6)
+    # ct2 = ConvTranspK4(96, 32, relu6)
+    ct2 = Chain(ConvTranspK4(96, 32), BatchNorm(32, relu6))
     ir2 = n_irblock1(64, 32, n=1, expansion_factor=1)
     
-    ct3 = ConvTranspK4(32, 24, relu6)
+    # ct3 = ConvTranspK4(32, 24, relu6)
+    ct3 = Chain(ConvTranspK4(32, 24), BatchNorm(24, relu6))
     ir3 = n_irblock1(48, 24, n=1, expansion_factor=1)
 
-    ct4 = ConvTranspK4(24, 16, relu6)
+    # ct4 = ConvTranspK4(24, 16, relu6)
+    ct4 = Chain(ConvTranspK4(24, 16), BatchNorm(16, relu6))
     ir4 = n_irblock1(32, 16, n=1, expansion_factor=1)
 
-    ct5 = ConvTranspK4(16, ch_out, relu6)
+    # ct5 = ConvTranspK4(16, ch_out, relu6)
+    ct5 = ConvTranspK4(16, ch_out)
 
 
     # activation
