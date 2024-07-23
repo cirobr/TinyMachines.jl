@@ -32,7 +32,6 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
     d5 = Chain(n_irblock2(96, 160, n=3, expansion_factor=6),
                 n_irblock1(160, 320, n=1, expansion_factor=6),
-                # Dropout(dp),   # works well here
                 ConvK1(320, 1280), BatchNorm(1280, relu6),
                 Dropout(0.2),
     )
