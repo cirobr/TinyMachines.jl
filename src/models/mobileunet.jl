@@ -13,8 +13,8 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     # encoder
     dp = 0.1
     d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
-               n_irblock1(32, 16, n=1, expansion_factor=1),
             #    Dropout(dp),
+            n_irblock1(32, 16, n=1, expansion_factor=1),
     )
 
     d2 = Chain(n_irblock2(16, 24, n=2, expansion_factor=6),
@@ -26,34 +26,29 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
      )
 
     d4 = Chain(n_irblock2(32, 64, n=4, expansion_factor=6),
-               n_irblock1(64, 96, n=3, expansion_factor=6),
                 # Dropout(dp),
+                n_irblock1(64, 96, n=3, expansion_factor=6),
     )
 
     d5 = Chain(n_irblock2(96, 160, n=3, expansion_factor=6),
                 n_irblock1(160, 320, n=1, expansion_factor=6),
+                Dropout(dp),
                 ConvK1(320, 1280),
-                # Dropout(dp),
     )
 
     # decoder
-    # ct1 = ConvTranspK4(1280, 96, relu6)
     ct1 = Chain(ConvTranspK4(1280, 96), BatchNorm(96, relu6))
     ir1 = n_irblock1(192, 96, n=1, expansion_factor=1)
 
-    # ct2 = ConvTranspK4(96, 32, relu6)
     ct2 = Chain(ConvTranspK4(96, 32), BatchNorm(32, relu6))
     ir2 = n_irblock1(64, 32, n=1, expansion_factor=1)
     
-    # ct3 = ConvTranspK4(32, 24, relu6)
     ct3 = Chain(ConvTranspK4(32, 24), BatchNorm(24, relu6))
     ir3 = n_irblock1(48, 24, n=1, expansion_factor=1)
 
-    # ct4 = ConvTranspK4(24, 16, relu6)
     ct4 = Chain(ConvTranspK4(24, 16), BatchNorm(16, relu6))
     ir4 = n_irblock1(32, 16, n=1, expansion_factor=1)
 
-    # ct5 = ConvTranspK4(16, ch_out, relu6)
     ct5 = ConvTranspK4(16, ch_out)
 
 
@@ -71,41 +66,25 @@ end
 
 function (m::MobileUNet)(x)
     # encoder
-    # @show size(x)
     x1 = m.d[1](x)
-    # @show size(x1)
     x2 = m.d[2](x1)
-    # @show size(x2)
     x3 = m.d[3](x2)
-    # @show size(x3)
     x4 = m.d[4](x3)
-    # @show size(x4)
     x5 = m.d[5](x4)
-    # @show size(x5)
 
     # decoder
     l1 = m.ct[1](x5)
-    # @show size(l1)
     l2 = m.ir[1](cat(l1, x4; dims=3))
-    # @show size(l2)
     l3 = m.ct[2](l2)
-    # @show size(l3)
     l4 = m.ir[2](cat(l3, x3; dims=3))
-    # @show size(l4)
     l5 = m.ct[3](l4)
-    # @show size(l5)
     l6 = m.ir[3](cat(l5, x2; dims=3))
-    # @show size(l6)
     l7 = m.ct[4](l6)
-    # @show size(l7)
     l8 = m.ir[4](cat(l7, x1; dims=3))
-    # @show size(l8)
     l9 = m.ct[5](l8)
-    # @show size(l9)
 
     # output
     yhat = m.ir[end](l9)
-    # @show size(yhat)
     feature_maps = [x1, x2, x3, x4, x5, l1, l2, l3, l4, l5, l6, l7, l8, l9]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
