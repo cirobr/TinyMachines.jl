@@ -28,7 +28,7 @@ irblock2(ch_in, ch_out, expansion_factor) =
     Parallel(
         +,
         irbottleneck(ch_in, ch_out, 2, expansion_factor),
-        Conv((1,1), ch_in => ch_out, identity; stride=2, bias=true)   # not clear from the article
+        Conv((1,1), ch_in => ch_out, identity; stride=2, bias=false)   # not clear from the article
     )
 
 
