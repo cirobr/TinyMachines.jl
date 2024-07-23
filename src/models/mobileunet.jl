@@ -11,23 +11,29 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                     verbose::Bool = false,         # output feature maps
 )
     # encoder
+    dp = 0.1
     d1 = Chain(ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
                n_irblock1(32, 16, n=1, expansion_factor=1),
+               Dropout(dp),
     )
 
     d2 = Chain(n_irblock2(16, 24, n=2, expansion_factor=6),
+                Dropout(dp),
     )
 
     d3 = Chain(n_irblock2(24, 32, n=3, expansion_factor=6),
+                Dropout(dp),
      )
 
     d4 = Chain(n_irblock2(32, 64, n=4, expansion_factor=6),
                n_irblock1(64, 96, n=3, expansion_factor=6),
+                Dropout(dp),
     )
 
     d5 = Chain(n_irblock2(96, 160, n=3, expansion_factor=6),
                 n_irblock1(160, 320, n=1, expansion_factor=6),
-                ConvK1(320, 1280)
+                ConvK1(320, 1280),
+                Dropout(dp),
     )
 
     # decoder
