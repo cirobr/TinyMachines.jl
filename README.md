@@ -15,9 +15,11 @@ The standard implementation follows the paper "U-Net: Convolutional Networks for
 
 ### MobileUNet
 
-Mobile-Unet utilizes inverted residual bottleneck blocks and pointwise convolution.
+Mobile-Unet has the same encoder structure as the Mobilenet-V2 classification model, and the same u-shape and skip connection principles as the U-Net.
 
-Implementation follows the paper "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
+Implementation follows the following papers:
+* "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
+* MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Paper credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
 
 
 ### Credits
@@ -31,7 +33,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 ### Versions:
 
 ### v0.0.12
-* Debug and tuning of the MobileUNet movel.
+* Largely improved MobileUNet.
 
 ### v0.0.11
 * Intermediate features, besides model output, are made avaliable at UNets.
