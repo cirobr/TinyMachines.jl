@@ -34,6 +34,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### v0.0.15
 * Compatibility starts at Flux v0.14.17
+* Improved dropouts
 
 ### v0.0.12
 * Largely improved MobileUNet.
