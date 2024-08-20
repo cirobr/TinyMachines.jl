@@ -16,27 +16,27 @@ function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
     # contracting path
     c1 = Chain(ConvK3(ch_in, chs[1], activation),
+               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
                Dropout(0.1),
-               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
 
     c2 = Chain(MaxPoolK2,
                ConvK3(chs[1], chs[2], activation),
+               ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation),
                Dropout(0.2),
-               ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation)
     )
     
 
     # expansive path
-    e2 = Chain(ConvTranspK2(chs[2], chs[1]; stride=2), BatchNorm(chs[1], activation),
+    e2 = Chain(ConvTranspK2(chs[2], chs[1], activation; stride=2),
     )
 
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
+               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
                Dropout(0.1),
-               ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
     
-    e0 = ConvK1(chs[1], ch_out, identity)
+    e0 = ConvK1(chs[1], ch_out)
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains

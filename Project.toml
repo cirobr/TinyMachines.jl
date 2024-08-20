@@ -1,14 +1,14 @@
 name = "TinyMachines"
 uuid = "5d0fdf5f-995e-4f1b-a9e8-363392c4fe32"
 authors = ["Ciro B Rosa <ciro.rosa@alumni.usp.br>"]
-version = "0.0.12"
+version = "0.0.15"
 
 [deps]
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
-Flux = "=0.14.16"
+Flux = "0.14.17"
 julia = "1.10"
 
 [extras]

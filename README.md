@@ -32,6 +32,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
+### v0.0.15
+* Compatibility starts at Flux v0.14.17
+
 ### v0.0.12
 * Largely improved MobileUNet.
 * Compatibility frozen at Flux v0.14.16
