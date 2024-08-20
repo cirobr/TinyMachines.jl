@@ -2,17 +2,18 @@
 
 @test size(MobileUNet(3,3; verbose=true)(x3)[1]) == (256,256,3,1)
 
-@test size.(MobileUNet(3,3; verbose=true)(x3)[2]) == [(128,128,16,1),
-                                                      (64,64,24,1),
-                                                      (32,32,32,1),
-                                                      (16,16,96,1),
-                                                      (8,8,1280,1),
-                                                      (16,16,96,1),
-                                                      (16,16,96,1),
-                                                      (32,32,32,1),
-                                                      (32,32,32,1),
-                                                      (64,64,24,1),
-                                                      (64,64,24,1),
-                                                      (128,128,16,1),
-                                                      (128,128,16,1),
-                                                      (256,256,3,1)]
+s = size.(MobileUNet(3,3; verbose=true)(x3)[2])
+@test s[1] == (128,128,16,1)  || error("Expected (128,128,16,1) but got $s[1]")
+@test s[2] == (64,64,24,1)    || error("Expected (64,64,24,1) but got $s[2]")
+@test s[3] == (32,32,32,1)    || error("Expected (32,32,32,1) but got $s[3]")
+@test s[4] == (16,16,96,1)    || error("Expected (16,16,96,1) but got $s[4]")
+@test s[5] == (8,8,1280,1)    || error("Expected (8,8,1280,1) but got $s[5]")
+@test s[6] == (16,16,96,1)    || error("Expected (16,16,96,1) but got $s[6]")
+@test s[7] == (16,16,96,1)    || error("Expected (16,16,96,1) but got $s[7]")
+@test s[8] == (32,32,32,1)    || error("Expected (32,32,32,1) but got $s[8]")
+@test s[9] == (32,32,32,1)    || error("Expected (32,32,32,1) but got $s[9]")
+@test s[10] == (64,64,24,1)   || error("Expected (64,64,24,1) but got $s[10]")
+@test s[11] == (64,64,24,1)   || error("Expected (64,64,24,1) but got $s[11]")
+@test s[12] == (128,128,16,1) || error("Expected (128,128,16,1) but got $s[12]")
+@test s[13] == (128,128,16,1) || error("Expected (128,128,16,1) but got $s[13]")
+@test s[14] == (256,256,3,1)  || error("Expected (256,256,3,1) but got $s[14]")
