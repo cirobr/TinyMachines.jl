@@ -1,21 +1,21 @@
-function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
+function ConvK1(ch_in::Int, ch_out::Int)
     kgain = kf * √(w1 * ch_in)
 
-    return Conv((1,1), ch_in => ch_out, activation;
+    return Conv((1,1), ch_in => ch_out;
                 stride=1,
-                pad=0,
+                pad=SamePad(),
                 bias=false,
                 dilation=1,
                 init=kaiming_normal(gain=kgain)
     )
 end
-PointwiseConv(ch_in::Int, ch_out::Int, activation=identity) = ConvK1(ch_in, ch_out, activation)
+PointwiseConv(ch_in::Int, ch_out::Int) = ConvK1(ch_in, ch_out)
 
 
-function ConvK2(ch_in::Int, ch_out::Int, activation=identity)
+function ConvK2(ch_in::Int, ch_out::Int)
     kgain = kf * √(w2 * ch_in)
 
-    return Conv((2,2), ch_in => ch_out, activation;
+    return Conv((2,2), ch_in => ch_out;
                 stride=2,
                 pad=SamePad(),
                 bias=true,
@@ -25,12 +25,12 @@ function ConvK2(ch_in::Int, ch_out::Int, activation=identity)
 end
 
 
-function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
+function ConvK3(ch_in::Int, ch_out::Int;
                 stride::Int=1)
     if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
     
-    return Conv((3,3), ch_in => ch_out, activation;
+    return Conv((3,3), ch_in => ch_out;
                 stride=stride,
                 pad=SamePad(),
                 bias=true,
@@ -40,31 +40,17 @@ function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
 end
 
 
-function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
-                       dilation::Int)
-    kgain = kf * √(w3 * ch_in)
-
-    return Conv((3,3), ch_in => ch_out, activation;
-                stride=1,
-                pad=SamePad(),
-                bias=true,
-                dilation=dilation,
-                init=kaiming_normal(gain=kgain)
-    )
+function UpConvK2(ch_in::Int, ch_out::Int)
+    return Chain(Upsample(scale=(4,4)), ConvK2(ch_in, ch_out))
 end
 
 
-function UpConvK2(ch_in::Int, ch_out::Int, activation=identity)
-    return Chain(Upsample(scale=(4,4)), ConvK2(ch_in, ch_out, activation))
-end
-
-
-function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity;
+function ConvTranspK2(ch_in::Int, ch_out::Int;
                       stride::Int=1)
     if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w2 * ch_in)
     
-    return ConvTranspose((2,2), ch_in => ch_out, activation;
+    return ConvTranspose((2,2), ch_in => ch_out;
                          stride=stride,
                          pad=SamePad(),
                          bias=true,
@@ -74,10 +60,10 @@ function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity;
 end
 
 
-function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
+function ConvTranspK4(ch_in::Int, ch_out::Int)
     kgain = kf * √(w4 * ch_in)
     
-    return ConvTranspose((4,4), ch_in => ch_out, activation;
+    return ConvTranspose((4,4), ch_in => ch_out;
                          stride=2,
                          pad=SamePad(),
                          bias=true,

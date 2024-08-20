@@ -15,25 +15,25 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 chs = alpha .* defaultChannels .|> Int
 
     # contracting path
-    c1 = Chain(ConvK3(ch_in, chs[1], activation),
+    c1 = Chain(ConvK3(ch_in, chs[1]), BatchNorm(chs[1], activation),
                Dropout(0.1),
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
 
     c2 = Chain(MaxPoolK2,
-               ConvK3(chs[1], chs[2], activation),
+               ConvK3(chs[1], chs[2]), BatchNorm(chs[2], activation),
                Dropout(0.15),
                ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation)
     )
     
     c3 = Chain(MaxPoolK2,
-               ConvK3(chs[2], chs[3], activation),
+               ConvK3(chs[2], chs[3]), BatchNorm(chs[3], activation),
                Dropout(0.2),
                ConvK3(chs[3], chs[3]), BatchNorm(chs[3], activation)
     )
     
     c4 = Chain(MaxPoolK2,
-               ConvK3(chs[3], chs[4], activation),
+               ConvK3(chs[3], chs[4]), BatchNorm(chs[4], activation),
                Dropout(0.25),
                ConvK3(chs[4], chs[4]), BatchNorm(chs[4], activation)
     )
@@ -43,24 +43,24 @@ chs = alpha .* defaultChannels .|> Int
     e4 = Chain(ConvTranspK2(chs[4], chs[3]; stride=2), BatchNorm(chs[3], activation),
     )
 
-    e3 = Chain(ConvK3(chs[4], chs[3], activation),
+    e3 = Chain(ConvK3(chs[4], chs[3]), BatchNorm(chs[3], activation),
                Dropout(0.2),
-               ConvK3(chs[3], chs[3], activation),
+               ConvK3(chs[3], chs[3]), BatchNorm(chs[3], activation),
                ConvTranspK2(chs[3], chs[2]; stride=2), BatchNorm(chs[2], activation)
     )
     
-    e2 = Chain(ConvK3(chs[3], chs[2], activation),
+    e2 = Chain(ConvK3(chs[3], chs[2]), BatchNorm(chs[2], activation),
                Dropout(0.15),
-               ConvK3(chs[2], chs[2], activation),
+               ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation),
                ConvTranspK2(chs[2], chs[1]; stride=2), BatchNorm(chs[1], activation)
     )
     
-    e1 = Chain(ConvK3(chs[2], chs[1], activation),
+    e1 = Chain(ConvK3(chs[2], chs[1]), BatchNorm(chs[1], activation),
                Dropout(0.1),
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation)
     )
     
-    e0 = ConvK1(chs[1], ch_out, identity)
+    e0 = ConvK1(chs[1], ch_out)
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains

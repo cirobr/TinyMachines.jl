@@ -49,9 +49,6 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     ir4 = bottleneck_block(32, 16, stride=1, expansion_factor=1, n=1)
 
     ct5 = ConvTranspK4(16, ch_out)
-
-
-    # activation
     e0  = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
 
