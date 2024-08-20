@@ -23,7 +23,7 @@ chs = alpha .* defaultChannels .|> Int
     c2 = Chain(MaxPoolK2,
                ConvK3(chs[1], chs[2]), activation,
                ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation),
-            #    Dropout(0.15),
+            #    Dropout(0.1),
     )
     
     c3 = Chain(MaxPoolK2,
@@ -51,7 +51,7 @@ chs = alpha .* defaultChannels .|> Int
     
     e2 = Chain(ConvK3(chs[3], chs[2]), activation,
                ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation),
-            #    Dropout(0.15),
+            #    Dropout(0.1),
                ConvTranspK2(chs[2], chs[1]; stride=2), activation,
     )
     
