@@ -34,6 +34,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### v0.0.12
 * Largely improved MobileUNet.
+* Compatibility frozen at Flux v0.14.16
 
 ### v0.0.11
 * Intermediate features, besides model output, are made avaliable at UNets.
