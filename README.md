@@ -32,6 +32,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
+### v0.0.14
+* Cleanup convolutions
+
 ### v0.0.12
 * Largely improved MobileUNet.
 
