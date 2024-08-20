@@ -14,7 +14,7 @@ cd(@__DIR__)
 
 cudadevice = 0
 nepochs    = 400
-debugflag  = true
+debugflag  = false
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
@@ -25,7 +25,7 @@ script_name = basename(@__FILE__)
 
 ### libs
 using Pkg
-envpath = expanduser("~/envs/dev/")
+envpath = expanduser("~/envs/tm0014/")
 Pkg.activate(envpath)
 
 using CUDA
