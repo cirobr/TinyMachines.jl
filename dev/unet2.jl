@@ -14,7 +14,7 @@ cd(@__DIR__)
 
 cudadevice = 0
 nepochs    = 400
-debugflag  = true
+debugflag  = false
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
