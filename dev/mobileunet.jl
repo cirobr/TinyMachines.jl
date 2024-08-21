@@ -12,13 +12,13 @@ cd(@__DIR__)
 # nepochs    = parse(Int64, ARGS[2])
 # debugflag  = parse(Bool,  ARGS[3])
 
-cudadevice = 1
-nepochs    = 400
-debugflag  = false
+# cudadevice = 0
+# nepochs    = 400
+# debugflag  = true
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
-@info "cudadevice: $cudadevice"
+# @info "cudadevice: $cudadevice"
 @info "nepochs: $nepochs"
 @info "debugflag: $debugflag"
 
@@ -29,13 +29,11 @@ envpath = expanduser("~/envs/dev/")
 Pkg.activate(envpath)
 
 using CUDA
-CUDA.device!(cudadevice)
+# CUDA.device!(cudadevice)
 CUDA.versioninfo()
 
-using ESPNet; tm=ESPNet
-
 using Flux
-import Flux: relu, leakyrelu, softmax
+import Flux: relu, leakyrelu, softmax, kaiming_normal
 using Metalhead; const m=Metalhead
 using Images
 using DataFrames
@@ -48,7 +46,7 @@ using StatsBase: sample
 using MLUtils: splitobs, kfolds, obsview, ObsView
 
 # private libs
-# using TinyMachines; const tm=TinyMachines
+using TinyMachines; const tm=TinyMachines
 using PreprocessingImages; const p=PreprocessingImages
 using PascalVocTools; const pv=PascalVocTools
 using LibML
@@ -169,7 +167,7 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = espnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
+modelcpu = tm.MobileUNet(3,C; verbose=false)
 # fpfn = expanduser("")
 # LibML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
@@ -190,7 +188,7 @@ lossfns = [lossFunction]
 
 # optimizer
 optimizerFunction = Flux.Adam
-η = 1e-3
+η = 1e-4
 λ = 0.0      # default 5e-4
 # _, optimizerFunction, η, λ = hypertuning["unet4"]
 modelOptimizer = λ > 0 ? Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) : optimizerFunction(η)
@@ -204,7 +202,7 @@ optimizerState = Flux.setup(modelOptimizer, model)
 ### training
 @info "start training ..."
 
-number_since_best = 30
+number_since_best = 20
 patience = 5
 metrics = [
       LibML.AccScore,

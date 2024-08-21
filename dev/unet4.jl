@@ -167,7 +167,7 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = tm.UNet4(3,C; activation=leakyrelu, alpha=1.f0, verbose=false)
+modelcpu = tm.UNet4(3,C; activation=leakyrelu, alpha=1, verbose=false)
 # fpfn = expanduser("")
 # LibML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
