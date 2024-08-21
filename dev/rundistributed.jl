@@ -40,15 +40,16 @@ end
 # setup scripts to be executed
 cd(@__DIR__)
 @everywhere nepochs = 400
-@everywhere debugflag = false
+@everywhere debugflag = true
 scripts = [
     "unet2.jl",
     "unet4.jl",
     "unet5.jl",
-    # "mobileunet.jl",
+    "mobileunet.jl",
     "espnet.jl",
 ]
 scripts = pwd() * "/" .* scripts
+Random.shuffle!(scripts)
 
 @everywhere function executescript(script)
     @info "Worker $(myid()) with device $(device()) is processing $(basename(script))"

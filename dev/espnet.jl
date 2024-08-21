@@ -12,13 +12,13 @@ cd(@__DIR__)
 # nepochs    = parse(Int64, ARGS[2])
 # debugflag  = parse(Bool,  ARGS[3])
 
-cudadevice = 1
-nepochs    = 400
-debugflag  = false
+# cudadevice = 1
+# nepochs    = 400
+# debugflag  = false
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
-@info "cudadevice: $cudadevice"
+# @info "cudadevice: $cudadevice"
 @info "nepochs: $nepochs"
 @info "debugflag: $debugflag"
 
@@ -29,10 +29,8 @@ envpath = expanduser("~/envs/dev/")
 Pkg.activate(envpath)
 
 using CUDA
-CUDA.device!(cudadevice)
+# CUDA.device!(cudadevice)
 CUDA.versioninfo()
-
-using ESPNet; tm=ESPNet
 
 using Flux
 import Flux: relu, leakyrelu, softmax
@@ -48,7 +46,7 @@ using StatsBase: sample
 using MLUtils: splitobs, kfolds, obsview, ObsView
 
 # private libs
-# using TinyMachines; const tm=TinyMachines
+using TinyMachines; const tm=TinyMachines
 using PreprocessingImages; const p=PreprocessingImages
 using PascalVocTools; const pv=PascalVocTools
 using LibML
@@ -169,7 +167,7 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = espnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
+modelcpu = ESPnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
 # fpfn = expanduser("")
 # LibML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;

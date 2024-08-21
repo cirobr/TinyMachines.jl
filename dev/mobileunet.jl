@@ -167,7 +167,7 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = tm.MobileUNet(3,C; verbose=false)
+modelcpu = MobileUNet(3,C; verbose=false)
 # fpfn = expanduser("")
 # LibML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
