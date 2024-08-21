@@ -3,5 +3,4 @@
 dataset/**/*.png
 dataset/**/*.jpg
 dataset/**/*.jpeg
-dev/models/
-dev/tblogs/
+training/models/
