@@ -8,11 +8,11 @@ end
 
 function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                activation    = relu,          # activation function
-               alpha         = 1.0,           # feature channels multiplier
+               alpha::Int    = 1,             # feature channels divider
                verbose::Bool = false,         # output feature maps
 )
 
-    chs = alpha .* defaultChannels .|> Int
+    chs = defaultChannels .÷ alpha
 
     # contracting path
     c1 = Chain(ConvK3(ch_in, chs[1], activation),
