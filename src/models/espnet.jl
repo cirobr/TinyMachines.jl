@@ -62,35 +62,35 @@ end
 
 function (m::ESPnet)(x)
     # encoder
-    ds1 = m.downsampling(x);              # @show size(ds1)
-    out1 = m.encoder[:e1](x);             # @show size(out1)
-    ct1 = cat(ds1, out1, dims=3);         # @show size(ct1)
+    ds1 = m.downsampling(x)
+    out1 = m.encoder[:e1](x)
+    ct1 = cat(ds1, out1, dims=3)
 
-    ds2 = m.downsampling(ds1);            # @show size(ds2)
-    out2a = m.encoder[:e2a](ct1);         # @show size(out2a)
-    out2b = m.encoder[:e2b](out2a);       # @show size(out2b)
-    ct2 = cat(ds2, out2a, out2b, dims=3); # @show size(ct2)
+    ds2 = m.downsampling(ds1)
+    out2a = m.encoder[:e2a](ct1)
+    out2b = m.encoder[:e2b](out2a)
+    ct2 = cat(ds2, out2a, out2b, dims=3)
     
-    out3a = m.encoder[:e3a](ct2);         # @show size(out3a)
-    out3b = m.encoder[:e3b](out3a);       # @show size(out3b)
-    ct3 = cat(out3a, out3b, dims=3);      # @show size(ct3)
+    out3a = m.encoder[:e3a](ct2)
+    out3b = m.encoder[:e3b](out3a)
+    ct3 = cat(out3a, out3b, dims=3)
 
 
     # bridges
-    b1 = m.bridge[:b1](ct1);              # @show size(b1)
-    b2 = m.bridge[:b2](ct2);              # @show size(b2)
-    b3 = m.bridge[:b3](ct3);              # @show size(b3)
+    b1 = m.bridge[:b1](ct1)
+    b2 = m.bridge[:b2](ct2)
+    b3 = m.bridge[:b3](ct3)
 
 
     # decoder
-    d3 = m.decoder[:d3](b3);              # @show size(d3)
-    ct4 = cat(b2, d3, dims=3);            # @show size(ct4)
+    d3 = m.decoder[:d3](b3)
+    ct4 = cat(b2, d3, dims=3)
 
-    d2 = m.decoder[:d2](ct4);             # @show size(d2)
-    ct5 = cat(b1, d2, dims=3);            # @show size(ct5)
+    d2 = m.decoder[:d2](ct4)
+    ct5 = cat(b1, d2, dims=3)
 
-    d1 = m.decoder[:d1](ct5);             # @show size(d1)
-    yhat = m.decoder[:d0](d1);            # @show size(yhat)
+    d1 = m.decoder[:d1](ct5)
+    yhat = m.decoder[:d0](d1)
 
 
     # return yhat
