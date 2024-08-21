@@ -1,8 +1,9 @@
 struct ESPnet
     downsampling
-    encoder
-    bridge
-    decoder
+    encoder::Chain
+    bridge::Chain
+    decoder::Chain
+    verbose::Bool
 end
 @layer ESPnet
 
@@ -55,7 +56,7 @@ function ESPnet(ch_in::Int, ch_out::Int;
     bridge  = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d3=d3, d2=d2, d1=d1, d0=d0)
 
-    return ESPnet(downsampling, encoder, bridge, decoder)
+    return ESPnet(downsampling, encoder, bridge, decoder, verbose)
 end
 
 
@@ -92,5 +93,8 @@ function (m::ESPnet)(x)
     yhat = m.decoder[:d0](d1);            # @show size(yhat)
 
 
-    return yhat
+    # return yhat
+    if m.verbose   return yhat, d1   # model and logits outputs
+    else           return yhat       # model output
+    end
 end
