@@ -3,12 +3,15 @@ module TinyMachines
 
 export UNet5, UNet4, UNet2
 export MobileUNet
+export ESPnet
+# export prelu
 
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              DepthwiseConv, Parallel,
-             identity, relu, σ, sigmoid, softmax, relu6,
-             @layer, kaiming_normal
+             kaiming_normal,
+             identity, relu, relu6, σ, sigmoid, softmax,
+             @layer
 
 
 # packages
@@ -19,6 +22,7 @@ const w4 = 4 * 4
 const kf = 1.f-2
 include("./functions/convolutions.jl")
 include("./functions/irblocks.jl")       # inverted residual blocks
+include("./functions/espblocks.jl")      # efficient spatial pyramid blocks
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -28,6 +32,9 @@ include("./models/unet2.jl")
 
 # mobile unet
 include("./models/mobileunet.jl")
+
+# espnet
+include("./models/espnet.jl")
 
 
 end   # module
