@@ -40,7 +40,7 @@ end
 # setup scripts to be executed
 cd(@__DIR__)
 @everywhere nepochs = 400
-@everywhere debugflag = true
+@everywhere debugflag = false
 scripts = [
     "unet2.jl",
     "unet4.jl",
