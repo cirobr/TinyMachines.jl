@@ -4,3 +4,4 @@ dataset/**/*.png
 dataset/**/*.jpg
 dataset/**/*.jpeg
 training/models/
+dev/
