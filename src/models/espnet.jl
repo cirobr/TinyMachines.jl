@@ -92,9 +92,13 @@ function (m::ESPnet)(x)
     d1 = m.decoder[:d1](ct5)
     yhat = m.decoder[:d0](d1)
 
+    feature_maps = [ds1, out1, ct1, ds2, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:10]
+                    b1, b2, b3,                                                # bridge  [11:13]
+                    d3, ct4, d2, ct5, d1]                                      # decoder [14:18]
+
 
     # return yhat
-    if m.verbose   return yhat, d1   # model and logits outputs
-    else           return yhat       # model output
+    if m.verbose   return yhat, feature_maps   # model and logits outputs
+    else           return yhat                 # model output
     end
 end

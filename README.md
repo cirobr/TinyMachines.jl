@@ -38,6 +38,9 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### Versions:
 
+### v0.0.16
+* Added features output to ESPNet
+
 ### v0.0.15
 * ESPNet added
 * Improved dropouts
