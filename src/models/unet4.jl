@@ -1,9 +1,10 @@
 struct UNet4
     enc::Chain
+    upc::Chain
     dec::Chain
     verbose::Bool
 end
-@layer UNet4 trainable=(enc, dec)
+@layer UNet4 trainable=(enc, upc, dec)
 
 
 function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -39,20 +40,22 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
     
 
-    # expansive path
-    e4 = Chain(ConvTranspK2(chs[4], chs[3], activation; stride=2),
+    # up convolutions
+    upc = Chain(ConvTranspK2(chs[4], chs[3], activation; stride=2),
+                ConvTranspK2(chs[3], chs[2], activation; stride=2),
+                ConvTranspK2(chs[2], chs[1], activation; stride=2),
     )
 
+
+    # expansive path
     e3 = Chain(ConvK3(chs[4], chs[3], activation),
                ConvK3(chs[3], chs[3]), BatchNorm(chs[3], activation),
                Dropout(0.1),
-               ConvTranspK2(chs[3], chs[2], activation; stride=2),
     )
     
     e2 = Chain(ConvK3(chs[3], chs[2], activation),
                ConvK3(chs[2], chs[2]), BatchNorm(chs[2], activation),
             #    Dropout(0.1),
-               ConvTranspK2(chs[2], chs[1], activation; stride=2),
     )
     
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
@@ -64,27 +67,32 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
-    enc = Chain(c1=c1, c2=c2, c3=c3, c4=c4)
-    dec = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0, act=act)
+    enc = Chain(c1, c2, c3, c4)
+    dec = Chain(e3, e2, e1, e0, act)
 
-    return UNet4(enc, dec, verbose)   # struct with encoder and decoder
+    return UNet4(enc, upc, dec, verbose)   # struct arguments
 end
 
 
 function (m::UNet4)(x)
-    enc1 = m.enc[:c1](x)
-    enc2 = m.enc[:c2](enc1)
-    enc3 = m.enc[:c3](enc2)
-    enc4 = m.enc[:c4](enc3)
+    enc1 = m.enc[1](x)
+    enc2 = m.enc[2](enc1)
+    enc3 = m.enc[3](enc2)
+    enc4 = m.enc[4](enc3)
+    # enc5 = m.enc[5](enc4)
 
-    dec4 = m.dec[:e4](enc4)
-    dec3 = m.dec[:e3](cat(enc3, dec4; dims=3))
-    dec2 = m.dec[:e2](cat(enc2, dec3; dims=3))
-    dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
-    dec0 = m.dec[:e0](dec1)
+    # up4 = m.upc[1](enc5)
+    # dec4 = m.dec[1](cat(enc4, up4; dims=3))
+    up3 = m.upc[1](enc4)
+    dec3 = m.dec[1](cat(enc3, up3; dims=3))
+    up2 = m.upc[2](dec3)
+    dec2 = m.dec[2](cat(enc2, up2; dims=3))
+    up1 = m.upc[3](dec2)
+    dec1 = m.dec[3](cat(enc1, up1; dims=3))
+    dec0 = m.dec[4](dec1)
 
-    yhat         = m.dec[:act](dec0)
-    feature_maps = [enc1, enc2, enc3, enc4, dec4, dec3, dec2, dec1, dec0]
+    yhat         = m.dec[end](dec0)
+    feature_maps = [enc1, enc2, enc3, enc4, dec3, dec2, dec1, dec0]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output

@@ -1,9 +1,10 @@
 struct UNet2
     enc::Chain
+    upc::Chain
     dec::Chain
     verbose::Bool
 end
-@layer UNet2 trainable=(enc, dec)
+@layer UNet2 trainable=(enc, upc, dec)
 
 
 function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -27,10 +28,12 @@ function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
     
 
-    # expansive path
-    e2 = Chain(ConvTranspK2(chs[2], chs[1], activation; stride=2),
+    # up convolutions
+    upc = Chain(ConvTranspK2(chs[2], chs[1], activation; stride=2),
     )
 
+
+    # expansive path
     e1 = Chain(ConvK3(chs[2], chs[1], activation),
                ConvK3(chs[1], chs[1]), BatchNorm(chs[1], activation),
                Dropout(0.1),
@@ -40,23 +43,32 @@ function UNet2(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
-    enc = Chain(c1=c1, c2=c2)
-    dec = Chain(e2=e2, e1=e1, e0=e0, act=act)
+    enc = Chain(c1, c2)
+    dec = Chain(e1, e0, act)
 
-    return UNet2(enc, dec, verbose)   # struct with encoder and decoder
+    return UNet2(enc, upc, dec, verbose)   # struct arguments
 end
 
 
 function (m::UNet2)(x)
-    enc1 = m.enc[:c1](x)
-    enc2 = m.enc[:c2](enc1)
+    enc1 = m.enc[1](x)
+    enc2 = m.enc[2](enc1)
+    # enc3 = m.enc[3](enc2)
+    # enc4 = m.enc[4](enc3)
+    # enc5 = m.enc[5](enc4)
 
-    dec2 = m.dec[:e2](enc2)
-    dec1 = m.dec[:e1](cat(enc1, dec2; dims=3))
-    dec0 = m.dec[:e0](dec1)
+    # up4 = m.upc[1](enc5)
+    # dec4 = m.dec[1](cat(enc4, up4; dims=3))
+    # up3 = m.upc[1](enc4)
+    # dec3 = m.dec[1](cat(enc3, up3; dims=3))
+    # up2 = m.upc[2](dec3)
+    # dec2 = m.dec[2](cat(enc2, up2; dims=3))
+    up1 = m.upc(enc2)
+    dec1 = m.dec[1](cat(enc1, up1; dims=3))
+    dec0 = m.dec[2](dec1)
 
-    yhat         = m.dec[:act](dec0)
-    feature_maps = [enc1, enc2, dec2, dec1, dec0]
+    yhat         = m.dec[end](dec0)
+    feature_maps = [enc1, enc2, dec1, dec0]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output
