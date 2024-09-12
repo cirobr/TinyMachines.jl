@@ -42,10 +42,10 @@ cd(@__DIR__)
 @everywhere nepochs = 400
 @everywhere debugflag = false
 scripts = [
-    "unet2.jl",
-    "unet4.jl",
-    "unet5.jl",
-    "mobileunet.jl",
+    # "unet2.jl",
+    # "unet4.jl",
+    # "unet5.jl",
+    # "mobileunet.jl",
     "espnet.jl",
 ]
 scripts = pwd() * "/" .* scripts

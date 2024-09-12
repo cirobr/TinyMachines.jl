@@ -188,7 +188,7 @@ lossfns = [lossFunction]
 
 # optimizer
 optimizerFunction = Flux.Adam
-η = 1e-4
+η = 1e-3
 λ = 0.0      # default 5e-4
 # _, optimizerFunction, η, λ = hypertuning["unet4"]
 modelOptimizer = λ > 0 ? Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) : optimizerFunction(η)
