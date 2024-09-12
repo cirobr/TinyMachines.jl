@@ -4,5 +4,5 @@ dataset/**/*.png
 dataset/**/*.jpg
 dataset/**/*.jpeg
 training/models/
-training-v0.0.17/models/
+training-old/models/
 dev/

@@ -1,7 +1,7 @@
 """
-LibML.Learn!()
+LibFluxML.Learn!()
 Author: cirobr@GitHub
-Date: 02-Aug-2024
+Date: 02-Sep-2024
 """
 
 @info "Project start"
@@ -12,9 +12,9 @@ cd(@__DIR__)
 # nepochs    = parse(Int64, ARGS[2])
 # debugflag  = parse(Bool,  ARGS[3])
 
-# cudadevice = 1
+# cudadevice = 0
 # nepochs    = 400
-# debugflag  = false
+# debugflag  = true
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
@@ -30,11 +30,10 @@ Pkg.activate(envpath)
 
 using CUDA
 # CUDA.device!(cudadevice)
-CUDA.versioninfo()
+# CUDA.versioninfo()
 
 using Flux
-import Flux: relu, leakyrelu, softmax
-using Metalhead; const m=Metalhead
+import Flux: relu, leakyrelu
 using Images
 using DataFrames
 using CSV
@@ -47,12 +46,13 @@ using MLUtils: splitobs, kfolds, obsview, ObsView
 
 # private libs
 using TinyMachines; const tm=TinyMachines
+using LibMetalhead
 using PreprocessingImages; const p=PreprocessingImages
 using PascalVocTools; const pv=PascalVocTools
-using LibML
-import LibML: IoU_loss, ce1_loss, ce3_loss, cosine_loss, softloss
+using LibFluxML
+import LibFluxML: IoU_loss, ce1_loss, ce3_loss, cosine_loss, softloss,
+                  AccScore, F1Score, IoUScore
 using LibCUDA
-# include("../architectures.jl")
 
 LibCUDA.cleangpu()
 @info "environment OK"
@@ -70,7 +70,7 @@ outputfolder = script_name[1:end-3] * "/"
 # pwd(), homedir()
 workpath = pwd() * "/"
 workpath = replace(workpath, homedir() => "~")
-datasetpath = "../dataset/"
+datasetpath = "~/projects/knowledge-distillation/dataset/"
 # mkpath(expanduser(datasetpath))   # it should already exist
 
 modelspath  = workpath * "models/" * outputfolder
@@ -169,7 +169,7 @@ LibCUDA.cleangpu()
 Random.seed!(1234)   # to enforce reproducibility
 modelcpu = ESPnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
 # fpfn = expanduser("")
-# LibML.loadModelState!(fpfn, modelcpu)
+# LibFluxML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
 @info "model OK"
 
@@ -181,14 +181,14 @@ model    = modelcpu |> gpu;
 
 
 # loss functions
-lossFunction(yhat, y) = LibML.IoU_loss(yhat, y)
+lossFunction(yhat, y) = IoU_loss(yhat, y)
 lossfns = [lossFunction]
 @info "loss functions OK"
 
 
 # optimizer
 optimizerFunction = Flux.Adam
-η = 1e-3
+η = 1e-4
 λ = 0.0      # default 5e-4
 # _, optimizerFunction, η, λ = hypertuning["unet4"]
 modelOptimizer = λ > 0 ? Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) : optimizerFunction(η)
@@ -202,18 +202,16 @@ optimizerState = Flux.setup(modelOptimizer, model)
 ### training
 @info "start training ..."
 
-number_since_best = 30
+number_since_best = 20
 patience = 5
 metrics = [
-      LibML.AccScore,
-      LibML.F1Score,
-      LibML.IoUScore,
-      # Flux.mse,
-      # LibML.ce3_loss,
+      AccScore,
+      F1Score,
+      IoUScore,
 ]
 
 Random.seed!(1234)   # to enforce reproducibility
-LibML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
+Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
       metrics=metrics,
       earlystops=(number_since_best, patience),
       modelspath=modelspath * "train/",
@@ -224,28 +222,6 @@ fpfn = expanduser(modelspath) * "train/model.jld2"
 mv(fpfn, expanduser(modelspath) * "train/bestmodel.jld2", force=true)
 @info "training OK"
 
-
-# ### tuning
-# @info "start tuning ..."
-# fpfn = expanduser(modelspath) * "train/bestmodel.jld2"
-# LibML.loadModelState!(fpfn, modelcpu)
-# model = modelcpu |> gpu
-
-# Flux.thaw!(optimizerState)
-# Flux.adjust!(optimizerState, η/10)
-# @info "optimizer adjusted"
-
-# Random.seed!(1234)   # to enforce reproducibility
-# LibML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
-#       metrics=metrics,
-#       earlystops=(number_since_best, patience),
-#       modelspath=modelspath * "tune/",
-#       tblogspath=tblogspath * "tune/"
-# )
-
-# fpfn = expanduser(modelspath) * "tune/model.jld2"
-# mv(fpfn, expanduser(modelspath) * "tune/bestmodel.jld2", force=true)
-# @info "tuning OK"
 
 
 LibCUDA.cleangpu()

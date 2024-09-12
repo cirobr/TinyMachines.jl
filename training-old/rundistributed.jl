@@ -45,8 +45,8 @@ scripts = [
     "unet2.jl",
     "unet4.jl",
     "unet5.jl",
-    # "mobileunet.jl",
-    # "espnet.jl",
+    "mobileunet.jl",
+    "espnet.jl",
 ]
 scripts = pwd() * "/" .* scripts
 Random.shuffle!(scripts)

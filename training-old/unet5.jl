@@ -1,5 +1,5 @@
 """
-LibFluxML.Learn!()
+LibML.Learn!()
 Author: cirobr@GitHub
 Date: 02-Aug-2024
 """
@@ -49,8 +49,8 @@ using MLUtils: splitobs, kfolds, obsview, ObsView
 using TinyMachines; const tm=TinyMachines
 using PreprocessingImages; const p=PreprocessingImages
 using PascalVocTools; const pv=PascalVocTools
-using LibFluxML
-import LibFluxML: IoU_loss, ce1_loss, ce3_loss, cosine_loss, softloss
+using LibML
+import LibML: IoU_loss, ce1_loss, ce3_loss, cosine_loss, softloss
 using LibCUDA
 # include("../architectures.jl")
 
@@ -70,7 +70,7 @@ outputfolder = script_name[1:end-3] * "/"
 # pwd(), homedir()
 workpath = pwd() * "/"
 workpath = replace(workpath, homedir() => "~")
-datasetpath = "~/projects/knowledge-distillation/dataset/"
+datasetpath = "../dataset/"
 # mkpath(expanduser(datasetpath))   # it should already exist
 
 modelspath  = workpath * "models/" * outputfolder
@@ -167,9 +167,9 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = UNet4(3,C; activation=leakyrelu, alpha=1, verbose=false)
+modelcpu = UNet5(3,C; activation=leakyrelu, alpha=1, verbose=false)
 # fpfn = expanduser("")
-# LibFluxML.loadModelState!(fpfn, modelcpu)
+# LibML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
 @info "model OK"
 
@@ -181,7 +181,7 @@ model    = modelcpu |> gpu;
 
 
 # loss functions
-lossFunction(yhat, y) = LibFluxML.IoU_loss(yhat, y)
+lossFunction(yhat, y) = LibML.IoU_loss(yhat, y)
 lossfns = [lossFunction]
 @info "loss functions OK"
 
@@ -205,15 +205,15 @@ optimizerState = Flux.setup(modelOptimizer, model)
 number_since_best = 20
 patience = 5
 metrics = [
-      LibFluxML.AccScore,
-      LibFluxML.F1Score,
-      LibFluxML.IoUScore,
+      LibML.AccScore,
+      LibML.F1Score,
+      LibML.IoUScore,
       # Flux.mse,
-      # LibFluxML.ce3_loss,
+      # LibML.ce3_loss,
 ]
 
 Random.seed!(1234)   # to enforce reproducibility
-LibFluxML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
+LibML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
       metrics=metrics,
       earlystops=(number_since_best, patience),
       modelspath=modelspath * "train/",
@@ -228,7 +228,7 @@ mv(fpfn, expanduser(modelspath) * "train/bestmodel.jld2", force=true)
 # ### tuning
 # @info "start tuning ..."
 # fpfn = expanduser(modelspath) * "train/bestmodel.jld2"
-# LibFluxML.loadModelState!(fpfn, modelcpu)
+# LibML.loadModelState!(fpfn, modelcpu)
 # model = modelcpu |> gpu
 
 # Flux.thaw!(optimizerState)
@@ -236,7 +236,7 @@ mv(fpfn, expanduser(modelspath) * "train/bestmodel.jld2", force=true)
 # @info "optimizer adjusted"
 
 # Random.seed!(1234)   # to enforce reproducibility
-# LibFluxML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
+# LibML.Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
 #       metrics=metrics,
 #       earlystops=(number_since_best, patience),
 #       modelspath=modelspath * "tune/",
