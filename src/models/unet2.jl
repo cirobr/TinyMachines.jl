@@ -59,7 +59,8 @@ function (m::UNet2)(x)
     dec0 = m.dec[2](dec1)
 
     yhat         = m.dec[end](dec0)
-    feature_maps = [enc1, enc2, dec1, dec0]
+    feature_maps = [enc1, enc2,    # encoder [1:2]
+                    dec1, dec0]    # decoder [3:4]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output

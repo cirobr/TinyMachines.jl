@@ -84,7 +84,8 @@ function (m::MobileUNet)(x)
 
     # output
     yhat = m.ir[end](l9)
-    feature_maps = [x1, x2, x3, x4, x5, l1, l2, l3, l4, l5, l6, l7, l8, l9]
+    feature_maps = [x1, x2, x3, x4, x5,                   # encoder [1:5]
+                    l1, l2, l3, l4, l5, l6, l7, l8, l9]   # decoder [6:14]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output

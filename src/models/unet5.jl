@@ -106,7 +106,8 @@ function (m::UNet5)(x)
     dec0 = m.dec[5](dec1)
 
     yhat         = m.dec[end](dec0)
-    feature_maps = [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, dec0]
+    feature_maps = [enc1, enc2, enc3, enc4, enc5,   # encoder [1:5]
+                    dec4, dec3, dec2, dec1, dec0]   # decoder [6:10]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output

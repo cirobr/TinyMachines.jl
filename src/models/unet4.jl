@@ -89,7 +89,8 @@ function (m::UNet4)(x)
     dec0 = m.dec[4](dec1)
 
     yhat         = m.dec[end](dec0)
-    feature_maps = [enc1, enc2, enc3, enc4, dec3, dec2, dec1, dec0]
+    feature_maps = [enc1, enc2, enc3, enc4,   # encoder [1:4] 
+                    dec3, dec2, dec1, dec0]   # decoder [5:8]
 
     if m.verbose   return yhat, feature_maps   # feature maps output
     else           return yhat                 # model output
