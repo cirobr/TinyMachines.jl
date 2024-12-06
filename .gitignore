@@ -1,8 +1,5 @@
 /Manifest.toml
 .vscode/
-dataset/**/*.png
-dataset/**/*.jpg
-dataset/**/*.jpeg
-training/models/
-training-old/models/
+dataset/
 dev/
+training/models/
