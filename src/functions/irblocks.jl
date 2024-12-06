@@ -39,8 +39,10 @@ end
 # bottleneck block
 function bottleneck_block(ch_in::Int, ch_out::Int; stride::Int=1, expansion_factor::Int=6, n::Int=1)
     @assert stride ∈ [1, 2] || error("stride must be 1 or 2")
-    model_in = stride == 1 ? irblock1(ch_in, ch_out, expansion_factor) : irblock2(ch_in, ch_out, expansion_factor)
-    model_chain = [irblock1(ch_out, ch_out, expansion_factor) for i in 1:n-1]
+    model_in = (stride == 1) ?
+                irblock1(ch_in, ch_out, expansion_factor) :   # stride 1
+                irblock2(ch_in, ch_out, expansion_factor)     # stride 2
+    model_chain = [irblock1(ch_out, ch_out, expansion_factor) for _ in 1:n-1]
 
-    return n == 1 ? model_in : Chain(model_in, model_chain...)
+    return (n == 1) ? model_in : Chain(model_in, model_chain...)
 end
