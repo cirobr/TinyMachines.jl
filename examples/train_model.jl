@@ -1,24 +1,25 @@
 """
 LibFluxML.Learn!()
 Author: cirobr@GitHub
-Date: 02-Sep-2024
+Date: 10-Dec-2024
 """
 
 @info "Project start"
 cd(@__DIR__)
 
-### arguments
+### CLI arguments
 # cudadevice = parse(Int64, ARGS[1])
 # nepochs    = parse(Int64, ARGS[2])
 # debugflag  = parse(Bool,  ARGS[3])
 
-# cudadevice = 0
-# nepochs    = 400
-# debugflag  = true
+### code arguments
+cudadevice = 0
+nepochs    = 400
+debugflag  = true
 
 script_name = basename(@__FILE__)
 @info "script_name: $script_name"
-# @info "cudadevice: $cudadevice"
+@info "cudadevice: $cudadevice"
 @info "nepochs: $nepochs"
 @info "debugflag: $debugflag"
 
@@ -29,29 +30,24 @@ envpath = expanduser("~/envs/dev/")
 Pkg.activate(envpath)
 
 using CUDA
-# CUDA.device!(cudadevice)
+CUDA.device!(cudadevice)
 # CUDA.versioninfo()
 
 using Flux
-import Flux: relu, leakyrelu
+import Flux: leakyrelu
 using Images
 using DataFrames
 using CSV
 using JLD2
 using FLoops
 using Random
-using Statistics: mean, minimum, maximum, norm
-using StatsBase: sample
-using MLUtils: splitobs, kfolds, obsview, ObsView
 
 # private libs
 using TinyMachines; const tm=TinyMachines
-using LibMetalhead
 using PreprocessingImages; const p=PreprocessingImages
 using PascalVocTools; const pv=PascalVocTools
 using LibFluxML
-import LibFluxML: IoU_loss, ce1_loss, ce3_loss, cosine_loss, softloss,
-                  AccScore, F1Score, IoUScore
+import LibFluxML: IoU_loss, AccScore, F1Score, IoUScore
 using LibCUDA
 
 LibCUDA.cleangpu()
@@ -95,6 +91,7 @@ dftrain = dftrain[dftrain.segmented .== 1,:]
 fpfn = expanduser(datasetpath) * "dfvalid-coi-resized.csv"
 dfvalid = CSV.read(fpfn, DataFrame)
 dfvalid = dfvalid[dfvalid.segmented .== 1,:]
+@info "datasets OK"
 
 
 ########### debug ############
@@ -110,36 +107,41 @@ end
 ##############################
 
 
-train_images = []
-valid_images = []
-train_masks  = []
-valid_masks  = []
-dfs = [dftrain, dfvalid]
-Xs  = [train_images, valid_images]
-ys  = [train_masks, valid_masks]
+# create tensors
+@info "creating tensors..."
+Xtr = Images.load(expanduser(dftrain.X[1]))
+dims = size(Xtr)
+Ntrain = size(dftrain, 1)
+Nvalid = size(dfvalid, 1)
 
-@floop for (df, X, y) in zip(dfs, Xs, ys)
+Xtrain = Array{Float32, 4}(undef, (dims...,3,Ntrain))
+ytrain = Array{Bool, 4}(undef, (dims...,C,Ntrain))
+Xvalid = Array{Float32, 4}(undef, (dims...,3,Nvalid))
+yvalid = Array{Bool, 4}(undef, (dims...,C,Nvalid))
+
+dfs = [dftrain, dfvalid]
+Xouts = [Xtrain, Xvalid]
+youts = [ytrain, yvalid]
+
+for (df, Xout, yout) in zip(dfs, Xouts, youts)   # no @floop here
       N = size(df, 1)
-      for i in 1:N   # no @floop here
+      @floop for i in 1:N
             local fpfn = expanduser(df.X[i])
             img = Images.load(fpfn)
             img = p.color2Float32(img)
-            push!(X, img)
+            Xout[:,:,:,i] = img
 
             local fpfn = expanduser(df.y[i])
-            local mask = Images.load(fpfn)
-            local mask = pv.voc_rgb2classes(mask)
-            local mask = Flux.onehotbatch(mask, [0,classnumbers...],0)
-            local mask = permutedims(mask, (2,3,1))
-            push!(y, mask)
+            mask = Images.load(fpfn)
+            # mask = p.gray2Int32(mask)
+            mask = pv.voc_rgb2classes(mask)
+            mask = Flux.onehotbatch(mask, [0,classnumbers...],0)
+            mask = permutedims(mask, (2,3,1)) .|> Bool
+            yout[:,:,:,i] = mask
       end
 end
-
-Xtrain = cat(train_images...; dims=4); train_images=nothing
-ytrain = cat(train_masks...; dims=4);  train_masks=nothing
-Xvalid = cat(valid_images...; dims=4); valid_images=nothing
-yvalid = cat(valid_masks...; dims=4);  valid_masks=nothing
 @info "tensors OK"
+
 
 # dataloaders
 Random.seed!(1234)   # to enforce reproducibility
@@ -167,7 +169,12 @@ LibCUDA.cleangpu()
 
 ### model
 Random.seed!(1234)   # to enforce reproducibility
-modelcpu = MobileUNet(3,C; verbose=false)
+modelcpu = UNet2(3,C; activation=leakyrelu, alpha=1, verbose=false)
+# modelcpu = UNet4(3,C; activation=leakyrelu, alpha=1, verbose=false)
+# modelcpu = UNet5(3,C; activation=leakyrelu, alpha=1, verbose=false)
+# modelcpu = MobileUNet(3,C; verbose=false)
+# modelcpu = ESPnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
+
 # fpfn = expanduser("")
 # LibFluxML.loadModelState!(fpfn, modelcpu)
 model    = modelcpu |> gpu;
@@ -190,10 +197,9 @@ lossfns = [lossFunction]
 optimizerFunction = Flux.Adam
 η = 1e-4
 λ = 0.0      # default 5e-4
-# _, optimizerFunction, η, λ = hypertuning["unet4"]
-modelOptimizer = λ > 0 ? Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) : optimizerFunction(η)
-
-
+modelOptimizer = (λ > 0) ? 
+                  Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) :
+                  optimizerFunction(η)
 optimizerState = Flux.setup(modelOptimizer, model)
 # Flux.freeze!(optimizerState.enc)
 @info "optimizer OK"
@@ -202,7 +208,7 @@ optimizerState = Flux.setup(modelOptimizer, model)
 ### training
 @info "start training ..."
 
-number_since_best = 20
+number_since_best = 10
 patience = 5
 metrics = [
       AccScore,

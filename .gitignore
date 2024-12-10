@@ -1,5 +1,4 @@
 /Manifest.toml
 .vscode/
-dataset/
-dev/
-training/models/
+examples/models/
+examples/tblogs/

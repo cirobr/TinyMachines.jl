@@ -42,6 +42,7 @@ cd(@__DIR__)
 @everywhere nepochs = 10
 @everywhere debugflag = false
 scripts = [
+    "train.jl",
     "unet2.jl",
     "unet4.jl",
     "unet5.jl",
