@@ -14,10 +14,10 @@ using Random
 using Distributed
 using CUDA
 
-
 @show Threads.nthreads()   # number of available threads
 display(devices())         # list of available GPUs
 @show workers()            # list of active workers (only Main process is active)
+
 
 wpd = 1   # workers per device (gpu) multiplier
 addprocs(wpd * length(devices()))
@@ -39,13 +39,13 @@ end
 
 # setup scripts to be executed
 cd(@__DIR__)
-@everywhere nepochs = 400
+@everywhere nepochs = 10
 @everywhere debugflag = false
 scripts = [
-    # "unet2.jl",
-    # "unet4.jl",
-    # "unet5.jl",
-    # "mobileunet.jl",
+    "unet2.jl",
+    "unet4.jl",
+    "unet5.jl",
+    "mobileunet.jl",
     "espnet.jl",
 ]
 scripts = pwd() * "/" .* scripts
