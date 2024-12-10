@@ -1,20 +1,9 @@
-"""
-LibFluxML.Learn!()
-Author: cirobr@GitHub
-Date: 10-Dec-2024
-"""
-
 @info "Project start"
 cd(@__DIR__)
 
-### CLI arguments
-# cudadevice = parse(Int64, ARGS[1])
-# nepochs    = parse(Int64, ARGS[2])
-# debugflag  = parse(Bool,  ARGS[3])
-
 ### code arguments
 cudadevice = 0
-nepochs    = 400
+nepochs    = 10
 debugflag  = true
 
 script_name = basename(@__FILE__)
@@ -31,7 +20,6 @@ Pkg.activate(envpath)
 
 using CUDA
 CUDA.device!(cudadevice)
-# CUDA.versioninfo()
 
 using Flux
 import Flux: leakyrelu
@@ -41,16 +29,11 @@ using CSV
 using JLD2
 using FLoops
 using Random
+using Statistics: mean
 
 # private libs
 using TinyMachines; const tm=TinyMachines
-using PreprocessingImages; const p=PreprocessingImages
-using PascalVocTools; const pv=PascalVocTools
-using LibFluxML
-import LibFluxML: IoU_loss, AccScore, F1Score, IoUScore
-using LibCUDA
-
-LibCUDA.cleangpu()
+using PascalVocTools; const pv=PascalVocTools   # https://github.com/cirobr/PascalVocTools.jl
 @info "environment OK"
 
 
@@ -68,13 +51,6 @@ workpath = pwd() * "/"
 workpath = replace(workpath, homedir() => "~")
 datasetpath = "~/projects/knowledge-distillation/dataset/"
 # mkpath(expanduser(datasetpath))   # it should already exist
-
-modelspath  = workpath * "models/" * outputfolder
-mkpath(expanduser(modelspath))
-
-tblogspath  = workpath * "tblogs/" * outputfolder
-rm(tblogspath; force=true, recursive=true); sleep(1)   # sleep to ensure removal
-mkpath(expanduser(tblogspath))
 @info "folders OK"
 
 
@@ -113,7 +89,6 @@ Xtr = Images.load(expanduser(dftrain.X[1]))
 dims = size(Xtr)
 Ntrain = size(dftrain, 1)
 Nvalid = size(dfvalid, 1)
-
 Xtrain = Array{Float32, 4}(undef, (dims...,3,Ntrain))
 ytrain = Array{Bool, 4}(undef, (dims...,C,Ntrain))
 Xvalid = Array{Float32, 4}(undef, (dims...,3,Nvalid))
@@ -128,12 +103,11 @@ for (df, Xout, yout) in zip(dfs, Xouts, youts)   # no @floop here
       @floop for i in 1:N
             local fpfn = expanduser(df.X[i])
             img = Images.load(fpfn)
-            img = p.color2Float32(img)
+            img = img |> channelview |> x -> permutedims(x, (2,3,1)) .|> Float32
             Xout[:,:,:,i] = img
 
             local fpfn = expanduser(df.y[i])
             mask = Images.load(fpfn)
-            # mask = p.gray2Int32(mask)
             mask = pv.voc_rgb2classes(mask)
             mask = Flux.onehotbatch(mask, [0,classnumbers...],0)
             mask = permutedims(mask, (2,3,1)) .|> Bool
@@ -146,11 +120,9 @@ end
 # dataloaders
 Random.seed!(1234)   # to enforce reproducibility
 trainset = Flux.DataLoader((Xtrain, ytrain),
-                            batchsize=minibatchsize,
-                            shuffle=true) |> gpu
-validset = Flux.DataLoader((Xvalid, yvalid),
-                            batchsize=1,
-                            shuffle=false) |> gpu
+                              batchsize=minibatchsize,
+                              shuffle=true) |> gpu
+validset = Flux.DataLoader((Xvalid, yvalid)) |> gpu
 @info "dataloader OK"
 
 
@@ -164,9 +136,6 @@ dpGB = dpsize / GB
 @info "datapoints in 1 GB = $(1 / dpGB)"
 
 
-LibCUDA.cleangpu()
-
-
 ### model
 Random.seed!(1234)   # to enforce reproducibility
 modelcpu = UNet2(3,C; activation=leakyrelu, alpha=1, verbose=false)
@@ -175,9 +144,7 @@ modelcpu = UNet2(3,C; activation=leakyrelu, alpha=1, verbose=false)
 # modelcpu = MobileUNet(3,C; verbose=false)
 # modelcpu = ESPnet(3,2; activation=leakyrelu, alpha2=3, alpha3=4, verbose=false)
 
-# fpfn = expanduser("")
-# LibFluxML.loadModelState!(fpfn, modelcpu)
-model    = modelcpu |> gpu;
+model = modelcpu |> gpu
 @info "model OK"
 
 
@@ -187,48 +154,28 @@ model    = modelcpu |> gpu;
 ###
 
 
-# loss functions
-lossFunction(yhat, y) = IoU_loss(yhat, y)
-lossfns = [lossFunction]
-@info "loss functions OK"
+# loss function
+loss(m, X, y) = Flux.crossentropy(m(X), y, dims=3)   # m is the first argument
+@info "loss function OK"
 
 
 # optimizer
-optimizerFunction = Flux.Adam
-η = 1e-4
-λ = 0.0      # default 5e-4
-modelOptimizer = (λ > 0) ? 
-                  Flux.Optimiser(WeightDecay(λ), optimizerFunction(η)) :
-                  optimizerFunction(η)
-optimizerState = Flux.setup(modelOptimizer, model)
-# Flux.freeze!(optimizerState.enc)
+opt = Flux.Adam()
+opt_state = Flux.setup(opt, model)
 @info "optimizer OK"
 
 
 ### training
 @info "start training ..."
-
-number_since_best = 10
-patience = 5
-metrics = [
-      AccScore,
-      F1Score,
-      IoUScore,
-]
-
 Random.seed!(1234)   # to enforce reproducibility
-Learn!(epochs, model, (trainset, validset), optimizerState, lossfns;
-      metrics=metrics,
-      earlystops=(number_since_best, patience),
-      modelspath=modelspath * "train/",
-      tblogspath=tblogspath * "train/"
-)
+validloss = Vector{Float32}(undef, length(validset))
 
-fpfn = expanduser(modelspath) * "train/model.jld2"
-mv(fpfn, expanduser(modelspath) * "train/bestmodel.jld2", force=true)
-@info "training OK"
+for i in 1:epochs
+      Flux.train!(loss, model, trainset, opt_state)
 
-
-
-LibCUDA.cleangpu()
+      for (i, (X,y)) in enumerate(validset)
+            validloss[i] = loss(model, X, y)
+      end
+      @info "epoch $i, loss = $(mean(validloss))"
+end
 @info "project finished"
