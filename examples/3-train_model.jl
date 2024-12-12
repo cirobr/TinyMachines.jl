@@ -49,7 +49,7 @@ outputfolder = script_name[1:end-3] * "/"
 # pwd(), homedir()
 workpath = pwd() * "/"
 workpath = replace(workpath, homedir() => "~")
-datasetpath = "~/projects/knowledge-distillation/dataset/"
+datasetpath = workpath
 # mkpath(expanduser(datasetpath))   # it should already exist
 @info "folders OK"
 
@@ -60,13 +60,11 @@ classnames   = ["cow"]   #["cat", "cow", "dog", "horse", "sheep"]
 classnumbers = [pv.voc_classname2classnumber[classname] for classname in classnames]
 C = length(classnumbers) + 1
 
-fpfn = expanduser(datasetpath) * "dftrain-coi-resized.csv"
+fpfn = expanduser(datasetpath) * "dftrain-resized.csv"
 dftrain = CSV.read(fpfn, DataFrame)
-dftrain = dftrain[dftrain.segmented .== 1,:]
 
-fpfn = expanduser(datasetpath) * "dfvalid-coi-resized.csv"
+fpfn = expanduser(datasetpath) * "dfvalid-resized.csv"
 dfvalid = CSV.read(fpfn, DataFrame)
-dfvalid = dfvalid[dfvalid.segmented .== 1,:]
 @info "datasets OK"
 
 
