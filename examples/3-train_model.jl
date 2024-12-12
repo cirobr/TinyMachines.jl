@@ -99,12 +99,12 @@ youts = [ytrain, yvalid]
 for (df, Xout, yout) in zip(dfs, Xouts, youts)   # no @floop here
       N = size(df, 1)
       @floop for i in 1:N
-            local fpfn = expanduser(df.X[i])
+            fpfn = expanduser(df.X[i])
             img = Images.load(fpfn)
             img = img |> channelview |> x -> permutedims(x, (2,3,1)) .|> Float32
             Xout[:,:,:,i] = img
 
-            local fpfn = expanduser(df.y[i])
+            fpfn = expanduser(df.y[i])
             mask = Images.load(fpfn)
             mask = pv.voc_rgb2classes(mask)
             mask = Flux.onehotbatch(mask, [0,classnumbers...],0)
