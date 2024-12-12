@@ -40,7 +40,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### v0.0.18
 * Fix compatibility with Flux v0.15.
-* Added an examples folder.
+* Added examples folder.
 
 ### v0.0.17
 * U-Net feature outputs are revised such that the second conv 3x3 at each encoder/decoder level is finalized with BatchNorm() and a nonlinearity.
