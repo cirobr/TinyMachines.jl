@@ -3,7 +3,6 @@ m = tm.ESPModule1(3, 2, relu; stride=1, add=false)
 yhat = m(x)
 @test size(yhat) == (256,256,2,1) || @error "size(yhat) == $(size(yhat))"
 
-
 m = tm.ESPModule1(3, 3, relu; stride=1, add=true)
 yhat = m(x)
 @test size(yhat) == (256,256,3,1) || @error "size(yhat) == $(size(yhat))"

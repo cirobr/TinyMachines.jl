@@ -1,4 +1,3 @@
-# add similar testing for p-relu
 x = rand(Float32, (256,256,3,1))
 m = ESPnet(3,2; activation=relu)
 yhat = m(x)
