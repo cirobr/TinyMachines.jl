@@ -1,8 +1,7 @@
 using TinyMachines; tm=TinyMachines
-using Flux
-import Flux: relu
-using Random
 using Test
+using Flux; import Flux: relu
+using Random
 
 Random.seed!(1234)
 x3 = randn(Float32, (256,256,3,1))
