@@ -39,15 +39,15 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 ### Versions:
 
 ### v0.0.19
-* Added compatibility to Flux v0.16.
+* Added compatibility with Flux v0.16.
 
 ### v0.0.18
-* Added compatibility to Flux v0.15.
+* Added compatibility with Flux v0.15.
 * Added examples folder.
 
 ### v0.0.17
 * U-Net feature outputs are revised such that the second conv 3x3 at each encoder/decoder level is finalized with BatchNorm() and a nonlinearity.
-* Compatibility frozen at Flux = v0.14.17
+* Compatibility frozen with Flux = v0.14.17
 
 ### v0.0.16
 * Added features output to ESPNet
@@ -59,7 +59,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### v0.0.12
 * Largely improved MobileUNet.
-* Compatibility frozen at Flux = v0.14.16
+* Compatibility frozen with Flux = v0.14.16
 
 ### v0.0.11
 * Intermediate features, besides model output, are made avaliable at UNets.
