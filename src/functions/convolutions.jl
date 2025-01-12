@@ -27,7 +27,7 @@ end
 
 function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
                 stride::Int=1)
-    # if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
+    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
     
     return Conv((3,3), ch_in => ch_out, activation;
@@ -47,7 +47,7 @@ end
 
 function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity;
                       stride::Int=1)
-    # if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
+    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w2 * ch_in)
     
     return ConvTranspose((2,2), ch_in => ch_out, activation;
@@ -79,7 +79,7 @@ MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)
 function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
                        stride::Int=1,
                        dilation::Int=1)
-    # if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
+    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
 
     return Conv((3,3), ch_in => ch_out, activation;

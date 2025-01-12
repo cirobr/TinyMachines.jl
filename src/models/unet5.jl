@@ -1,7 +1,7 @@
 struct UNet5
-    enc::Chain
-    upc::Chain
-    dec::Chain
+    enc #::Chain
+    upc #::Chain
+    dec #::Chain
     verbose::Bool
 end
 @layer UNet5 trainable=(enc, upc, dec)
@@ -12,7 +12,7 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                verbose::Bool = false,         # output feature maps
 )
 
-    chs::Vector{Int64} = defaultChannels .÷ alpha
+    chs = defaultChannels .÷ alpha
 
     # contracting path
     c1 = cb(ch_in, chs[1], activation)
@@ -25,14 +25,14 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     c5 = Chain(c5, Dropout(0.25))
 
     # up convolutions
-    # u4 = ConvTranspK2(chs[5], chs[4], activation; stride=2)
-    # u3 = ConvTranspK2(chs[4], chs[3], activation; stride=2)
-    # u2 = ConvTranspK2(chs[3], chs[2], activation; stride=2)
-    # u1 = ConvTranspK2(chs[2], chs[1], activation; stride=2)
-    u4 = UpBlock(chs[5], chs[4], activation)
-    u3 = UpBlock(chs[4], chs[3], activation)
-    u2 = UpBlock(chs[3], chs[2], activation)
-    u1 = UpBlock(chs[2], chs[1], activation)
+    u4 = ConvTranspK2(chs[5], chs[4], activation; stride=2)
+    u3 = ConvTranspK2(chs[4], chs[3], activation; stride=2)
+    u2 = ConvTranspK2(chs[3], chs[2], activation; stride=2)
+    u1 = ConvTranspK2(chs[2], chs[1], activation; stride=2)
+    # u4 = UpBlock(chs[5], chs[4], activation)
+    # u3 = UpBlock(chs[4], chs[3], activation)
+    # u2 = UpBlock(chs[3], chs[2], activation)
+    # u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
     e4 = cb(chs[5], chs[4], activation)
@@ -61,24 +61,20 @@ function (m::UNet5)(x)
     enc4 = m.enc[:c4](enc3)
     enc5 = m.enc[:c5](enc4)
 
-    # up4 = m.upc[:u4](enc5)
-    # cat4 = cat(enc4, up4; dims=3)   # cat: high allocation source ???
-    cat4 = m.upc[:u4](enc5, enc4)
+    up4 = m.upc[:u4](enc5)
+    cat4 = cat(enc4, up4; dims=3)   # cat: allocation source ???
     dec4 = m.dec[:e4](cat4)
 
-    # up3 = m.upc[:u3](dec4)
-    # cat3 = cat(enc3, up3; dims=3)
-    cat3 = m.upc[:u3](dec4, enc3)
+    up3 = m.upc[:u3](dec4)
+    cat3 = cat(enc3, up3; dims=3)
     dec3 = m.dec[:e3](cat3)
     
-    # up2 = m.upc[:u2](dec3)
-    # cat2 = cat(enc2, up2; dims=3)
-    cat2 = m.upc[:u2](dec3, enc2)
+    up2 = m.upc[:u2](dec3)
+    cat2 = cat(enc2, up2; dims=3)
     dec2 = m.dec[:e2](cat2)
 
-    # up1 = m.upc[:u1](dec2)
-    # cat1 = cat(enc1, up1; dims=3)
-    cat1 = m.upc[:u1](dec2, enc1)
+    up1 = m.upc[:u1](dec2)
+    cat1 = cat(enc1, up1; dims=3)
     dec1 = m.dec[:e1](cat1)
 
     dec0 = m.dec[:e0](dec1)
