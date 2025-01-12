@@ -18,11 +18,11 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     c1 = cb(ch_in, chs[1], activation)
     c2 = mcb(chs[1], chs[2], activation)
     c3 = mcb(chs[2], chs[3], activation)
-    # c3 = Chain(c3, Dropout(0.1))
+    c3 = Chain(c3, Dropout(0.1))
     c4 = mcb(chs[3], chs[4], activation)
-    # c4 = Chain(c4, Dropout(0.2))
+    c4 = Chain(c4, Dropout(0.2))
     c5 = mcb(chs[4], chs[5], activation)
-    # c5 = Chain(c5, Dropout(0.25))
+    c5 = Chain(c5, Dropout(0.25))
 
     # up convolutions
     u4 = ConvTranspK2(chs[5], chs[4], activation; stride=2)
@@ -32,9 +32,9 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
     # expansive path
     e4 = cb(chs[5], chs[4], activation)
-    # e4 = Chain(e4, Dropout(0.2))
+    e4 = Chain(e4, Dropout(0.2))
     e3 = cb(chs[4], chs[3], activation)
-    # e3 = Chain(e3, Dropout(0.1))
+    e3 = Chain(e3, Dropout(0.1))
     e2 = cb(chs[3], chs[2], activation)
     e1 = cb(chs[2], chs[1], activation)
     
