@@ -27,7 +27,7 @@ end
 
 function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
                 stride::Int=1)
-    if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
+    # if stride ∉ [1,2]   return error("Stride must be 1 or 2.")   end
     kgain = kf * √(w3 * ch_in)
     
     return Conv((3,3), ch_in => ch_out, activation;
