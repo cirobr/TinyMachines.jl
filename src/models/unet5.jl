@@ -12,7 +12,7 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                verbose::Bool = false,         # output feature maps
 )
 
-    chs = defaultChannels .÷ alpha
+    const chs = defaultChannels .÷ alpha
 
     # contracting path
     c1 = cb(ch_in, chs[1], activation)
