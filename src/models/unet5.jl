@@ -51,7 +51,7 @@ end
 
 
 function (m::UNet5)(x)
-    enc1::Array{Float32,4} = m.enc[:c1](x)
+    enc1 = m.enc[:c1](x)
     enc2 = m.enc[:c2](enc1)
     enc3 = m.enc[:c3](enc2)
     enc4 = m.enc[:c4](enc3)
