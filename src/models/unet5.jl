@@ -4,7 +4,7 @@ struct UNet5
     dec #::Chain
     verbose::Bool
 end
-@layer UNet5 trainable=(enc, upc, dec)
+@layer UNet5 #trainable=(enc, upc, dec)
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                activation    = relu,          # activation function
