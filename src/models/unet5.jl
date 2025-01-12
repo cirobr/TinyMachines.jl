@@ -1,8 +1,8 @@
 struct UNet5
-    enc::Chain
-    upc::Chain
-    dec::Chain
-    verbose::Bool
+    enc     #::Chain
+    upc     #::Chain
+    dec     #::Chain
+    verbose #::Bool
 end
 @layer UNet5 trainable=(enc, upc, dec)
 
