@@ -83,7 +83,3 @@ function (m::UNet5)(x)
     else           return yhat                 # model output
     end
 end
-
-function Base.show()
-    println("UNet:")
-end
