@@ -50,7 +50,7 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 end
 
 
-function (m::UNet5)(x)
+function (m::UNet5)(x::AbstractArray)
     enc1 = m.enc[:c1](x)
     enc2 = m.enc[:c2](enc1)
     enc3 = m.enc[:c3](enc2)
