@@ -84,6 +84,6 @@ function (m::UNet5)(x)
     end
 end
 
-function Base.show(io::IO, u::UNet5)
-    println(io, "UNet:")
+function Base.show()
+    println("UNet:")
 end
