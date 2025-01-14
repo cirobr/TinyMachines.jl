@@ -6,14 +6,14 @@
 
 A collection of tiny machine learning models for semantic segmentation of images on IoT devices, written in Flux.jl
 
-### UNet5, UNet4
+## UNet5, UNet4
 
 UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4 has four. Number of channels can be modulated to increase/decrease size.
 
 The standard implementation follows the paper "U-Net: Convolutional Networks for Biomedical Image Segmentation" ([arXiv](https://arxiv.org/abs/1505.04597)). Paper credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
 
 
-### MobileUNet
+## MobileUNet
 
 Mobile-Unet has the same encoder structure as the Mobilenet-V2 classification model, and the same u-shape and skip connection principles as the U-Net.
 
@@ -22,13 +22,13 @@ Implementation follows the following papers:
 * MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Paper credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
 
 
-### ESPNet
+## ESPNet
 ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity (replaced by ReLU in this implementation).
 
 Implementation follows the paper "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Paper credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
 
 
-### Credits
+## Credits
 Credits for the original architectures go to the papers' authors, as aforementioned.
 
 Credits for the implementations in Julia/Flux go to Ciro B Rosa.
@@ -36,7 +36,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
 
 
-### General syntax:
+## General syntax:
 
 With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
 
@@ -59,18 +59,45 @@ UNet5() has internally five encoder/decoder stages, each of them delivering feat
 
 Parameter "alpha" reduces number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
 
-Parameter "verbose" == false delivers output mask with same (H,W) size as input images. Parameter "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
+Parameter "verbose" == false delivers output mask with same (H,W) size as input images.
+
+Parameter "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
 
     verbose == false => y_hat
-    verbose == true => [yhat, [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, logits]]
+    verbose == true  => [ yhat, [encoder[1:5] - decoder[6:9] - logits[10]] ] (UNet5)
+    verbose == true  => [ yhat, [encoder[1:4] - decoder[5:7] - logits[8]] ]  (UNet4)
 
 
-### Versions:
+### MobileUnet syntax:
+
+    MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+        verbose::Bool = false,                # output feature maps
+    )
+
+    verbose == false => y_hat
+    verbose == true => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
+
+
+### ESPNet syntax:
+
+    ESPnet(ch_in::Int=3, ch_out::Int=1;     # input/output channels
+        activation=relu,                    # activation function
+        alpha2::Int=2, alpha3::Int=3,       # modulation of encoder's expansive blocks
+        verbose::Bool=false,                # output feature maps
+    )
+
+Parameters alpha2 and alpha3 are moulation parameters of encoder's expansive blocks. User shall refer to original article for details.
+
+    verbose == false => y_hat
+    verbose == true => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
+
+
+## Versions:
 
 ### v0.1.0
-* First public version
-* Cleaned up code
-* UNet2 removed
+* First public version.
+* Cleaned up code.
+* UNet2 removed.
 
 ### v0.0.19
 * Added compatibility with Flux v0.16.
