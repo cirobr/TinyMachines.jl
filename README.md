@@ -40,11 +40,11 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
 
-        model = UNet5()
+    model = UNet5()
 
 If ch_out > 1, output mask activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
 
-        model = UNet5(3,2)
+    model = UNet5(3,2)
 
 ### UNet5, UNet4 syntax:
 
@@ -55,9 +55,9 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
     )
 
 
-UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.\\
+UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.
 
-Parameter \textit{"alpha"} reduces number of internal channels proportionally. For instance, \textit{"alpha"} == 2 delivers [32, 64, 128, 256, 512] channels
+Parameter "alpha" reduces number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
 
 Parameter \textit{"verbose"} == false delivers output mask with same (H,W) size as input images. Parameter \textit{"verbose"} == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.\\
 
