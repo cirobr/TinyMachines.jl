@@ -73,9 +73,6 @@ function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
 end
 
 
-# MaxPoolK2 = MaxPool((2,2); pad=0, stride=2)
-
-
 function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
                        stride::Int=1,
                        dilation::Int=1)
