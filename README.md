@@ -60,11 +60,11 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.
 
-Parameter "alpha" reduces number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
+Argument "alpha" modulates the number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
 
-Parameter "verbose" == false delivers output mask with same (H,W) size as input images.
+Argument "verbose" == false delivers output mask with same (H,W) size as input images.
 
-Parameter "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
+Argument "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
 
     verbose == false => y_hat
     verbose == true  => [ yhat, [encoder[1:5] - decoder[6:9] - logits[10]] ] (UNet5)
@@ -78,7 +78,7 @@ Parameter "verbose" == true delivers a two-elements vector: first element is the
     )
 
     verbose == false => y_hat
-    verbose == true => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
+    verbose == true  => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
 
 
 ### ESPNet syntax:
@@ -89,10 +89,10 @@ Parameter "verbose" == true delivers a two-elements vector: first element is the
         verbose::Bool=false,                # output feature maps
     )
 
-Parameters alpha2 and alpha3 are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
+Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
 
     verbose == false => y_hat
-    verbose == true => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
+    verbose == true  => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
 
 
 ## Versions:
