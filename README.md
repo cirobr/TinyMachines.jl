@@ -6,6 +6,8 @@
 
 A collection of tiny machine learning models for semantic segmentation of images on IoT devices, written in Flux.jl.
 
+Besides regular masks, all models also deliver their internal feature maps as outputs, which are useful for model compression through knowledge distillation.
+
 
 ## UNet5, UNet4
 
