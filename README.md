@@ -4,7 +4,8 @@
 
 [![Build Status](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
-A collection of tiny machine learning models for semantic segmentation of images on IoT devices, written in Flux.jl
+A collection of tiny machine learning models for semantic segmentation of images on IoT devices, written in Flux.jl.
+
 
 ## UNet5, UNet4
 
@@ -36,7 +37,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * LinkedIn: https://www.linkedin.com/in/cirobrosa/
 
 
-## General syntax:
+## Syntax:
 
 With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
 
@@ -46,6 +47,7 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 
     model = UNet5(3,2)
 
+
 ### UNet5, UNet4 syntax:
 
     UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
@@ -53,7 +55,6 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
         alpha::Int    = 1,               # channels divider
         verbose::Bool = false,           # output feature maps
     )
-
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.
 
