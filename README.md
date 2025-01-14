@@ -48,10 +48,12 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 
 ### UNet5, UNet4 syntax:
 
-UNet5(ch_in::Int=3, ch_out::Int=1;            # input/output channels\\
+UNet5(ch_in::Int=3, ch_out::Int=1;            # input/output channels\\\
                activation    = relu,          # activation function\\
                alpha::Int    = 1,             # channels divider\\
                verbose::Bool = false,         # output feature maps\\
+)
+
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.\\
 
