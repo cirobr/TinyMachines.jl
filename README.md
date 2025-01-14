@@ -59,7 +59,10 @@ UNet5() has internally five encoder/decoder stages, each of them delivering feat
 
 Parameter "alpha" reduces number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
 
-Parameter \textit{"verbose"} == false delivers output mask with same (H,W) size as input images. Parameter \textit{"verbose"} == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.\\
+Parameter "verbose" == false delivers output mask with same (H,W) size as input images. Parameter "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
+
+    verbose == false => y_hat
+    verbose == true => [yhat, [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, logits]]
 
 
 ### Versions:
