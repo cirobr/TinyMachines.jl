@@ -38,13 +38,13 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ### General syntax:
 
-With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.\\
+With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
 
-model = UNet5()\\
+        model = UNet5()
 
-If ch_out > 1, output mask activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:\\
+If ch_out > 1, output mask activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
 
-model = UNet5(3,2)
+        model = UNet5(3,2)
 
 ### UNet5, UNet4 syntax:
 
