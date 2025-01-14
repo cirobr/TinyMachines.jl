@@ -1,7 +1,7 @@
 name = "TinyMachines"
 uuid = "5d0fdf5f-995e-4f1b-a9e8-363392c4fe32"
 authors = ["Ciro B Rosa <ciro.rosa@alumni.usp.br>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"

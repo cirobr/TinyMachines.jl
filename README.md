@@ -97,6 +97,9 @@ Parameters alpha2 and alpha3 are modulation parameters of encoder's expansive bl
 
 ## Versions:
 
+### v0.1.1
+* Added examples folder.
+
 ### v0.1.0
 * First public version.
 * Cleaned up code.
