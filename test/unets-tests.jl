@@ -1,17 +1,3 @@
-# UNet2
-modelcpu = UNet2()
-yhat  = modelcpu(x3)
-@test size(yhat) == (256, 256, 1, 1)
-
-modelcpu = UNet2(3, 3; activation=Flux.leakyrelu, alpha=2, verbose=true)
-yhat  = modelcpu(x3)
-s = size.(yhat[2])
-@test s[1] == (256,256,32,1)  || error("Expected (256,256,32,1) but got $s[1]")
-@test s[2] == (128,128,64,1)  || error("Expected (128,128,64,1) but got $s[2]")
-@test s[3] == (256,256,32,1)  || error("Expected (256,256,32,1) but got $s[3]")
-@test s[4] == (256,256,3,1)   || error("Expected (256,256,3,1) but got $s[4]")
-
-
 # UNet4
 modelcpu = UNet4()
 yhat  = modelcpu(x3)

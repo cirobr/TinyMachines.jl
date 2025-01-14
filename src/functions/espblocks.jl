@@ -1,21 +1,21 @@
-struct ESPModule1
+struct ESPBlock1
     pointwise
     dilated
     add::Bool
 end
-@layer ESPModule1 trainable=(pointwise, dilated)
+@layer ESPBlock1 trainable=(pointwise, dilated)
 
 
-struct ESPModule4
+struct ESPBlock4
     pointwise
     dilated
     add::Bool
 end
-@layer ESPModule4 trainable=(pointwise, dilated)
+@layer ESPBlock4 trainable=(pointwise, dilated)
 
 
 # downsampling modulated by stride
-function ESPModule1(ch_in::Int, ch_out::Int, activation=identity;
+function ESPBlock1(ch_in::Int, ch_out::Int, activation=identity;
                     stride::Int=1,
                     add::Bool=false)
     # K = 1
@@ -26,7 +26,7 @@ function ESPModule1(ch_in::Int, ch_out::Int, activation=identity;
     pointwise = ConvK1(ch_in, d, identity)
     dilated   = Chain(ConvK3(d, d, identity; stride=stride), BatchNorm(d, activation))
 
-    return ESPModule1(pointwise, dilated, add)
+    return ESPBlock1(pointwise, dilated, add)
 end
 
 
@@ -35,7 +35,7 @@ K = number of parallel dilated convolutions = height of pyramid
 d = number of input/output channels for all parallel dilated convolutions
 """
 # no downsampling
-function ESPModule4(ch_in::Int, ch_out::Int, activation=identity;
+function ESPBlock4(ch_in::Int, ch_out::Int, activation=identity;
                     add::Bool=false)
     K = 4
     if mod(ch_out, K) != 0   error("ch_out must be divisible by K")   end
@@ -51,11 +51,11 @@ function ESPModule4(ch_in::Int, ch_out::Int, activation=identity;
                for k in 1:K]
     dilated = Chain(dilated_vec...)
 
-    return ESPModule4(pointwise, dilated, add)
+    return ESPBlock4(pointwise, dilated, add)
 end
 
 
-function (m::ESPModule1)(x)
+function (m::ESPBlock1)(x)
     pw   = m.pointwise(x)                        # pointwise convolution
     yhat = m.dilated(pw)                         # dilated convolutions
     if m.add  yhat = x + yhat   end              # residual connection
@@ -63,7 +63,7 @@ function (m::ESPModule1)(x)
 end
 
 
-function (m::ESPModule4)(x)
+function (m::ESPBlock4)(x)
     pw = m.pointwise(x)                          # pointwise convolution
     
     sum1 = m.dilated[1](pw)                      # dilated convolutions
@@ -82,7 +82,7 @@ function (m::ESPModule4)(x)
 end
 
 
-function ESPModule4_alpha(ch::Int, activation=identity; alpha::Int=1)
-    chain = [ESPModule4(ch, ch, activation; add=true) for k in 1:alpha]
+function ESPBlock4_alpha(ch::Int, activation=identity; alpha::Int=1)
+    chain = [ESPBlock4(ch, ch, activation; add=true) for k in 1:alpha]
     return Chain(chain...)
 end

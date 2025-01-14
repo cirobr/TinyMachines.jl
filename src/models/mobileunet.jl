@@ -12,41 +12,41 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 )
     # encoder
     d1 = Chain( ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
-                bottleneck_block(32, 16, stride=1, expansion_factor=1, n=1),
+                BBlock(32, 16, stride=1, expansion_factor=1, n=1),
                 Dropout(0.05),
     )
 
-    d2 = Chain( bottleneck_block(16, 24, stride=2, expansion_factor=6, n=2),
+    d2 = Chain( BBlock(16, 24, stride=2, expansion_factor=6, n=2),
                 Dropout(0.05),
     )
 
-    d3 = Chain( bottleneck_block(24, 32, stride=2, expansion_factor=6, n=3),
+    d3 = Chain( BBlock(24, 32, stride=2, expansion_factor=6, n=3),
                 Dropout(0.05),
     )
 
-    d4 = Chain( bottleneck_block(32, 64, stride=2, expansion_factor=6, n=4),
-                bottleneck_block(64, 96, stride=1, expansion_factor=6, n=3),
+    d4 = Chain( BBlock(32, 64, stride=2, expansion_factor=6, n=4),
+                BBlock(64, 96, stride=1, expansion_factor=6, n=3),
                 Dropout(0.1),
     )
 
-    d5 = Chain( bottleneck_block(96, 160, stride=2, expansion_factor=6, n=3),
-                bottleneck_block(160, 320, stride=1, expansion_factor=6, n=1),
+    d5 = Chain( BBlock(96, 160, stride=2, expansion_factor=6, n=3),
+                BBlock(160, 320, stride=1, expansion_factor=6, n=1),
                 ConvK1(320, 1280), BatchNorm(1280, relu6),
                 Dropout(0.2),
     )
 
     # decoder
     ct1 = Chain(ConvTranspK4(1280, 96), BatchNorm(96, relu6))
-    ir1 = bottleneck_block(192, 96, stride=1, expansion_factor=1, n=1)
+    ir1 = BBlock(192, 96, stride=1, expansion_factor=1, n=1)
 
     ct2 = Chain(ConvTranspK4(96, 32), BatchNorm(32, relu6))
-    ir2 = bottleneck_block(64, 32, stride=1, expansion_factor=1, n=1)
+    ir2 = BBlock(64, 32, stride=1, expansion_factor=1, n=1)
     
     ct3 = Chain(ConvTranspK4(32, 24), BatchNorm(24, relu6))
-    ir3 = bottleneck_block(48, 24, stride=1, expansion_factor=1, n=1)
+    ir3 = BBlock(48, 24, stride=1, expansion_factor=1, n=1)
 
     ct4 = Chain(ConvTranspK4(24, 16), BatchNorm(16, relu6))
-    ir4 = bottleneck_block(32, 16, stride=1, expansion_factor=1, n=1)
+    ir4 = BBlock(32, 16, stride=1, expansion_factor=1, n=1)
 
     ct5 = ConvTranspK4(16, ch_out)
 
