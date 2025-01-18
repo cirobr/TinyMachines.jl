@@ -4,9 +4,9 @@
 
 [![Build Status](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/cirobr/TinyMachines.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
-A collection of tiny machine learning models for semantic segmentation of images on IoT devices, written in Flux.jl.
+A collection of tiny machine learning models for image semantic segmentation on IoT devices, written in Flux.jl
 
-Besides regular masks, all models also deliver their internal feature maps as outputs, which are useful for model compression through knowledge distillation.
+Besides regular mask outputs, all models deliver their internal feature maps as outputs, which are useful for model compression through knowledge distillation.
 
 
 ## UNet5, UNet4
