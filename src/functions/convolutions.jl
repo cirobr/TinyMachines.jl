@@ -6,7 +6,7 @@ function ConvK1(ch_in::Int, ch_out::Int, activation=identity)
                 pad=0,
                 bias=false,
                 dilation=1,
-                init=kaiming_normal(gain=gn)
+                # init=kaiming_normal(gain=gn)
     )
 end
 PointwiseConv = ConvK1
@@ -20,7 +20,7 @@ function ConvK2(ch_in::Int, ch_out::Int, activation=identity)
                 pad=SamePad(),
                 bias=true,
                 dilation=1,
-                init=kaiming_normal(gain=gn)
+                # init=kaiming_normal(gain=gn)
     )
 end
 
@@ -35,7 +35,7 @@ function ConvK3(ch_in::Int, ch_out::Int, activation=identity;
                 pad=SamePad(),
                 bias=true,
                 dilation=1,
-                init=kaiming_normal(gain=gn)
+                # init=kaiming_normal(gain=gn)
     )
 end
 
@@ -55,7 +55,7 @@ function ConvTranspK2(ch_in::Int, ch_out::Int, activation=identity;
                          pad=SamePad(),
                          bias=true,
                          dilation=1,
-                         init=kaiming_normal(gain=gn)
+                        #  init=kaiming_normal(gain=gn)
     )
 end
 
@@ -68,7 +68,7 @@ function ConvTranspK4(ch_in::Int, ch_out::Int, activation=identity)
                          pad=SamePad(),
                          bias=true,
                          dilation=1,
-                         init=kaiming_normal(gain=gn)
+                        #  init=kaiming_normal(gain=gn)
     )
 end
 
@@ -84,6 +84,6 @@ function DilatedConvK3(ch_in::Int, ch_out::Int, activation=identity;
                 pad=SamePad(),
                 bias=true,
                 dilation=dilation,                # dilation == 1 => ConvK3
-                init=kaiming_normal(gain=gn)
+                # init=kaiming_normal(gain=gn)
 )
 end
