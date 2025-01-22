@@ -25,10 +25,10 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     c5 = Chain(c5, Dropout(0.25))
 
     # up convolutions
-    u4 = ConvTranspK2(chs[5], chs[4], activation; stride=2)
-    u3 = ConvTranspK2(chs[4], chs[3], activation; stride=2)
-    u2 = ConvTranspK2(chs[3], chs[2], activation; stride=2)
-    u1 = ConvTranspK2(chs[2], chs[1], activation; stride=2)
+    u4 = UpBlock(chs[5], chs[4], activation)
+    u3 = UpBlock(chs[4], chs[3], activation)
+    u2 = UpBlock(chs[3], chs[2], activation)
+    u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
     e4 = CBlock(chs[5], chs[4], activation)
