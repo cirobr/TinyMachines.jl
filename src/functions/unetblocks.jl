@@ -11,3 +11,8 @@ MCBlock(ch_in, ch_out, activation) =
           ConvK3(ch_in, ch_out, activation),
           ConvK3(ch_out, ch_out), BatchNorm(ch_out, activation)
 )
+
+
+# up convolutional block
+UpBlock(ch_in, ch_out, activation) = 
+    ConvTranspK2(ch_in, ch_out, activation; stride=2)

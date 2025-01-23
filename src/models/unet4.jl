@@ -23,9 +23,9 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     c4 = Chain(c4, Dropout(0.2))
 
     # up convolutions
-    u3 = ConvTranspK2(chs[4], chs[3], activation; stride=2)
-    u2 = ConvTranspK2(chs[3], chs[2], activation; stride=2)
-    u1 = ConvTranspK2(chs[2], chs[1], activation; stride=2)
+    u3 = UpBlock(chs[4], chs[3], activation)
+    u2 = UpBlock(chs[3], chs[2], activation)
+    u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
     e3 = CBlock(chs[4], chs[3], activation)
