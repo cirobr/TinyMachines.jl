@@ -97,6 +97,9 @@ Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blo
 
 ## Versions:
 
+### v0.1.3
+* Update github workflows.
+
 ### v0.1.2
 * Changed UPBlocks in UNets.
 * Compatibility expanded to Julia 1.10 - 1.11.
