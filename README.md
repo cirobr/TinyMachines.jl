@@ -97,6 +97,9 @@ Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blo
 
 ## Versions:
 
+### v0.1.4
+* Mobile-Unet encoder regularization.
+
 ### v0.1.3
 * Update github workflows.
 
