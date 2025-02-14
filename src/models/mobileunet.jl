@@ -13,26 +13,26 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     # encoder
     d1 = Chain( ConvK3(ch_in, 32, stride=2), BatchNorm(32, relu6),
                 BBlock(32, 16, stride=1, expansion_factor=1, n=1),
-                Dropout(0.05),
+                Dropout(0.2),
     )
 
     d2 = Chain( BBlock(16, 24, stride=2, expansion_factor=6, n=2),
-                Dropout(0.05),
+                Dropout(0.2),
     )
 
     d3 = Chain( BBlock(24, 32, stride=2, expansion_factor=6, n=3),
-                Dropout(0.05),
+                Dropout(0.2),
     )
 
     d4 = Chain( BBlock(32, 64, stride=2, expansion_factor=6, n=4),
                 BBlock(64, 96, stride=1, expansion_factor=6, n=3),
-                Dropout(0.1),
+                Dropout(0.2),
     )
 
     d5 = Chain( BBlock(96, 160, stride=2, expansion_factor=6, n=3),
                 BBlock(160, 320, stride=1, expansion_factor=6, n=1),
                 ConvK1(320, 1280), BatchNorm(1280, relu6),
-                Dropout(0.2),
+                Dropout(0.1),
     )
 
     # decoder
