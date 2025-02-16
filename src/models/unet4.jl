@@ -10,13 +10,13 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                 activation    = relu,          # activation function
                 alpha::Int    = 1,             # channels divider
                 verbose::Bool = false,         # output feature maps
-                dropc1::Float = 0.1,           # dropout rate c1
-                dropc2::Float = 0.1,           # dropout rate c2
-                dropc3::Float = 0.1,           # dropout rate c3
-                dropc4::Float = 0.1,           # dropout rate c4
-                drope3::Float = 0.1,           # dropout rate e3
-                drope2::Float = 0.1,           # dropout rate e2
-                drope1::Float = 0.1,           # dropout rate e1
+                dropc1::Float64 = 0.1,           # dropout rate c1
+                dropc2::Float64 = 0.1,           # dropout rate c2
+                dropc3::Float64 = 0.1,           # dropout rate c3
+                dropc4::Float64 = 0.1,           # dropout rate c4
+                drope3::Float64 = 0.1,           # dropout rate e3
+                drope2::Float64 = 0.1,           # dropout rate e2
+                drope1::Float64 = 0.1,           # dropout rate e1
 )
 
     chs = defaultChannels .÷ alpha
