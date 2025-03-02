@@ -7,22 +7,33 @@ end
 @layer UNet5 trainable=(encoder, upconvs, decoder)
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-               activation    = relu,          # activation function
-               alpha::Int    = 1,             # channels divider
-               verbose::Bool = false,         # output feature maps
+                activation    = relu,          # activation function
+                alpha::Int    = 1,             # channels divider
+                verbose::Bool = false,         # output feature maps
+                dropc1::Float64 = 0.0,           # dropout rate c1
+                dropc2::Float64 = 0.0,           # dropout rate c2
+                dropc3::Float64 = 0.0,           # dropout rate c3
+                dropc4::Float64 = 0.0,           # dropout rate c4
+                dropc5::Float64 = 0.0,           # dropout rate c5
+                drope4::Float64 = 0.0,           # dropout rate e4
+                drope3::Float64 = 0.0,           # dropout rate e3
+                drope2::Float64 = 0.0,           # dropout rate e2
+                drope1::Float64 = 0.0,           # dropout rate e1
 )
 
     chs = defaultChannels .÷ alpha
 
     # contracting path
     c1 = CBlock(ch_in, chs[1], activation)
+    c1 = Chain(c1, Dropout(dropc1))
     c2 = MCBlock(chs[1], chs[2], activation)
+    c2 = Chain(c2, Dropout(dropc2))
     c3 = MCBlock(chs[2], chs[3], activation)
-    c3 = Chain(c3, Dropout(0.1))
+    c3 = Chain(c3, Dropout(dropc3))
     c4 = MCBlock(chs[3], chs[4], activation)
-    c4 = Chain(c4, Dropout(0.2))
+    c4 = Chain(c4, Dropout(dropc4))
     c5 = MCBlock(chs[4], chs[5], activation)
-    c5 = Chain(c5, Dropout(0.25))
+    c5 = Chain(c5, Dropout(dropc5))
 
     # up convolutions
     u4 = UpBlock(chs[5], chs[4], activation)
@@ -32,11 +43,13 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
 
     # expansive path
     e4 = CBlock(chs[5], chs[4], activation)
-    e4 = Chain(e4, Dropout(0.2))
+    e4 = Chain(e4, Dropout(drope4))
     e3 = CBlock(chs[4], chs[3], activation)
-    e3 = Chain(e3, Dropout(0.1))
+    e3 = Chain(e3, Dropout(drope3))
     e2 = CBlock(chs[3], chs[2], activation)
+    e2 = Chain(e2, Dropout(drope2))
     e1 = CBlock(chs[2], chs[1], activation)
+    e1 = Chain(e1, Dropout(drope1))
     
     e0 = ConvK1(chs[1], ch_out)
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
