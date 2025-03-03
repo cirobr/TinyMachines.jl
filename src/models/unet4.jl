@@ -9,9 +9,9 @@ end
 function UNet4(ch_in::Int=3, ch_out::Int=1;            # input/output channels
                 activation    = relu,                  # activation function
                 alpha::Int    = 1,                     # channels divider
+                drop_enc      = (0.0, 0.0, 0.1, 0.2),  # dropout rates encoder
+                drop_dec      = (0.0, 0.0, 0.1),       # dropout rates decoder
                 verbose::Bool = false,                 # output feature maps
-                drop_enc      = (0.0, 0.0, 0.1, 0.2),  # encoder dropouts
-                drop_dec      = (0.0, 0.0, 0.1),       # decoder dropouts
 )
 
     chs = defaultChannels .÷ alpha
