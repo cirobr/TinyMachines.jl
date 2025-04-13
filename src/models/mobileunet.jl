@@ -7,10 +7,10 @@ end
 @layer MobileUNet trainable=(d, ct, ir)
 
 
-function MobileUNet(ch_in::Int=3, ch_out::Int=1;              # input/output channels
-                    drop_enc = (0.05, 0.05, 0.05, 0.1, 0.2),  # dropout rates encoder
-                    drop_dec = (0.0, 0.0, 0.0, 0.0),          # dropout rates decoder
-                    verbose::Bool = false,                    # output feature maps
+function MobileUNet(ch_in::Int=3, ch_out::Int=1;        # input/output channels
+                    drop_enc = (0.0,0.2,0.1,0.1,0.2),   # dropout rates encoder (from experiment)
+                    drop_dec = (0.1,0.0,0.2,0.0,0.2),   # dropout rates decoder (from experiment)
+                    verbose::Bool = false,              # output feature maps
 )
 
 # encoder
