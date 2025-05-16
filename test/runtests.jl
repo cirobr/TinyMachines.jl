@@ -5,11 +5,16 @@ using Random
 
 Random.seed!(1234)
 x3 = randn(Float32, (256,256,3,1))
+x8 = randn(Float32, (256,256,8,1))
 
 @testset "TinyMachines.jl" begin
     include("./convlayers-tests.jl")
-    include("./unets-tests.jl")
-    include("./mobileunet-tests.jl")
     include("./espblocks-tests.jl")
+    ### TODO: irblocks-tests
+
+    include("./mobileunet-tests.jl")
     include("./espnet-tests.jl")
+    include("./unets-tests.jl")
+
+    include("epoch-tests.jl")
 end

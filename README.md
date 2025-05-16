@@ -101,7 +101,8 @@ Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blo
 * Mobile-Unet: added activation argument, default to relu6.
 * UNet4, UNet5, ESPnet cleanup.
 * Convolutions, cleanup.
-* Prototype PReLU candidates.
+* Tests, cleanup.
+* Added epoch tests for all models.
 
 ### v0.1.3
 * Update github workflows.
