@@ -6,10 +6,10 @@ struct UNet5
 end
 @layer UNet5 trainable=(encoder, upconvs, decoder)
 
-function UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-               activation    = relu,          # activation function
-               alpha::Int    = 1,             # channels divider
-               verbose::Bool = false,         # output feature maps
+function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+               activation::Function = relu,    # activation function
+               alpha::Int           = 1,       # channels divider
+               verbose::Bool        = false,   # output feature maps
 )
 
     chs = defaultChannels .÷ alpha

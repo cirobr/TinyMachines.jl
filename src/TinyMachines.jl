@@ -18,10 +18,10 @@ const w3 = 3 * 3
 const w4 = 4 * 4
 const kf = 1.f-2
 
-include("./functions/convolutions.jl")   # custom convolutions
-include("./functions/unetblocks.jl")     # unet blocks
-include("./functions/irblocks.jl")       # inverted residual blocks
-include("./functions/espblocks.jl")      # efficient spatial pyramid blocks
+include("./functions/convlayers.jl")   # convolutional layers (custom conv + activation)
+include("./functions/unetblocks.jl")   # unet blocks
+include("./functions/irblocks.jl")     # inverted residual blocks
+include("./functions/espblocks.jl")    # efficient spatial pyramid blocks
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]

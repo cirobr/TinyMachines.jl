@@ -9,7 +9,7 @@ end
 
 
 function ESPnet(ch_in::Int=3, ch_out::Int=1;
-                activation=relu,
+                activation::Function=relu,
                 alpha2::Int=2, alpha3::Int=3,
                 verbose::Bool=false,
 )
@@ -18,7 +18,9 @@ function ESPnet(ch_in::Int=3, ch_out::Int=1;
 
 
     # encoder
-    e1  = Chain(ConvK3(ch_in, 16; stride=2), BatchNorm(16, activation))
+    e1  = Chain(ConvK3(ch_in, 16; stride=2),
+                BatchNorm(16, activation)
+    )
 
     e2a = ESPBlock1(19, 64, activation; stride=2, add=false)
     # e2a = Chain(e2a, Dropout(0.0))
@@ -39,10 +41,12 @@ function ESPnet(ch_in::Int=3, ch_out::Int=1;
 
 
     # decoder
-    d3 = Chain(ConvTranspK2(ch_out, ch_out; stride=2), BatchNorm(ch_out, activation))
-
+    d3 = Chain(ConvTranspK2(ch_out, ch_out; stride=2),
+               BatchNorm(ch_out, activation)
+    )
     d2 = Chain(ESPBlock1(2*ch_out, ch_out, activation; stride=1, add=false),
-               ConvTranspK2(ch_out, ch_out; stride=2), BatchNorm(ch_out, activation)
+               ConvTranspK2(ch_out, ch_out; stride=2),
+               BatchNorm(ch_out, activation)
     )
     d1 = Chain(ConvK1(2*ch_out, ch_out),
                ConvTranspK2(ch_out, ch_out; stride=2)   # no bn, no activation

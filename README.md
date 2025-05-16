@@ -66,7 +66,7 @@ Argument "verbose" == false delivers output mask with same (H,W) size as input i
 
 Argument "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
 
-    verbose == false => y_hat
+    verbose == false => yhat
     verbose == true  => [ yhat, [encoder[1:5] - decoder[6:9] - logits[10]] ] (UNet5)
     verbose == true  => [ yhat, [encoder[1:4] - decoder[5:7] - logits[8]] ]  (UNet4)
 
@@ -77,7 +77,7 @@ Argument "verbose" == true delivers a two-elements vector: first element is the 
         verbose::Bool = false,                # output feature maps
     )
 
-    verbose == false => y_hat
+    verbose == false => yhat
     verbose == true  => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
 
 
@@ -91,11 +91,17 @@ Argument "verbose" == true delivers a two-elements vector: first element is the 
 
 Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
 
-    verbose == false => y_hat
+    verbose == false => yhat
     verbose == true  => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
 
 
 ## Versions:
+
+### v0.1.5 (v0.1.3 compatible)
+* Mobile-Unet: added activation argument, default to relu6.
+* UNet4, UNet5, ESPnet cleanup.
+* Convolutions, cleanup.
+* Prototype PReLU candidates.
 
 ### v0.1.3
 * Update github workflows.
