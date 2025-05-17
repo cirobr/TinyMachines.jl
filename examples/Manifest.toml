@@ -1083,8 +1083,8 @@ version = "1.11.0"
 
 [[deps.TinyMachines]]
 deps = ["Flux"]
-git-tree-sha1 = "5e598f3b2fc503e2493ab24586c8733b0f639d6e"
-repo-rev = "v0.1.5rc2"
+git-tree-sha1 = "0ba0cfa63a0bb4054e2e3ecdb9aa5ec0a36dfbe7"
+repo-rev = "v0.1.5rc3"
 repo-url = "git@github.com:cirobr/TinyMachines.jl.git"
 uuid = "5d0fdf5f-995e-4f1b-a9e8-363392c4fe32"
 version = "0.1.5"

@@ -6,8 +6,8 @@ export UNet5, UNet4, MobileUNet, ESPnet
 import Flux
 import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
              DepthwiseConv, Parallel,
-             kaiming_normal,
              identity, relu, relu6, σ, sigmoid, softmax,
+             kaiming_normal, rand32,
              @layer
 
 
@@ -22,7 +22,8 @@ include("./functions/convlayers.jl")   # convolutional layers (custom conv + act
 include("./functions/activationlayers.jl") # activation layers (prelu)
 include("./functions/unetblocks.jl")   # unet blocks
 include("./functions/irblocks.jl")     # inverted residual blocks
-include("./functions/espblocks.jl")    # efficient spatial pyramid blocks
+# include("./functions/espblocks-activk1.jl")
+include("./functions/espblocks-convprelu.jl")
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -34,7 +35,8 @@ include("./models/unet4.jl")
 include("./models/mobileunet.jl")
 
 # espnet
-include("./models/espnet.jl")
+# include("./models/espnet-activk1.jl")
+include("./models/espnet-convprelu.jl")
 
 
 end   # module
