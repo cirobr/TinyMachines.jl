@@ -12,12 +12,12 @@ ActivK1(ch_in::Int, activation::Function=Flux.leakyrelu) =
 
 # depthwise conv + PReLU
 struct ConvPReLU
-    conv::Flux.Conv
+    conv::Chain
 end
 @layer ConvPReLU
 
 function ConvPReLU(ch_in::Int)
-    ActivK1(ch_in, identity)
+    return ConvPReLU(ActivK1(ch_in, identity))
 end
 
 function (m::ConvPReLU)(x)
