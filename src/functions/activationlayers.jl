@@ -1,5 +1,9 @@
 ### PReLU prototypes
 
+# of type float (to allow for integer inputs)
+oftf(x, y) = oftype(float(x), y)
+
+
 
 # depthwise conv
 ActivK1(ch_in::Int, activation::Function=Flux.leakyrelu) =
@@ -27,17 +31,17 @@ end
 
 # PReLU layer   ### works in cpu, fails at gpucompiler.jl ###
 struct PReLUlayer
-    α::AbstractVector
-    ch_in::Int
+    a::AbstractArray
+    # ch_in::Int
 end
-@layer PReLUlayer trainable=(α)
+@layer PReLUlayer #trainable=(a)
 
 function PReLUlayer(ch_in::Int)
-    α = rand(ch_in)
-    return PReLUlayer(α, ch_in)
+    a = rand(1,1,ch_in,1)
+
+    return PReLUlayer(a)
 end
 
 function (m::PReLUlayer)(x)
-    α_broadcast = reshape(convert.(eltype(x), m.α), (1, 1, m.ch_in, 1))
-    return max.(x, 0) .+ α_broadcast .* min.(x, 0)
+    return @. max.(x, 0) + oftf(x,m.a) * min(x, 0)
 end
