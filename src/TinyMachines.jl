@@ -23,8 +23,8 @@ include("./functions/activationlayers.jl") # activation layers (prelu)
 include("./functions/unetblocks.jl")   # unet blocks
 include("./functions/irblocks.jl")     # inverted residual blocks
 # include("./functions/espblocks-activk1.jl")
-# include("./functions/espblocks-convprelu.jl")
-include("./functions/espblocks-prelulayer.jl")
+include("./functions/espblocks-convprelu.jl")
+# include("./functions/espblocks-prelulayer.jl")
 
 # unets
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -37,8 +37,8 @@ include("./models/mobileunet.jl")
 
 # espnet
 # include("./models/espnet-activk1.jl")
-# include("./models/espnet-convprelu.jl")
-include("./models/espnet-prelulayer.jl")
+include("./models/espnet-convprelu.jl")
+# include("./models/espnet-prelulayer.jl")
 
 
 end   # module
