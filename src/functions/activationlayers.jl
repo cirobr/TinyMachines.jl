@@ -1,18 +1,12 @@
 ### PReLU prototypes
 
-# of type float (to allow for integer inputs)
-oftf(x, y) = oftype(float(x), y)
-
-
 
 # depthwise conv
-ActivK1(ch_in::Int, activation::Function=Flux.leakyrelu) =
-    Chain(DepthwiseConv((1, 1), ch_in => ch_in;
+DwConvK1(ch_in::Int, activation::Function=identity) =
+    Chain(DepthwiseConv((1, 1), ch_in => ch_in, activation;
                         bias=false,
-                        init=rand32),
-          activation
-)
-
+                        init=rand32)
+    )
 
 # depthwise conv + PReLU
 struct ConvPReLU
@@ -21,15 +15,17 @@ end
 @layer ConvPReLU
 
 function ConvPReLU(ch_in::Int)
-    return ConvPReLU(ActivK1(ch_in, identity))
+    return ConvPReLU(DwConvK1(ch_in, identity))
 end
 
 function (m::ConvPReLU)(x)
-    return max.(x, 0) .+ m.conv(min.(x, 0))
+    return max.(x, 0) + m.conv(min.(x, 0))
 end
 
 
 # PReLU layer
+oftf(x, y) = oftype(float(x), y)
+
 struct PReLUlayer
     a::AbstractArray
     # ch_in::Int
@@ -37,8 +33,8 @@ end
 @layer PReLUlayer #trainable=(a)
 
 function PReLUlayer(ch_in::Int)
-    # a = rand(1,1,ch_in,1)
-    a = rand(ch_in)
+    a = rand(1,1,ch_in,1)
+    # a = rand(ch_in)
 
     return PReLUlayer(a)
 end
