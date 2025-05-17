@@ -1,0 +1,5 @@
+[deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+TinyMachines = "5d0fdf5f-995e-4f1b-a9e8-363392c4fe32"
+cuDNN = "02a925ec-e4fe-4b08-9a7e-0d78e3d38ccd"
