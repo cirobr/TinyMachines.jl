@@ -1,14 +1,14 @@
-struct ESPnet
+struct ESPNet
     downsampling
     encoder::Chain
     bridge::Chain
     decoder::Chain
     verbose::Bool
 end
-@layer ESPnet trainable=(encoder, bridge, decoder)
+@layer ESPNet trainable=(encoder, bridge, decoder)
 
 
-function ESPnet(ch_in::Int=3, ch_out::Int=1;
+function ESPNet(ch_in::Int=3, ch_out::Int=1;
                 activation::Function=relu,
                 alpha2::Int=2, alpha3::Int=3,
                 verbose::Bool=false,
@@ -63,11 +63,11 @@ function ESPnet(ch_in::Int=3, ch_out::Int=1;
     bridge  = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d3=d3, d2=d2, d1=d1, d0=d0)
 
-    return ESPnet(downsampling, encoder, bridge, decoder, verbose)
+    return ESPNet(downsampling, encoder, bridge, decoder, verbose)
 end
 
 
-function (m::ESPnet)(x)
+function (m::ESPNet)(x)
     # encoder
     ds1 = m.downsampling(x)
     out1 = m.encoder[:e1](x)

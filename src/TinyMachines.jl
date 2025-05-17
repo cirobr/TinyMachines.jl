@@ -1,13 +1,15 @@
 module TinyMachines
 
 
-export UNet5, UNet4, MobileUNet, ESPnet
+export UNet5, UNet4, MobileUNet, ESPNet   # models
+export ConvPReLU                          # special layers
 
 import Flux
-import Flux: Chain, SkipConnection, Conv, MaxPool, Upsample, ConvTranspose, BatchNorm, Dropout, SamePad,
-             DepthwiseConv, Parallel,
+import Flux: Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv,
+             MaxPool, Upsample, 
+             BatchNorm, Dropout,
              identity, relu, relu6, σ, sigmoid, softmax,
-             kaiming_normal, rand32,
+             SamePad, kaiming_normal, rand32,
              @layer
 
 
@@ -37,6 +39,7 @@ include("./models/mobileunet.jl")
 # espnet
 # include("./models/espnet.jl")
 include("./models/espnet-convprelu.jl")
+### TODO: join both espnet methods   ###
 
 
 end   # module

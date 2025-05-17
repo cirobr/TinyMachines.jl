@@ -53,9 +53,9 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 ### UNet5, UNet4 syntax:
 
     UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-        activation    = relu,            # activation function
-        alpha::Int    = 1,               # channels divider
-        verbose::Bool = false,           # output feature maps
+        activation::Function = relu,     # activation function
+        alpha::Int           = 1,        # channels divider
+        verbose::Bool        = false,    # output feature maps
     )
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.
@@ -74,6 +74,7 @@ Argument "verbose" == true delivers a two-elements vector: first element is the 
 ### MobileUnet syntax:
 
     MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+        activation::Function=relu6;           # activation function
         verbose::Bool = false,                # output feature maps
     )
 
@@ -83,10 +84,10 @@ Argument "verbose" == true delivers a two-elements vector: first element is the 
 
 ### ESPNet syntax:
 
-    ESPnet(ch_in::Int=3, ch_out::Int=1;     # input/output channels
-        activation=relu,                    # activation function
-        alpha2::Int=2, alpha3::Int=3,       # modulation of encoder's expansive blocks
-        verbose::Bool=false,                # output feature maps
+    ESPNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+        activation::Function=relu,        # activation function
+        alpha2::Int=2, alpha3::Int=3,     # modulation of encoder's expansive blocks
+        verbose::Bool=false,              # output feature maps
     )
 
 Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
@@ -97,9 +98,11 @@ Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blo
 
 ## Versions:
 
-### v0.1.5 (v0.1.3 compatible)
+### v0.1.5
 * Mobile-Unet: added activation argument, default to relu6.
-* UNet4, UNet5, ESPnet cleanup.
+* ESPNet: added new method, PReLU incorporated.
+* ConvPReLU is exported (PReLU implementation).
+* UNet4, UNet5, ESPNet cleanup.
 * Convolutions, cleanup.
 * Tests, cleanup.
 * Added epoch tests for all models.
