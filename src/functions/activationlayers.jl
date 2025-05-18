@@ -2,7 +2,7 @@
 DwConvPrelu(ch_in::Int, activation::Function=identity) =
     Chain(DepthwiseConv((1, 1), ch_in => ch_in, activation;
                         bias=false,
-                        init=rand32)   ### TODO: use a better init (e.g. 0.1) ###
+                        init=rand32)
     )
 
 struct ConvPReLU
