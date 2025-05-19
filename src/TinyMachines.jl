@@ -13,7 +13,7 @@ import Flux: Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv
              @layer
 
 
-# packages
+# functions
 const w1 = 1
 const w2 = 2 * 2
 const w3 = 3 * 3
@@ -24,22 +24,15 @@ include("./functions/convlayers.jl")         # convolutional layers (custom conv
 include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
 include("./functions/irblocks.jl")           # inverted residual blocks
-# include("./functions/espblocks.jl")             # esp blocks
-include("./functions/espblocks-convprelu.jl")   # esp blocks
+include("./functions/espblocks.jl")          # esp blocks
 
-# unets
+# models
 const defaultChannels = [64, 128, 256, 512, 1024]
 
 include("./models/unet5.jl")
 include("./models/unet4.jl")
-
-# mobile unet
 include("./models/mobileunet.jl")
-
-# espnet
-# include("./models/espnet.jl")
-include("./models/espnet-convprelu.jl")
-### TODO: join both espnet methods   ###
+include("./models/espnet.jl")
 
 
 end   # module
