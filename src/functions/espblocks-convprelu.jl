@@ -14,12 +14,11 @@ end
 @layer ESPBlock4 trainable=(pointwise, dilated)
 
 
-# downsampling modulated by stride
 function ESPBlock1(ch_in::Int, ch_out::Int;
-                   stride::Int=1,
+                   stride::Int=1,   # downsampling modulated by stride
                    add::Bool=false)
     # K = 1
-    # if mod(ch_out, K) != 0   error("ch_out must be divisible by K")   end
+    # @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
 
     d = ch_out
 
@@ -37,17 +36,16 @@ end
 K = number of parallel dilated convolutions = height of pyramid
 d = number of input/output channels for all parallel dilated convolutions
 """
-# no downsampling
 function ESPBlock4(ch_in::Int, ch_out::Int;
+                   # no stride, no downsampling
                    add::Bool=false)
     K = 4
-    if mod(ch_out, K) != 0   error("ch_out must be divisible by K")   end
+    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
 
     d = ch_out ÷ K
     dils = [2^(k-1) for k in 1:K]
 
-    pointwise = ConvK1(ch_in, d, identity)
-
+    pointwise = ConvK1(ch_in, d)
     dilated_vec =
         [Chain(DilatedConvK3(d, d; stride=1, dilation=dils[k]),
                BatchNorm(d),
