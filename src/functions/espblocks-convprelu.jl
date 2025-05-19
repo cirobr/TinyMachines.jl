@@ -1,10 +1,38 @@
+"""
+K = number of parallel dilated convolutions = height of pyramid
+d = number of input/output channels for all parallel dilated convolutions
+"""
+function ESPBlock(ch_in::Int, ch_out::Int;
+                  K::Int=1,                  # number of parallel dilated convolutions
+                  stride::Int=1,             # downsampling modulated by stride (1 or 2)
+)
+    @assert K > 0               || error("K must be positive")
+    @assert stride ∈ 1:2        || error("stride must be 1 or 2")
+    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
+
+    d = ch_out ÷ K
+    dils = [2^(k-1) for k in 1:K]
+
+    pointwise = ConvK1(ch_in, d)
+    dilated_vec =
+        [Chain(DilatedConvK3(d, d; stride=stride, dilation=dils[k]),
+               BatchNorm(d),
+               ConvPReLU(d)
+        )
+        for k in 1:K]
+    dilated = Chain(dilated_vec...)
+
+    return Chain(pointwise, dilated)
+end
+
+
+
 struct ESPBlock1
     pointwise
     dilated
     add::Bool
 end
 @layer ESPBlock1 trainable=(pointwise, dilated)
-
 
 struct ESPBlock4
     pointwise
@@ -14,48 +42,23 @@ end
 @layer ESPBlock4 trainable=(pointwise, dilated)
 
 
+
 function ESPBlock1(ch_in::Int, ch_out::Int;
                    stride::Int=1,   # downsampling modulated by stride
                    add::Bool=false)
-    # K = 1
-    # @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
-
-    d = ch_out
-
-    pointwise = ConvK1(ch_in, d)
-    dilated   = Chain(ConvK3(d, d; stride=stride),
-                      BatchNorm(d),
-                      ConvPReLU(d)
-    )
+    pointwise, dilated = ESPBlock(ch_in, ch_out; K=1, stride=stride)
 
     return ESPBlock1(pointwise, dilated, add)
 end
 
-
-"""
-K = number of parallel dilated convolutions = height of pyramid
-d = number of input/output channels for all parallel dilated convolutions
-"""
 function ESPBlock4(ch_in::Int, ch_out::Int;
                    # no stride, no downsampling
                    add::Bool=false)
-    K = 4
-    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
-
-    d = ch_out ÷ K
-    dils = [2^(k-1) for k in 1:K]
-
-    pointwise = ConvK1(ch_in, d)
-    dilated_vec =
-        [Chain(DilatedConvK3(d, d; stride=1, dilation=dils[k]),
-               BatchNorm(d),
-               ConvPReLU(d)
-        )
-        for k in 1:K]
-    dilated = Chain(dilated_vec...)
+    pointwise, dilated = ESPBlock(ch_in, ch_out; K=4, stride=1)
 
     return ESPBlock4(pointwise, dilated, add)
 end
+
 
 
 function (m::ESPBlock1)(x)
@@ -64,7 +67,6 @@ function (m::ESPBlock1)(x)
     if m.add  yhat = x + yhat   end              # residual connection
     return yhat
 end
-
 
 function (m::ESPBlock4)(x)
     pw = m.pointwise(x)                          # pointwise convolution
@@ -83,6 +85,7 @@ function (m::ESPBlock4)(x)
     if m.add  yhat = x + yhat   end              # residual connection
     return yhat
 end
+
 
 
 function ESPBlock4_alpha(ch::Int; alpha::Int=1)
