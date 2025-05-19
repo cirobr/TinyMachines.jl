@@ -101,7 +101,8 @@ Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blo
 ### v0.1.5
 * MobileUNet: added activation argument, default to relu6.
 * ConvPReLU: add and export new layer (PReLU implementation).
-* ESPNet: add new method, ConvPReLU incorporated.
+* ESPBlock: simplified.
+* ESPNet: ConvPReLU incorporated.
 * UNet4, UNet5, MobuleUNet: cleanup.
 * Convolutions: cleanup.
 * Tests: cleanup.
