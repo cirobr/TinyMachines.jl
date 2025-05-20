@@ -66,7 +66,7 @@ UNet5() has internally five encoder/decoder stages, each of them delivering feat
 
 Argument $alpha$ modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
 
-Argument $verbose == false$ delivers output mask with same (H,W) size as input images.
+Argument $verbose == false$ delivers output mask with same frame size as input images.
 
 Argument $verbose == true$ delivers a two-elements vector: first element is the same output as $verbose == false$; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
 
