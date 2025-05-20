@@ -54,7 +54,7 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
     model = UNet5(3,2)
 
 
-### UNet5, UNet4
+#### UNet5, UNet4
 
     UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
         activation::Function = relu,     # activation function
@@ -75,7 +75,7 @@ Argument $verbose == true$ delivers a two-elements vector: first element is the 
     verbose == true  => [ yhat, [encoder[1:4] - decoder[5:7] - logits[8]] ]  (UNet4)
 
 
-### MobileUnet
+#### MobileUnet
 
     MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
         activation::Function=relu6;           # activation function
@@ -86,7 +86,7 @@ Argument $verbose == true$ delivers a two-elements vector: first element is the 
     verbose == true  => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
 
 
-### ESPNet
+#### ESPNet
 
     ESPNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
         activation::Function=relu,        # activation function
@@ -100,6 +100,6 @@ Arguments $alpha2$ and $alpha3$ are modulation parameters of encoder's expansive
     verbose == true  => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
 
 
-### ConvPReLU
+#### ConvPReLU
 
     ConvPReLU(ch_in)   # number of input channels
