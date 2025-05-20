@@ -68,7 +68,7 @@ Argument $alpha$ modulates the number of internal channels proportionally. For i
 
 Argument $verbose == false$ delivers output mask with same (H,W) size as input images.
 
-Argument "verbose" == true delivers a two-elements vector: first element is the same output as verbose == false; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
+Argument $verbose == true$ delivers a two-elements vector: first element is the same output as $verbose == false$; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
 
     verbose == false => yhat
     verbose == true  => [ yhat, [encoder[1:5] - decoder[6:9] - logits[10]] ] (UNet5)
@@ -94,7 +94,7 @@ Argument "verbose" == true delivers a two-elements vector: first element is the 
         verbose::Bool=false,              # output feature maps
     )
 
-Arguments alpha2 and alpha3 are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
+Arguments $alpha2$ and $alpha3$ are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
 
     verbose == false => yhat
     verbose == true  => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
