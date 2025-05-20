@@ -64,7 +64,7 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly [64, 128, 256, 512, 1024] channels.
 
-Argument "alpha" modulates the number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
+Argument $"alpha"$ modulates the number of internal channels proportionally. For instance, alpha == 2 delivers [32, 64, 128, 256, 512] channels.
 
 Argument "verbose" == false delivers output mask with same (H,W) size as input images.
 
