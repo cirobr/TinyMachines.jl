@@ -1,15 +1,15 @@
-struct UNet5
+struct unet5
     encoder::Chain
     upconvs::Chain
     decoder::Chain
-    verbose::Bool
+    # verbose::Bool
 end
-@layer UNet5 trainable=(encoder, upconvs, decoder)
+@layer unet5 #trainable=(encoder, upconvs, decoder)
 
-function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+function unet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                activation::Function = relu,    # activation function
                alpha::Int           = 1,       # channels divider
-               verbose::Bool        = false,   # output feature maps
+            #    verbose::Bool        = false,   # output feature maps
 )
 
     chs = defaultChannels .÷ alpha
@@ -39,18 +39,18 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     e1 = CBlock(chs[2], chs[1], activation)
     
     e0 = ConvK1(chs[1], ch_out)
-    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    # act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
     encoder = Chain(c1=c1, c2=c2, c3=c3, c4=c4, c5=c5)
     upconvs = Chain(u4=u4, u3=u3, u2=u2, u1=u1)
     decoder = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0, act=act)
 
-    return UNet5(encoder, upconvs, decoder, verbose)   # struct output
+    return unet5(encoder, upconvs, decoder)   # struct output
 end
 
 
-function (m::UNet5)(x::AbstractArray{Float32,4})
+function (m::unet5)(x::AbstractArray{Float32,4})
     enc1 = m.encoder[:c1](x)
     enc2 = m.encoder[:c2](enc1)
     enc3 = m.encoder[:c3](enc2)
@@ -74,12 +74,25 @@ function (m::UNet5)(x::AbstractArray{Float32,4})
     dec1 = m.decoder[:e1](cat1)
 
     dec0 = m.decoder[:e0](dec1)
+    logits = dec0
 
-    yhat         = m.decoder[:act](dec0)
-    feature_maps = [enc1, enc2, enc3, enc4, enc5,   # encoder [1:5]
-                    dec4, dec3, dec2, dec1, dec0]   # decoder [6:10]
+    # encoder [1:5], decoder [6:10]
+    feature_maps = [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, logits]
 
-    if m.verbose   return yhat, feature_maps   # feature maps output
-    else           return yhat                 # model output
-    end
+    return feature_maps   # model output
+    # yhat         = m.decoder[:act](dec0)
+    # feature_maps = [enc1, enc2, enc3, enc4, enc5,   # encoder [1:5]
+    #                 dec4, dec3, dec2, dec1, dec0]   # decoder [6:10]
+
+    # if m.verbose   return yhat, feature_maps   # feature maps output
+    # else           return yhat                 # model output
+    # end
+end
+
+function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+               activation::Function = relu,    # activation function
+)
+    model = unet5(ch_in, ch_out; activation=activation, alpha=1)
+    act   = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    return Chain(model, x->x[end], act)
 end

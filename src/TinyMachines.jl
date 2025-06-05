@@ -2,6 +2,7 @@ module TinyMachines
 
 
 export UNet5, UNet4, MobileUNet, ESPNet   # models
+export unet5, unet4 #, mobileunet, espnet   # constructors
 export ConvPReLU                          # special layers
 
 import Flux
