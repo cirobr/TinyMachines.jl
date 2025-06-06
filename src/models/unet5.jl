@@ -2,7 +2,6 @@ struct unet5
     encoder::Chain
     upconvs::Chain
     decoder::Chain
-    # verbose::Bool
 end
 @layer unet5
 
