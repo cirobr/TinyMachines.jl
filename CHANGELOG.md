@@ -1,3 +1,8 @@
+### v0.3.0
+* Created model constructors: unet5, unet4, mobileunet, espnet.
+* Models with preferred hyperparameters and output activations are now built from constructors.
+* Updated documentation.
+
 ### v0.2.0
 * MobileUNet: added activation argument, default to relu6.
 * ConvPReLU: add and export new layer (PReLU implementation).

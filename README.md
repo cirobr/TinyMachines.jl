@@ -55,12 +55,19 @@ If ch_out > 1, output mask activation becomes softmax. For instance, a model wit
 
 
 #### UNet5, UNet4
+```
+UNet5(3, 1;              # input/output channels
+    activation = relu,   # activation function
+    alpha = 1,           # channels divider
+)
+```
 
-    UNet5(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-        activation::Function = relu,     # activation function
-        alpha::Int           = 1,        # channels divider
-        verbose::Bool        = false,    # output feature maps
-    )
+```
+UNet4(3, 1;              # input/output channels
+    activation = relu,   # activation function
+    alpha = 1,           # channels divider
+)
+```
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
 
@@ -68,40 +75,71 @@ UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
 
 Argument $alpha$ modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
 
-Argument $verbose == false$ delivers output mask with same frame size as input images.
-
-Argument $verbose == true$ delivers a two-elements vector: first element is the same output as $verbose == false$; and second element are the intermediate feature model outputs, which are useful for knowledge distillation.
-
-    verbose == false => yhat
-    verbose == true  => [ yhat, [encoder[1:5] - decoder[6:9] - logits[10]] ] (UNet5)
-    verbose == true  => [ yhat, [encoder[1:4] - decoder[5:7] - logits[8]] ]  (UNet4)
-
 
 #### MobileUnet
 
-    MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-        activation::Function=relu6;           # activation function
-        verbose::Bool = false,                # output feature maps
-    )
-
-    verbose == false => yhat
-    verbose == true  => [ yhat, [encoder[1:5] - decoder[6:13] - logits[14]] ]
+```
+MobileUNet(3, 1;        # input/output channels
+    activation=relu6,   # activation function
+)
+```
 
 
 #### ESPNet
 
-    ESPNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-        activation::Function=relu,        # activation function
-        alpha2::Int=2, alpha3::Int=3,     # modulation of encoder's expansive blocks
-        verbose::Bool=false,              # output feature maps
-    )
+```
+# ConvPReLU is incorporated, no need to pass activation function
+ESPNet(3, 1;           # input/output channels
+    activation=relu,   # activation function
+    alpha2=2,          # modulation of encoder's expansive block
+    alpha3=3,          # modulation of encoder's expansive block
+)
+```
 
-Arguments $alpha2$ and $alpha3$ are modulation parameters of encoder's expansive blocks. User shall refer to original article for details.
 
-    verbose == false => yhat
-    verbose == true  => [ yhat, [encoder[1:10] - bridges[11:13] - decoder[14:17] - logits[18]] ]
+#### Constructors
+
+Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters were previously set up for better performance.
+
+```
+unet5(3, 1;                               # input/output channels
+    activation = relu,                    # activation function
+    alpha = 1,                            # channels divider
+    cdrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+)
+```
+
+```
+unet4(3, 1;                               # input/output channels
+    activation = relu,                    # activation function
+    alpha = 1,                            # channels divider
+    cdrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+)
+```
+
+```
+mobileunet(3, 1;                          # input/output channels
+    activation = relu6,                   # activation function
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+)
+```
+
+```
+# ConvPReLU is incorporated, no need to pass activation function
+espnet(3, 1;                              # input/output channels
+    alpha2 = 2,                           # expansion factor in encoder stage 2
+    alpha3 = 3,                           # expansion factor in encoder stage 3
+    edrops = (0.0, 0.0, 0.0),             # dropout rates for encoder
+    ddrops = (0.0, 0.0),                  # dropout rates for decoder
+)
+```
 
 
 #### ConvPReLU
 
-    ConvPReLU(ch_in)   # number of input channels
+```
+ConvPReLU(ch_in)   # number of input channels
+```

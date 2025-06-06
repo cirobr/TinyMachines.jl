@@ -10,7 +10,6 @@ function mobileunet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                     activation::Function=relu6,    # activation function
                     edrops=(0.0, 0.0, 0.0, 0.0, 0.0), # dropout rates
                     ddrops=(0.0, 0.0, 0.0, 0.0),     # dropout rates
-                    # verbose::Bool = false,         # output feature maps
 )
     # encoder
     d1 = Chain( ConvK3(ch_in, 32, stride=2), BatchNorm(32, activation),

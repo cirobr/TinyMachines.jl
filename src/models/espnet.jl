@@ -7,12 +7,12 @@ end
 @layer espnet
 
 
-function espnet(ch_in::Int=3, ch_out::Int=1;
+# ConvPReLU is incorporated, no need to pass activation function
+function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                 alpha2::Int=2,                 # expansion factor in encoder stage 2
                 alpha3::Int=3,                 # expansion factor in encoder stage 3
                 edrops=(0.0, 0.0, 0.0),        # dropout rates for encoder
                 ddrops=(0.0, 0.0),             # dropout rates for decoder
-                # ConvPReLU is incorporated, no need to pass activation function
 )
     # downsampling
     ds = Flux.MeanPool((3,3); pad=SamePad(), stride=2)
