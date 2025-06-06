@@ -14,7 +14,7 @@ x8 = randn(Float32, (256,256,8,1))
     ### TODO: irblocks-tests
 
     include("./mobileunet-tests.jl")
-    # include("./espnet-tests.jl")
+    include("./espnet-tests.jl")
     include("./unets-tests.jl")
 
     # include("./epoch-tests.jl")
