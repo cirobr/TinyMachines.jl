@@ -6,13 +6,13 @@ export unet5, unet4, mobileunet, espnet   # constructors
 export ConvPReLU                          # special layers
 
 import Flux
-import Flux: Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv,
-             MaxPool, Upsample, 
-             BatchNorm, Dropout,
-             identity, relu, relu6, σ, sigmoid, softmax,
-             SamePad, kaiming_normal, rand32,
-             @layer
-
+import Flux:
+    Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv,
+    MaxPool, Upsample, 
+    BatchNorm, Dropout,
+    identity, relu, relu6, σ, sigmoid, softmax,
+    SamePad, kaiming_normal, rand32,
+    @layer
 
 # functions
 const w1 = 1
