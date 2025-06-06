@@ -59,7 +59,7 @@ model = UNet5(3,2)   # softmax output
 ```
 
 
-#### Models
+## Models
 
 ```
 UNet5(3, 1;              # input/output channels
@@ -86,7 +86,7 @@ ESPNet(3, 1)           # input/output channels
 ```
 
 
-#### Constructors
+## Constructors
 
 Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters are chosen for performance.
 
