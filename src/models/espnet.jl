@@ -1,17 +1,15 @@
-struct ESPNet
+struct espnet
     downsampling
     encoder::Chain
     bridge::Chain
     decoder::Chain
-    verbose::Bool
 end
-@layer ESPNet trainable=(encoder, bridge, decoder)
+@layer espnet
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1;
-                # activation::Function=relu,   # replaced by ConvPReLU
-                alpha2::Int=2, alpha3::Int=3,
-                verbose::Bool=false,
+function espnet(ch_in::Int=3, ch_out::Int=1;
+                alpha2::Int=2,
+                alpha3::Int=3,
 )
     # downsampling
     ds = Flux.MeanPool((3,3); pad=SamePad(), stride=2)
@@ -24,13 +22,10 @@ function ESPNet(ch_in::Int=3, ch_out::Int=1;
     )
 
     e2a = ESPBlock1(19, 64; stride=2, add=false)
-    # e2a = Chain(e2a, Dropout(0.0))
-    
     e2b = ESPBlock4_alpha(64; alpha=alpha2)
     e2b = Chain(e2b, Dropout(0.1))
     
     e3a = ESPBlock1(131, 128; stride=2, add=false)
-    
     e3b = ESPBlock4_alpha(128; alpha=alpha3)
     e3b = Chain(e3b, Dropout(0.3))
 
@@ -63,11 +58,11 @@ function ESPNet(ch_in::Int=3, ch_out::Int=1;
     bridge  = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d3=d3, d2=d2, d1=d1, d0=d0)
 
-    return ESPNet(downsampling, encoder, bridge, decoder, verbose)
+    return espnet(downsampling, encoder, bridge, decoder)
 end
 
 
-function (m::ESPNet)(x)
+function (m::espnet)(x)
     # encoder
     ds1 = m.downsampling(x)
     out1 = m.encoder[:e1](x)
@@ -97,15 +92,23 @@ function (m::ESPNet)(x)
     ct5 = cat(b1, d2, dims=3)
 
     d1 = m.decoder[:d1](ct5)
+    logits = d1
     yhat = m.decoder[:d0](d1)
 
 
     feature_maps = [ds1, out1, ct1, ds2, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:10]
                     b1, b2, b3,                                                # bridge  [11:13]
-                    d3, ct4, d2, ct5, d1]                                      # decoder [14:18]
+                    d3, ct4, d2, ct5, logits]                                  # decoder [14:18]
 
-    # return yhat
-    if m.verbose   return yhat, feature_maps   # model and logits outputs
-    else           return yhat                 # model output
-    end
+    return feature_maps   # model output
+end
+
+
+function ESPNet(ch_in::Int=3, ch_out::Int=1)
+    model = espnet(ch_in, ch_out;
+                   alpha2=5,
+                   alpha3=8,
+    )
+    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    return Chain(model, x->x[end], act)
 end

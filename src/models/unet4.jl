@@ -5,20 +5,23 @@ struct unet4
 end
 @layer unet4
 
+
 function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                activation::Function = relu,    # activation function
                alpha::Int           = 1,       # channels divider
+               cdrops = (0.0, 0.0, 0.0, 0.0),  # dropout rates
+               edrops = (0.0, 0.0, 0.0),       # dropout rates
 )
 
     chs = defaultChannels .÷ alpha
 
     # contracting path
-    c1 = CBlock(ch_in, chs[1], activation)
-    c2 = MCBlock(chs[1], chs[2], activation)
-    c3 = MCBlock(chs[2], chs[3], activation)
-    c3 = Chain(c3, Dropout(0.1))
-    c4 = MCBlock(chs[3], chs[4], activation)
-    c4 = Chain(c4, Dropout(0.2))
+    c1 = Chain(CBlock(ch_in, chs[1], activation), Dropout(cdrops[1]))
+    c2 = Chain(MCBlock(chs[1], chs[2], activation), Dropout(cdrops[2]))
+    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))
+    # c3 = Chain(c3, Dropout(0.1))
+    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))
+    # c4 = Chain(c4, Dropout(0.2))
 
     # up convolutions
     u3 = UpBlock(chs[4], chs[3], activation)
@@ -26,10 +29,10 @@ function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
-    e3 = CBlock(chs[4], chs[3], activation)
-    e3 = Chain(e3, Dropout(0.1))
-    e2 = CBlock(chs[3], chs[2], activation)
-    e1 = CBlock(chs[2], chs[1], activation)
+    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))
+    # e3 = Chain(e3, Dropout(0.1))
+    e2 = Chain(CBlock(chs[3], chs[2], activation), Dropout(edrops[2]))
+    e1 = Chain(CBlock(chs[2], chs[1], activation), Dropout(edrops[1]))
     
     e0 = ConvK1(chs[1], ch_out)
 
@@ -70,10 +73,16 @@ function (m::unet4)(x::AbstractArray{Float32,4})
     return feature_maps   # model output
 end
 
+
 function UNet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                activation::Function = relu,    # activation function
 )
-    model = unet4(ch_in, ch_out; activation=activation, alpha=1)
-    act   = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    model = unet4(ch_in, ch_out;
+                  activation=activation,
+                  alpha=1,
+                  cdrops=(0.0, 0.0, 0.1, 0.2),
+                  edrops=(0.0, 0.0, 0.1),
+    )
+    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
     return Chain(model, x->x[end], act)
 end

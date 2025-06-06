@@ -5,7 +5,7 @@ data = Flux.DataLoader((Xs, ys))
 
 # Instantiate models
 models = [
-    ESPNet(3,2),
+    # ESPNet(3,2),
     MobileUNet(3,2),
     UNet4(3,2),
     UNet5(3,2),

@@ -4,25 +4,26 @@ struct unet5
     decoder::Chain
     # verbose::Bool
 end
-@layer unet5 #trainable=(encoder, upconvs, decoder)
+@layer unet5
 
-function unet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
-               activation::Function = relu,    # activation function
-               alpha::Int           = 1,       # channels divider
-            #    verbose::Bool        = false,   # output feature maps
+function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
+               activation::Function = relu,          # activation function
+               alpha::Int           = 1,             # channels divider
+               cdrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+               edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 
     chs = defaultChannels .÷ alpha
 
     # contracting path
-    c1 = CBlock(ch_in, chs[1], activation)
-    c2 = MCBlock(chs[1], chs[2], activation)
-    c3 = MCBlock(chs[2], chs[3], activation)
-    c3 = Chain(c3, Dropout(0.1))
-    c4 = MCBlock(chs[3], chs[4], activation)
-    c4 = Chain(c4, Dropout(0.2))
-    c5 = MCBlock(chs[4], chs[5], activation)
-    c5 = Chain(c5, Dropout(0.25))
+    c1 = Chain(CBlock(ch_in, chs[1], activation), Dropout(cdrops[1]))
+    c2 = Chain(MCBlock(chs[1], chs[2], activation), Dropout(cdrops[2]))
+    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))
+    # c3 = Chain(c3, Dropout(0.1))
+    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))
+    # c4 = Chain(c4, Dropout(0.2))
+    c5 = Chain(MCBlock(chs[4], chs[5], activation), Dropout(cdrops[5]))
+    # c5 = Chain(c5, Dropout(0.25))
 
     # up convolutions
     u4 = UpBlock(chs[5], chs[4], activation)
@@ -31,20 +32,19 @@ function unet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
-    e4 = CBlock(chs[5], chs[4], activation)
-    e4 = Chain(e4, Dropout(0.2))
-    e3 = CBlock(chs[4], chs[3], activation)
-    e3 = Chain(e3, Dropout(0.1))
-    e2 = CBlock(chs[3], chs[2], activation)
-    e1 = CBlock(chs[2], chs[1], activation)
+    e4 = Chain(CBlock(chs[5], chs[4], activation), Dropout(edrops[4]))
+    # e4 = Chain(e4, Dropout(0.2))
+    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))
+    # e3 = Chain(e3, Dropout(0.1))
+    e2 = Chain(CBlock(chs[3], chs[2], activation), Dropout(edrops[2]))
+    e1 = Chain(CBlock(chs[2], chs[1], activation), Dropout(edrops[1]))
     
     e0 = ConvK1(chs[1], ch_out)
-    # act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
 
     # output chains
     encoder = Chain(c1=c1, c2=c2, c3=c3, c4=c4, c5=c5)
     upconvs = Chain(u4=u4, u3=u3, u2=u2, u1=u1)
-    decoder = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0, act=act)
+    decoder = Chain(e4=e4, e3=e3, e2=e2, e1=e1, e0=e0)
 
     return unet5(encoder, upconvs, decoder)   # struct output
 end
@@ -80,19 +80,18 @@ function (m::unet5)(x::AbstractArray{Float32,4})
     feature_maps = [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, logits]
 
     return feature_maps   # model output
-    # yhat         = m.decoder[:act](dec0)
-    # feature_maps = [enc1, enc2, enc3, enc4, enc5,   # encoder [1:5]
-    #                 dec4, dec3, dec2, dec1, dec0]   # decoder [6:10]
-
-    # if m.verbose   return yhat, feature_maps   # feature maps output
-    # else           return yhat                 # model output
-    # end
 end
+
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                activation::Function = relu,    # activation function
 )
-    model = unet5(ch_in, ch_out; activation=activation, alpha=1)
-    act   = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    model = unet5(ch_in, ch_out;
+                  activation=activation,
+                  alpha=1,
+                  cdrops=(0.0, 0.0, 0.1, 0.2, 0.25),
+                  edrops=(0.0, 0.0, 0.1, 0.2),
+    )
+    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
     return Chain(model, x->x[end], act)
 end

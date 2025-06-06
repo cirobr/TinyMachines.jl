@@ -2,7 +2,7 @@ module TinyMachines
 
 
 export UNet5, UNet4, MobileUNet, ESPNet   # models
-export unet5, unet4 #, mobileunet, espnet   # constructors
+export unet5, unet4, mobileunet, espnet   # constructors
 export ConvPReLU                          # special layers
 
 import Flux
@@ -33,7 +33,7 @@ const defaultChannels = [64, 128, 256, 512, 1024]
 include("./models/unet5.jl")
 include("./models/unet4.jl")
 include("./models/mobileunet.jl")
-include("./models/espnet.jl")
+# include("./models/espnet.jl")
 
 
 end   # module
