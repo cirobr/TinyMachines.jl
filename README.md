@@ -134,7 +134,7 @@ espnet(3, 1;                              # input/output channels
 ```
 
 
-#### ConvPReLU
+## ConvPReLU
 
 ```
 ConvPReLU(ch_in)   # number of input channels
