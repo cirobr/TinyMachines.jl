@@ -66,8 +66,7 @@ function (m::unet4)(x::AbstractArray{Float32,4})
 
     feature_maps = [enc1, enc2, enc3, enc4,     # encoder[1:4]
                     dec3, dec2, dec1, logits]   # decoder[5:8]
-
-    return feature_maps   # model output
+    return feature_maps
 end
 
 

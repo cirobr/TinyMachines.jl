@@ -8,8 +8,8 @@ end
 
 
 function espnet(ch_in::Int=3, ch_out::Int=1;
-                alpha2::Int=2,
-                alpha3::Int=3,
+                alpha2::Int=2,                 # expansion factor in encoder stage 2
+                alpha3::Int=3,                 # expansion factor in encoder stage 3
                 edrops=(0.0, 0.0, 0.0),        # dropout rates for encoder
                 ddrops=(0.0, 0.0),             # dropout rates for decoder
                 # ConvPReLU is incorporated, no need to pass activation function
@@ -96,15 +96,17 @@ function (m::espnet)(x)
     feature_maps = [ds1, out1, ct1, ds2, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:10]
                     b1, b2, b3,                                                # bridges [11:13]
                     d2, ct4, d1, ct5, logits]                                  # decoder [14:18]
-
-    return feature_maps   # model output
+    return feature_maps
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1)   # input/output channels
+function ESPNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+                alpha2::Int=2,                 # expansion factor in encoder stage 2
+                alpha3::Int=3,                 # expansion factor in encoder stage 3
+)
     model = espnet(ch_in, ch_out;
-                   alpha2=5,
-                   alpha3=8,
+                   alpha2=alpha2,
+                   alpha3=alpha3,
                    edrops=(0.0, 0.1, 0.3),
                    ddrops=(0.0, 0.0),
     )

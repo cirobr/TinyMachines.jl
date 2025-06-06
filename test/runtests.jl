@@ -17,5 +17,5 @@ x8 = randn(Float32, (256,256,8,1))
     include("./espnet-tests.jl")
     include("./unets-tests.jl")
 
-    # include("./epoch-tests.jl")
+    include("./epoch-tests.jl")
 end
