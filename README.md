@@ -59,7 +59,7 @@ model = UNet5(3,2)   # softmax output
 ```
 
 
-#### UNet5, UNet4
+#### Models
 
 ```
 UNet5(3, 1;              # input/output channels
@@ -73,20 +73,14 @@ UNet4(3, 1;              # input/output channels
 )
 ```
 
-
-#### MobileUnet
-
 ```
 MobileUNet(3, 1;        # input/output channels
     activation=relu6,   # activation function
 )
 ```
 
-
-#### ESPNet
-
 ```
-# Model call is specific for alpha2 = 5, alpha3 = 8
+# Model call is specific for alpha2=5, alpha3=8, which differ from default constructor
 # ConvPReLU is incorporated, no need to pass activation function
 ESPNet(3, 1)           # input/output channels
 ```
