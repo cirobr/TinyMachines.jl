@@ -1,7 +1,7 @@
 struct espnet
     downsampling
     encoder::Chain
-    bridge::Chain
+    bridges::Chain
     decoder::Chain
 end
 @layer espnet
@@ -17,7 +17,6 @@ function espnet(ch_in::Int=3, ch_out::Int=1;
     # downsampling
     ds = Flux.MeanPool((3,3); pad=SamePad(), stride=2)
 
-
     # encoder
     e1  = Chain(ConvK3(ch_in, 16; stride=2),
                 BatchNorm(16),
@@ -26,23 +25,15 @@ function espnet(ch_in::Int=3, ch_out::Int=1;
     )
 
     e2a = ESPBlock1(19, 64; stride=2, add=false)
-    e2b = Chain(ESPBlock4_alpha(64; alpha=alpha2),
-                Dropout(edrops[2])
-    )
-    # e2b = Chain(e2b, Dropout(0.1))
+    e2b = Chain(ESPBlock4_alpha(64; alpha=alpha2), Dropout(edrops[2]))    # Dropout(0.1)
     
     e3a = ESPBlock1(131, 128; stride=2, add=false)
-    e3b = Chain(ESPBlock4_alpha(128; alpha=alpha3),
-                Dropout(edrops[3])
-    )
-    # e3b = Chain(e3b, Dropout(0.3))
-
+    e3b = Chain(ESPBlock4_alpha(128; alpha=alpha3), Dropout(edrops[3]))   # Dropout(0.3)
 
     # bridges
     b1 = ConvK1(19,  ch_out)
     b2 = ConvK1(131, ch_out)
     b3 = ConvK1(256, ch_out)
-
 
     # decoder
     d2 = Chain(ConvTranspK2(ch_out, ch_out; stride=2),
@@ -59,16 +50,14 @@ function espnet(ch_in::Int=3, ch_out::Int=1;
     d0 = Chain(ConvK1(2*ch_out, ch_out),
                ConvTranspK2(ch_out, ch_out; stride=2),   # no bn, no activation
     )
-    # d0 = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
-
 
     # output chains
     downsampling = ds
     encoder = Chain(e1=e1, e2a=e2a, e2b=e2b, e3a=e3a, e3b=e3b)
-    bridge  = Chain(b1=b1, b2=b2, b3=b3)
+    bridges = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d2=d2, d1=d1, d0=d0)
 
-    return espnet(downsampling, encoder, bridge, decoder)
+    return espnet(downsampling, encoder, bridges, decoder)   # struct output
 end
 
 
@@ -89,9 +78,9 @@ function (m::espnet)(x)
 
 
     # bridges
-    b1 = m.bridge[:b1](ct1)
-    b2 = m.bridge[:b2](ct2)
-    b3 = m.bridge[:b3](ct3)
+    b1 = m.bridges[:b1](ct1)
+    b2 = m.bridges[:b2](ct2)
+    b3 = m.bridges[:b3](ct3)
 
 
     # decoder
@@ -103,23 +92,21 @@ function (m::espnet)(x)
 
     d0 = m.decoder[:d0](ct5)
     logits = d0
-    # yhat = m.decoder[:d0](d1)
-
 
     feature_maps = [ds1, out1, ct1, ds2, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:10]
-                    b1, b2, b3,                                                # bridge  [11:13]
+                    b1, b2, b3,                                                # bridges [11:13]
                     d2, ct4, d1, ct5, logits]                                  # decoder [14:18]
 
     return feature_maps   # model output
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1)
+function ESPNet(ch_in::Int=3, ch_out::Int=1)   # input/output channels
     model = espnet(ch_in, ch_out;
                    alpha2=5,
                    alpha3=8,
-                   edrops=(0.0, 0.1, 0.3),   # dropout rates for encoder
-                   ddrops=(0.0, 0.0),        # dropout rates for decoder
+                   edrops=(0.0, 0.1, 0.3),
+                   ddrops=(0.0, 0.0),
     )
     act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
     return Chain(model, x->x[end], act)

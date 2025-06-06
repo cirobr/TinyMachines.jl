@@ -16,12 +16,10 @@ function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     chs = defaultChannels .÷ alpha
 
     # contracting path
-    c1 = Chain(CBlock(ch_in, chs[1], activation), Dropout(cdrops[1]))
+    c1 = Chain(CBlock(ch_in, chs[1], activation),   Dropout(cdrops[1]))
     c2 = Chain(MCBlock(chs[1], chs[2], activation), Dropout(cdrops[2]))
-    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))
-    # c3 = Chain(c3, Dropout(0.1))
-    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))
-    # c4 = Chain(c4, Dropout(0.2))
+    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))   # Dropout(0.1)
+    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))   # Dropout(0.2)
 
     # up convolutions
     u3 = UpBlock(chs[4], chs[3], activation)
@@ -29,8 +27,7 @@ function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
-    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))
-    # e3 = Chain(e3, Dropout(0.1))
+    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))    # Dropout(0.1)
     e2 = Chain(CBlock(chs[3], chs[2], activation), Dropout(edrops[2]))
     e1 = Chain(CBlock(chs[2], chs[1], activation), Dropout(edrops[1]))
     
@@ -67,8 +64,8 @@ function (m::unet4)(x::AbstractArray{Float32,4})
     dec0 = m.decoder[:e0](dec1)
     logits = dec0
 
-    # encoder [1:4], decoder [5:8]
-    feature_maps = [enc1, enc2, enc3, enc4, dec3, dec2, dec1, logits]
+    feature_maps = [enc1, enc2, enc3, enc4,     # encoder[1:4]
+                    dec3, dec2, dec1, logits]   # decoder[5:8]
 
     return feature_maps   # model output
 end

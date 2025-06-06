@@ -16,14 +16,11 @@ function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
     chs = defaultChannels .÷ alpha
 
     # contracting path
-    c1 = Chain(CBlock(ch_in, chs[1], activation), Dropout(cdrops[1]))
+    c1 = Chain(CBlock(ch_in, chs[1], activation),   Dropout(cdrops[1]))
     c2 = Chain(MCBlock(chs[1], chs[2], activation), Dropout(cdrops[2]))
-    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))
-    # c3 = Chain(c3, Dropout(0.1))
-    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))
-    # c4 = Chain(c4, Dropout(0.2))
-    c5 = Chain(MCBlock(chs[4], chs[5], activation), Dropout(cdrops[5]))
-    # c5 = Chain(c5, Dropout(0.25))
+    c3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(cdrops[3]))   # Dropout(0.1)
+    c4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(cdrops[4]))   # Dropout(0.2)
+    c5 = Chain(MCBlock(chs[4], chs[5], activation), Dropout(cdrops[5]))   # Dropout(0.25)
 
     # up convolutions
     u4 = UpBlock(chs[5], chs[4], activation)
@@ -32,10 +29,8 @@ function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
     u1 = UpBlock(chs[2], chs[1], activation)
 
     # expansive path
-    e4 = Chain(CBlock(chs[5], chs[4], activation), Dropout(edrops[4]))
-    # e4 = Chain(e4, Dropout(0.2))
-    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))
-    # e3 = Chain(e3, Dropout(0.1))
+    e4 = Chain(CBlock(chs[5], chs[4], activation), Dropout(edrops[4]))   # Dropout(0.2)
+    e3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(edrops[3]))   # Dropout(0.1)
     e2 = Chain(CBlock(chs[3], chs[2], activation), Dropout(edrops[2]))
     e1 = Chain(CBlock(chs[2], chs[1], activation), Dropout(edrops[1]))
     
@@ -76,8 +71,8 @@ function (m::unet5)(x::AbstractArray{Float32,4})
     dec0 = m.decoder[:e0](dec1)
     logits = dec0
 
-    # encoder [1:5], decoder [6:10]
-    feature_maps = [enc1, enc2, enc3, enc4, enc5, dec4, dec3, dec2, dec1, logits]
+    feature_maps = [enc1, enc2, enc3, enc4, enc5,     # encoder[1:5]
+                    dec4, dec3, dec2, dec1, logits]   # decoder[6:10]
 
     return feature_maps   # model output
 end
