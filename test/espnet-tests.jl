@@ -1,8 +1,8 @@
-m = ESPNet(3,2)  # min alphas on article
+m = ESPNet()
 yhat = m(x3)
-@test size(yhat) == (256,256,2,1) || @error "size(yhat) == $(size(yhat))"
+@test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"
 
-m = espnet(3,2, alpha2=5, alpha3=8)  # max alphas on article
+m = espnet(3,2, alpha2=2, alpha3=3)  # min alphas on article
 yhat = m(x3)
 @test size(yhat[1])  == (128,128,3,1)  || @error "yhat == $(size(yhat[1]))"
 @test size(yhat[3])  == (128,128,19,1) || @error "size(yhat[2][3]) == $(size(yhat[2][3]))"

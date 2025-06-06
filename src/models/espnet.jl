@@ -100,13 +100,10 @@ function (m::espnet)(x)
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-                alpha2::Int=2,                 # expansion factor in encoder stage 2
-                alpha3::Int=3,                 # expansion factor in encoder stage 3
-)
+function ESPNet(ch_in::Int=3, ch_out::Int=1)   # input/output channels
     model = espnet(ch_in, ch_out;
-                   alpha2=alpha2,
-                   alpha3=alpha3,
+                   alpha2=5,
+                   alpha3=8,
                    edrops=(0.0, 0.1, 0.3),
                    ddrops=(0.0, 0.0),
     )

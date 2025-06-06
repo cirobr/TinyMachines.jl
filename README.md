@@ -47,33 +47,35 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
 
-    model = UNet5()
+```
+model = UNet5()      # sigmoid output
+model = UNet4(3,1)   # sigmoid output
+```
 
 If ch_out > 1, output mask activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
 
-    model = UNet5(3,2)
+```
+model = UNet5(3,2)   # softmax output
+```
 
 
 #### UNet5, UNet4
+
 ```
 UNet5(3, 1;              # input/output channels
     activation = relu,   # activation function
-    alpha = 1,           # channels divider
 )
 ```
 
 ```
 UNet4(3, 1;              # input/output channels
     activation = relu,   # activation function
-    alpha = 1,           # channels divider
 )
 ```
 
 UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
 
 UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
-
-Argument $alpha$ modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
 
 
 #### MobileUnet
@@ -88,18 +90,15 @@ MobileUNet(3, 1;        # input/output channels
 #### ESPNet
 
 ```
+# Model call is specific for alpha2 = 5, alpha3 = 8
 # ConvPReLU is incorporated, no need to pass activation function
-ESPNet(3, 1;           # input/output channels
-    activation=relu,   # activation function
-    alpha2=2,          # modulation of encoder's expansive block
-    alpha3=3,          # modulation of encoder's expansive block
-)
+ESPNet(3, 1)           # input/output channels
 ```
 
 
 #### Constructors
 
-Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters were previously set up for better performance.
+Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters are chosen for performance.
 
 ```
 unet5(3, 1;                               # input/output channels
@@ -118,6 +117,9 @@ unet4(3, 1;                               # input/output channels
     edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 ```
+
+Argument $alpha$ in unets modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
+
 
 ```
 mobileunet(3, 1;                          # input/output channels
