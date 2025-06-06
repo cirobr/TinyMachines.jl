@@ -73,10 +73,6 @@ UNet4(3, 1;              # input/output channels
 )
 ```
 
-UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
-
-UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
-
 
 #### MobileUnet
 
@@ -117,6 +113,10 @@ unet4(3, 1;                               # input/output channels
     edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 ```
+
+UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
+
+UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
 
 Argument $alpha$ in unets modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
 
