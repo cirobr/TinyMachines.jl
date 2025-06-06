@@ -22,21 +22,21 @@ Mobile-Unet has the same encoder structure as the Mobilenet-V2 classification mo
 
 Implementation follows the following papers:
 * "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
-* MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Paper credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
+* MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
 
 
 ## ESPNet
 ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity (replaced by ReLU in this implementation).
 
-Implementation follows the paper "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Paper credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
+Implementation follows the paper "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
 
 
 ## ConvPReLU
-ConvPReLU is an implementation of the PReLU trainable nonlinearity, which is incorporated into ESPNet. PReLU has been originally described in "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification" ([arXiv](https://arxiv.org/abs/1502.01852)). Paper credits: Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
+ConvPReLU is an implementation of the PReLU trainable nonlinearity, which is incorporated in ESPNet. PReLU has been originally described in "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification" ([arXiv](https://arxiv.org/abs/1502.01852)). Credits: Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
 
 
 ## Credits
-Credits for the original architectures go to the papers' authors, as aforementioned.
+Credits for the original architectures go to the articles' authors, as aforementioned.
 
 Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * GitHub: https://github.com/cirobr
