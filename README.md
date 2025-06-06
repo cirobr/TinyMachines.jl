@@ -13,30 +13,35 @@ Besides regular mask outputs, all models deliver their internal feature maps as 
 
 UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4 has four. Number of channels can be modulated to increase/decrease size.
 
-The standard implementation follows the paper "U-Net: Convolutional Networks for Biomedical Image Segmentation" ([arXiv](https://arxiv.org/abs/1505.04597)). Paper credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
+Reference:
+* "U-Net: Convolutional Networks for Biomedical Image Segmentation" ([arXiv](https://arxiv.org/abs/1505.04597)). Credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
 
 
 ## MobileUNet
 
 Mobile-Unet has the same encoder structure as the Mobilenet-V2 classification model, and the same u-shape and skip connection principles as the U-Net.
 
-Implementation follows the following papers:
-* "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Paper credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
+References:
+* "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
 * MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
 
 
 ## ESPNet
 ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity (replaced by ReLU in this implementation).
 
-Implementation follows the paper "ESPNet: Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
+Reference:
+* Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
 
 
 ## ConvPReLU
-ConvPReLU is an implementation of the PReLU trainable nonlinearity, which is incorporated in ESPNet. PReLU has been originally described in "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification" ([arXiv](https://arxiv.org/abs/1502.01852)). Credits: Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
+ConvPReLU is an implementation of the PReLU trainable nonlinearity, which is incorporated in ESPNet. 
+
+Reference:
+* "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification" ([arXiv](https://arxiv.org/abs/1502.01852)). Credits: Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
 
 
 ## Credits
-Credits for the original architectures go to the articles' authors, as aforementioned.
+Credits for the original architectures go to the references' authors, as aforementioned.
 
 Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 * GitHub: https://github.com/cirobr
@@ -52,7 +57,7 @@ model = UNet5()      # sigmoid output
 model = UNet4(3,1)   # sigmoid output
 ```
 
-If ch_out > 1, output mask activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
+If ch_out > 1, output activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
 
 ```
 model = UNet5(3,2)   # softmax output
