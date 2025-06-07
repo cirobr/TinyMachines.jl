@@ -99,8 +99,8 @@ Constructors are models which allow access to a multitude of hyperparameters. Ea
 unet5(3, 1;                               # input/output channels
     activation = relu,                    # activation function
     alpha = 1,                            # channels divider
-    cdrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-    edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 ```
 
@@ -108,8 +108,8 @@ unet5(3, 1;                               # input/output channels
 unet4(3, 1;                               # input/output channels
     activation = relu,                    # activation function
     alpha = 1,                            # channels divider
-    cdrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-    edrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 ```
 
