@@ -11,7 +11,7 @@ Besides regular mask outputs, all models deliver their internal feature maps as 
 
 ## UNet5, UNet4
 
-UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4 has four. Number of channels can be modulated to increase/decrease size.
+UNet5 is the classic U-Net architecture, with five encoder/decoder levels. UNet4 has four. Number of channels can be modulated to reduce dimensionality.
 
 Reference:
 * "U-Net: Convolutional Networks for Biomedical Image Segmentation" ([arXiv](https://arxiv.org/abs/1505.04597)). Credits: Ronnenberger, Olaf; Fischer, Philipp; and Brox, Thomas.
