@@ -27,7 +27,7 @@ References:
 
 
 ## ESPNet
-ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity (replaced by ReLU in this implementation).
+ESPNet utilizes the Efficient Spatial Pyramid module and the PReLU nonlinearity.
 
 Reference:
 * Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
