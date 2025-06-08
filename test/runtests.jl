@@ -7,6 +7,7 @@ Random.seed!(1234)
 x3 = randn(Float32, (256,256,3,1))
 x8 = randn(Float32, (256,256,8,1))
 
+@info "TinyMachines.jl tests..."
 @testset "TinyMachines.jl" begin
     include("./activationlayers-tests.jl")
     include("./convlayers-tests.jl")

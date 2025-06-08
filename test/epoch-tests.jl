@@ -6,15 +6,24 @@ ys = rand(Bool, 64,64,2,5)
 data = Flux.DataLoader((Xs, ys))
 
 # instantiate models
-models = [
-    ESPNet(3,2),
-    MobileUNet(3,2),
-    UNet4(3,2),
-    UNet5(3,2),
-]
+# models = [
+#     ESPNet(3,2),
+#     MobileUNet(3,2),
+#     UNet4(3,2),
+#     UNet5(3,2),
+# ]
+
+dict = Dict{Any, String}(
+    ESPNet(3,2)     => "ESPNet",
+    MobileUNet(3,2) => "MobileUNet",
+    UNet4(3,2)      => "UNet4",
+    UNet5(3,2)      => "UNet5",
+)
 
 # training
-for model in models
+for (k,v) in dict
+    model = k
+    @info "... training $v"
     loss(model,x,y) = Flux.crossentropy(model(x), y; dims=3)
     opt = Flux.Adam()
     opt_state = Flux.setup(opt, model)
