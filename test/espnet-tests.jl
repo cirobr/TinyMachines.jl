@@ -1,3 +1,5 @@
+@info "espnet tests..."
+
 m = ESPNet()
 yhat = m(x3)
 @test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"

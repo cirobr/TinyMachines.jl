@@ -1,3 +1,5 @@
+@info "epoch tests..."
+
 # dummy data for testing
 Xs = randn(Float32, 64,64,3,5)
 ys = rand(Bool, 64,64,2,5)

@@ -1,3 +1,5 @@
+@info "unets tests..."
+
 # UNet4
 modelcpu = UNet4()
 yhat  = modelcpu(x3)

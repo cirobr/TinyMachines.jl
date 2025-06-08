@@ -1,3 +1,5 @@
+@info "activation layers tests..."
+
 Random.seed!(1234)
 x = randn(Float32, (3,3,1,1))
 yhat = ConvPReLU(1)(x)

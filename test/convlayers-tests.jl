@@ -1,3 +1,5 @@
+@info "conv layers tests..."
+
 @test size(tm.ConvK1(3, 1)(x3)) == (256,256,1,1)
 
 @test size(tm.ConvK2(3, 1)(x3)) == (128,128,1,1)
