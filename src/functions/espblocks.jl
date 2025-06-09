@@ -14,8 +14,8 @@ function esp(ch_in::Int, ch_out::Int;   # input/output channels
     chain =
         [Chain(DilatedConvK3(d, d; dilation=dils[k]),
                BatchNorm(d),
-               # ConvPReLU(d)
-               leakyrelu
+               ConvPReLU(d)
+            #    leakyrelu
         )
         for k in 1:K]
     dilated = Chain(chain...)
@@ -35,8 +35,8 @@ function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
         ConvK1(ch_in, ch_out),                  # pointwise convolution
         ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilated convolution
         BatchNorm(ch_out),
-        # ConvPReLU(ch_out)
-        leakyrelu
+        ConvPReLU(ch_out)
+        # leakyrelu
     )
 end
 
