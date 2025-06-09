@@ -27,12 +27,28 @@ end
 
 
 
-struct ESPBlock1
-    pointwise
-    dilated
-    add::Bool
+function ESPBlock1(ch_in::Int, ch_out::Int;
+                   stride::Int=1,   # downsampling modulated by stride
+                   add::Bool=false
+)
+    @assert stride ∈ 1:2 || error("stride must be 1 or 2")
+    return Chain(
+        ConvK1(ch_in, ch_out),  # pointwise convolution
+        ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilated convolution
+        BatchNorm(ch_out),
+        ConvPReLU(ch_out)
+    )
 end
-@layer ESPBlock1 trainable=(pointwise, dilated)
+
+
+
+
+# struct ESPBlock1
+#     pointwise
+#     dilated
+#     add::Bool
+# end
+# @layer ESPBlock1 trainable=(pointwise, dilated)
 
 struct ESPBlock4
     pointwise
@@ -43,13 +59,13 @@ end
 
 
 
-function ESPBlock1(ch_in::Int, ch_out::Int;
-                   stride::Int=1,   # downsampling modulated by stride
-                   add::Bool=false)
-    pointwise, dilated = ESPBlock(ch_in, ch_out; K=1, stride=stride)
+# function ESPBlock1(ch_in::Int, ch_out::Int;
+#                    stride::Int=1,   # downsampling modulated by stride
+#                    add::Bool=false)
+#     pointwise, dilated = ESPBlock(ch_in, ch_out; K=1, stride=stride)
 
-    return ESPBlock1(pointwise, dilated, add)
-end
+#     return ESPBlock1(pointwise, dilated, add)
+# end
 
 function ESPBlock4(ch_in::Int, ch_out::Int;
                    # no stride, no downsampling
@@ -61,12 +77,12 @@ end
 
 
 
-function (m::ESPBlock1)(x)
-    pw   = m.pointwise(x)                        # pointwise convolution
-    yhat = m.dilated(pw)                         # dilated convolutions
-    if m.add  yhat = x + yhat   end              # residual connection
-    return yhat
-end
+# function (m::ESPBlock1)(x)
+#     pw   = m.pointwise(x)                        # pointwise convolution
+#     yhat = m.dilated(pw)                         # dilated convolutions
+#     if m.add  yhat = x + yhat   end              # residual connection
+#     return yhat
+# end
 
 function (m::ESPBlock4)(x)
     pw = m.pointwise(x)                          # pointwise convolution

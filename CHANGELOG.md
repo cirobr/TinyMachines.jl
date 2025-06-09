@@ -1,3 +1,5 @@
+### v0.3.1
+
 ### v0.3.0
 * Created model constructors: unet5, unet4, mobileunet, espnet.
 * Models with preferred hyperparameters and output activations are now built from constructors.
