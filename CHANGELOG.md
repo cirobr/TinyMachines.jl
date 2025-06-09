@@ -1,4 +1,5 @@
 ### v0.3.1
+* Simplified esp blocks.
 
 ### v0.3.0
 * Created model constructors: unet5, unet4, mobileunet, espnet.

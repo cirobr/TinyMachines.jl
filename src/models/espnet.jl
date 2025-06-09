@@ -1,5 +1,5 @@
 struct espnet
-    downsampling
+    downsampling::MeanPool
     encoder::Chain
     bridges::Chain
     decoder::Chain
@@ -15,7 +15,7 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                 ddrops=(0.0, 0.0),             # dropout rates for decoder
 )
     # downsampling
-    ds = Flux.MeanPool((3,3); pad=SamePad(), stride=2)
+    ds = MeanPool((3,3); pad=SamePad(), stride=2)
 
     # encoder
     e1  = Chain(ConvK3(ch_in, 16; stride=2),
@@ -25,10 +25,10 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
 
     e2a = ESPBlock1(19, 64; stride=2) #, add=false)
-    e2b = Chain(ESPBlock4_alpha(64; alpha=alpha2), Dropout(edrops[2]))    # Dropout(0.1)
+    e2b = Chain(ESPAlpha(64; alpha=alpha2), Dropout(edrops[2]))    # Dropout(0.1)
     
     e3a = ESPBlock1(131, 128; stride=2) #, add=false)
-    e3b = Chain(ESPBlock4_alpha(128; alpha=alpha3), Dropout(edrops[3]))   # Dropout(0.3)
+    e3b = Chain(ESPAlpha(128; alpha=alpha3), Dropout(edrops[3]))   # Dropout(0.3)
 
     # bridges
     b1 = ConvK1(19,  ch_out)

@@ -8,7 +8,7 @@ export ConvPReLU                          # special layers
 import Flux
 import Flux:
     Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv,
-    MaxPool, Upsample, 
+    MaxPool, MeanPool, Upsample, 
     BatchNorm, Dropout,
     identity, relu, relu6, σ, sigmoid, softmax,
     SamePad, kaiming_normal, rand32,

@@ -1,39 +1,36 @@
-"""
-K = number of parallel dilated convolutions = height of pyramid
-d = number of input/output channels for all parallel dilated convolutions
-"""
-function ESPBlock(ch_in::Int, ch_out::Int;
-                  K::Int=1,                  # number of parallel dilated convolutions
-                  stride::Int=1,             # downsampling modulated by stride (1 or 2)
+# ESP block constructor
+# K = number of parallel dilated convolutions = height of pyramid
+# d = number of channels for each parallel dilated convolution
+function esp(ch_in::Int, ch_out::Int;   # input/output channels
+             K::Int=1,                  # number of parallel dilated convolutions
 )
-    @assert K > 0               || error("K must be positive")
-    @assert stride ∈ 1:2        || error("stride must be 1 or 2")
+    @assert K > 1               || error("K must be greater than 1")
     @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by K")
 
     d = ch_out ÷ K
     dils = [2^(k-1) for k in 1:K]
 
     pointwise = ConvK1(ch_in, d)
-    dilated_vec =
-        [Chain(DilatedConvK3(d, d; stride=stride, dilation=dils[k]),
+    chain =
+        [Chain(DilatedConvK3(d, d; dilation=dils[k]),
                BatchNorm(d),
                ConvPReLU(d)
         )
         for k in 1:K]
-    dilated = Chain(dilated_vec...)
+    dilated = Chain(chain...)
 
-    return Chain(pointwise, dilated)
+    return pointwise, dilated
 end
 
 
-
-function ESPBlock1(ch_in::Int, ch_out::Int;
-                   stride::Int=1,   # downsampling modulated by stride
-                #    add::Bool=false
+# ESPBlock1 is a single ESP block with 1 parallel dilated convolution
+# It is a special case of ESPBlock4 with K=1
+function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
+                   stride::Int=1,             # stride for modulated downsampling
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
     return Chain(
-        ConvK1(ch_in, ch_out),  # pointwise convolution
+        ConvK1(ch_in, ch_out),                  # pointwise convolution
         ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilated convolution
         BatchNorm(ch_out),
         ConvPReLU(ch_out)
@@ -42,20 +39,16 @@ end
 
 
 
-
+# ESPBlock4 is a single ESP block with 4 parallel dilated convolutions
 struct ESPBlock4
-    pointwise
-    dilated
-    add::Bool
+    pointwise::Conv
+    dilated::Chain
 end
-@layer ESPBlock4 trainable=(pointwise, dilated)
+@layer ESPBlock4
 
-function ESPBlock4(ch_in::Int, ch_out::Int;
-                   # no stride, no downsampling
-                   add::Bool=false)
-    pointwise, dilated = ESPBlock(ch_in, ch_out; K=4, stride=1)
-
-    return ESPBlock4(pointwise, dilated, add)
+function ESPBlock4(ch_in::Int, ch_out::Int)
+    pointwise, dilated = esp(ch_in, ch_out; K=4)
+    return ESPBlock4(pointwise, dilated)
 end
 
 function (m::ESPBlock4)(x)
@@ -71,13 +64,11 @@ function (m::ESPBlock4)(x)
     sum4 += sum3
 
     yhat = cat(sum1, sum2, sum3, sum4; dims=3)   # concatenate
-
-    return x + yhat
+    return x + yhat                              # residual connection
 end
 
-
-
-function ESPBlock4_alpha(ch::Int; alpha::Int=1)
-    chain = [ESPBlock4(ch, ch; add=true) for k in 1:alpha]
+# ESPAlpha is a chain of ESPBlock4 blocks, where alpha is the number of blocks
+function ESPAlpha(ch::Int; alpha::Int=1)
+    chain = [ESPBlock4(ch, ch) for _ in 1:alpha]
     return Chain(chain...)
 end
