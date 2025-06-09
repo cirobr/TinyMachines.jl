@@ -10,7 +10,7 @@ import Flux:
     Chain, SkipConnection, Parallel, Conv, ConvTranspose, DepthwiseConv,
     MaxPool, MeanPool, Upsample, 
     BatchNorm, Dropout,
-    identity, relu, relu6, σ, sigmoid, softmax,
+    identity, relu, leakyrelu, relu6, σ, sigmoid, softmax,
     SamePad, kaiming_normal, rand32,
     @layer
 

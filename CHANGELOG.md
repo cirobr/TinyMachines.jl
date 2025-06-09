@@ -1,5 +1,6 @@
 ### v0.3.1
 * Simplified esp blocks.
+* ConvPReLU with slow compilation, replaced by Flux.leakyrelu.
 
 ### v0.3.0
 * Created model constructors: unet5, unet4, mobileunet, espnet.

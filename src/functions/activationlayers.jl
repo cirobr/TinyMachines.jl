@@ -1,11 +1,11 @@
 # PReLU
-preluweights(ch_in::Int) = Chain(DepthwiseConv((1, 1), ch_in => ch_in;
+preluweights(ch_in::Int) = DepthwiseConv((1, 1), ch_in => ch_in;
                                  bias=false,
                                  init=rand32
-))
+)
 
 struct ConvPReLU
-    conv::Chain
+    conv
 end
 @layer ConvPReLU
 
