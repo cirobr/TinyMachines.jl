@@ -29,7 +29,7 @@ end
 
 function ESPBlock1(ch_in::Int, ch_out::Int;
                    stride::Int=1,   # downsampling modulated by stride
-                   add::Bool=false
+                #    add::Bool=false
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
     return Chain(
@@ -43,29 +43,12 @@ end
 
 
 
-# struct ESPBlock1
-#     pointwise
-#     dilated
-#     add::Bool
-# end
-# @layer ESPBlock1 trainable=(pointwise, dilated)
-
 struct ESPBlock4
     pointwise
     dilated
     add::Bool
 end
 @layer ESPBlock4 trainable=(pointwise, dilated)
-
-
-
-# function ESPBlock1(ch_in::Int, ch_out::Int;
-#                    stride::Int=1,   # downsampling modulated by stride
-#                    add::Bool=false)
-#     pointwise, dilated = ESPBlock(ch_in, ch_out; K=1, stride=stride)
-
-#     return ESPBlock1(pointwise, dilated, add)
-# end
 
 function ESPBlock4(ch_in::Int, ch_out::Int;
                    # no stride, no downsampling
@@ -74,15 +57,6 @@ function ESPBlock4(ch_in::Int, ch_out::Int;
 
     return ESPBlock4(pointwise, dilated, add)
 end
-
-
-
-# function (m::ESPBlock1)(x)
-#     pw   = m.pointwise(x)                        # pointwise convolution
-#     yhat = m.dilated(pw)                         # dilated convolutions
-#     if m.add  yhat = x + yhat   end              # residual connection
-#     return yhat
-# end
 
 function (m::ESPBlock4)(x)
     pw = m.pointwise(x)                          # pointwise convolution
@@ -98,8 +72,7 @@ function (m::ESPBlock4)(x)
 
     yhat = cat(sum1, sum2, sum3, sum4; dims=3)   # concatenate
 
-    if m.add  yhat = x + yhat   end              # residual connection
-    return yhat
+    return x + yhat
 end
 
 
