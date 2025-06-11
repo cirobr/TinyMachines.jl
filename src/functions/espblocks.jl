@@ -16,12 +16,12 @@ end
 
 
 # ESPBlock4 is a single ESP block with 4 parallel dilated convolutions
-function esp4(ch_in::Int, ch_out::Int)
+function esp4(ch_in::Int, ch_out::Int)   # input/output channels
     K = 4
-    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by 4")
-    d = ch_out ÷ K
     dils = [1, 2, 4, 8]
+    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by 4")
 
+    d = ch_out ÷ K
     pointwise = ConvK1(ch_in, d)
     chain1 = Chain( DilatedConvK3(d, d; dilation=dils[1]), BatchNorm(d), ConvPReLU(d) )
     chain2 = Chain( DilatedConvK3(d, d; dilation=dils[2]), BatchNorm(d), ConvPReLU(d) )
@@ -75,6 +75,8 @@ function ESPAlpha(ch::Int; alpha::Int=1)
     @assert length(chain) == 10 || error("chain must have 10 blocks")
     return chain[1:alpha]
 end
+
+
 
 
 
