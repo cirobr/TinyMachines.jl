@@ -24,7 +24,7 @@ const kf = 1.f-2
 include("./functions/convlayers.jl")         # convolutional layers (custom conv + activation)
 include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
-include("./functions/irblocks.jl")           # inverted residual blocks
+include("./functions/irblocks.jl")           ### TODO: eliminate recursions   # inverted residual blocks
 include("./functions/espblocks.jl")          # esp blocks
 
 # models
