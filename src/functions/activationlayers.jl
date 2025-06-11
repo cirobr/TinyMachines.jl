@@ -14,13 +14,5 @@ function ConvPReLU(ch_in::Int)
 end
 
 function (m::ConvPReLU)(x)
-    return max.(x, 0) .+ m.conv(min.(x, 0))
+    return fpos.(float(x)) .+ (m.conv(fneg.(float(x))))
 end
-
-# function (m::ConvPReLU)(x)
-#     xmax = max.(x, 0)
-#     xmin = min.(x, 0)
-#     xconv = m.conv(xmin)
-#     # @assert size(xmax) == size(xconv) "Size mismatch: $(size(xmax)) != $(size(xconv))"
-#     return xmax + xconv
-# end

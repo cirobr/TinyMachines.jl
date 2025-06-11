@@ -1,6 +1,6 @@
 ### v0.3.2
 * Recursions eliminated from ESP blocks (faster compilation).
-* ConvPReLU version.
+* Faster ConvPReLU version.
 
 ### v0.3.1
 * Simplified esp blocks.

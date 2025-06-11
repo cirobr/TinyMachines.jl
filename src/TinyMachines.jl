@@ -27,6 +27,8 @@ include("./functions/unetblocks.jl")         # unet blocks
 include("./functions/irblocks.jl")           ### TODO: eliminate recursions   # inverted residual blocks
 include("./functions/espblocks.jl")          # esp blocks
 
+include("./functions/others.jl")            # other functions (e.g. fpos(), fneg(), etc.)
+
 # models
 const defaultChannels = [64, 128, 256, 512, 1024]
 
