@@ -1,10 +1,14 @@
+### v0.3.3
+* MobileUNet: Recursions eliminated from irblocks.
+* ESPNet: ConvPReLU replaced by leakyrelu due to long compilation time.
+
 ### v0.3.2
-* Recursions eliminated from ESP blocks (faster compilation).
+* ESPNet: Recursions eliminated from ESP blocks (faster compilation).
 * Faster ConvPReLU version.
 
 ### v0.3.1
-* Simplified esp blocks.
-* ConvPReLU version.
+* ESPNet: Simplified esp blocks.
+* ConvPReLU introduced.
 
 ### v0.3.0
 * Created model constructors: unet5, unet4, mobileunet, espnet.

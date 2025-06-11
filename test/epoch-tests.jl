@@ -7,7 +7,7 @@ data = Flux.DataLoader((Xs, ys))
 
 dict = Dict{Any, String}(
     ESPNet(3,2)     => "ESPNet",
-    # MobileUNet(3,2) => "MobileUNet",
+    MobileUNet(3,2) => "MobileUNet",
     # UNet4(3,2)      => "UNet4",
     # UNet5(3,2)      => "UNet5",
 )
