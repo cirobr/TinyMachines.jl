@@ -21,13 +21,13 @@ const w3 = 3 * 3
 const w4 = 4 * 4
 const kf = 1.f-2
 
+# include("./functions/misc.jl")               # miscellaneous functions (e.g. fpos(), fneg(), etc.)
+
 include("./functions/convlayers.jl")         # convolutional layers (custom conv + activation)
 # include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
-include("./functions/irblocks.jl")           ### TODO: eliminate recursions   # inverted residual blocks
+include("./functions/irblocks.jl")           # inverted residual blocks
 include("./functions/espblocks.jl")          # esp blocks
-
-# include("./functions/misc.jl")               # miscellaneous functions (e.g. fpos(), fneg(), etc.)
 
 # models
 const defaultChannels = [64, 128, 256, 512, 1024]
