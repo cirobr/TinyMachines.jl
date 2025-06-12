@@ -59,7 +59,7 @@ function (m::ESPBlock4)(x)
     return x + yhat                              # residual connection
 end
 
-function ESPAlpha(ch::Int; alpha::Int=1)
+function ChainedESPBlock4(ch::Int; alpha::Int=1)
     @assert alpha ∈ 1:10 || error("alpha must be between 1 and 10")
     chain = Chain(ESPBlock4(ch, ch),
                   ESPBlock4(ch, ch),
