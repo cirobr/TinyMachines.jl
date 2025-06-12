@@ -6,64 +6,53 @@ end
 @layer mobileunet
 
 
-function mobileunet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
-                    activation::Function=relu6,    # activation function
-                    edrops=(0.0, 0.0, 0.0, 0.0, 0.0), # dropout rates
-                    ddrops=(0.0, 0.0, 0.0, 0.0),     # dropout rates
+function mobileunet(ch_in::Int=3, ch_out::Int=1;       # input/output channels
+                    activation::Function=relu6,        # activation function
+                    edrops=(0.0, 0.0, 0.0, 0.0, 0.0),  # dropout rates
+                    ddrops=(0.0, 0.0, 0.0, 0.0),       # dropout rates
 )
     # encoder
     d1 = Chain( ConvK3(ch_in, 32, stride=2),
                 BatchNorm(32, activation),
-                # BBlock(32, 16, activation, stride=1, t=1, n=1),
                 IRBlock1(32, 16, activation, t=1),
-                Dropout(edrops[1]),   # Dropout(0.05)
+                Dropout(edrops[1]),
     )
-    # d2 = Chain( BBlock(16, 24, activation, stride=2, t=6, n=2),
     d2 = Chain( IRBlock2(16, 24, activation, t=6),
                 ChainedIRBlock1(24, activation, t=6, n=1),
-                Dropout(edrops[2]),   # Dropout(0.05)
+                Dropout(edrops[2]),
     )
-    # d3 = Chain( BBlock(24, 32, activation, stride=2, t=6, n=3),
     d3 = Chain( IRBlock2(24, 32, activation, t=6),
                 ChainedIRBlock1(32, activation, t=6, n=2),
-                Dropout(edrops[3]),   # Dropout(0.05)
+                Dropout(edrops[3]),
     )
-    # d4 = Chain( BBlock(32, 64, activation, stride=2, t=6, n=4),
     d4 = Chain( IRBlock2(32, 64, activation, t=6),
                 ChainedIRBlock1(64, activation, t=6, n=3),
-                # BBlock(64, 96, activation, stride=1, t=6, n=3),
                 IRBlock1(64, 96, activation, t=6),
                 ChainedIRBlock1(96, activation, t=6, n=2),
-                Dropout(edrops[4]),   # Dropout(0.1)
+                Dropout(edrops[4]),
     )
-    # d5 = Chain( BBlock(96, 160, activation, stride=2, t=6, n=3),
     d5 = Chain( IRBlock2(96, 160, activation, t=6),
                 ChainedIRBlock1(160, activation, t=6, n=2),
-                # BBlock(160, 320, activation, stride=1, t=6, n=1),
                 IRBlock1(160, 320, activation, t=6),
                 ConvK1(320, 1280),
                 BatchNorm(1280, activation),
-                Dropout(edrops[5]),   # Dropout(0.2)
+                Dropout(edrops[5]),
     )
 
     # decoder
     ct1 = Chain(ConvTranspK4(1280, 96), BatchNorm(96, activation))
-    # ir1 = BBlock(192, 96, activation, stride=1, t=1, n=1)
     ir1 = IRBlock1(192, 96, activation, t=1)
     ir1 = Chain(ir1, Dropout(ddrops[1]))
 
     ct2 = Chain(ConvTranspK4(96, 32), BatchNorm(32, activation))
-    # ir2 = BBlock(64, 32, activation, stride=1, t=1, n=1)
     ir2 = IRBlock1(64, 32, activation, t=1)
     ir2 = Chain(ir2, Dropout(ddrops[2]))
     
     ct3 = Chain(ConvTranspK4(32, 24), BatchNorm(24, activation))
-    # ir3 = BBlock(48, 24, activation, stride=1, t=1, n=1)
     ir3 = IRBlock1(48, 24, activation, t=1)
     ir3 = Chain(ir3, Dropout(ddrops[3]))
 
     ct4 = Chain(ConvTranspK4(24, 16), BatchNorm(16, activation))
-    # ir4 = BBlock(32, 16, activation, stride=1, t=1, n=1)
     ir4 = IRBlock1(32, 16, activation, t=1)
     ir4 = Chain(ir4, Dropout(ddrops[4]))
 

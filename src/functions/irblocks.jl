@@ -65,6 +65,6 @@ function ChainedIRBlock1(ch::Int,                  # input/output channels
         IRBlock1(ch, ch, activation, t=t),
     )
 
-    @assert length(chain) == 10 || error("ChainIRBlock1 must have exactly 10 blocks")
+    # @assert length(chain) == 10 || error("ChainedIRBlock1 must have 10 blocks")
     return chain[1:n]
 end

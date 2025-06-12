@@ -60,7 +60,7 @@ function (m::ESPBlock4)(x)
 end
 
 function ChainedESPBlock4(ch::Int; alpha::Int=1)
-    @assert alpha ∈ 1:10 || error("alpha must be between 1 and 10")
+    @assert alpha ∈ 1:10 || error("alpha must be in the range 1:10")
     chain = Chain(ESPBlock4(ch, ch),
                   ESPBlock4(ch, ch),
                   ESPBlock4(ch, ch),
@@ -72,6 +72,6 @@ function ChainedESPBlock4(ch::Int; alpha::Int=1)
                   ESPBlock4(ch, ch),
                   ESPBlock4(ch, ch),
     )
-    @assert length(chain) == 10 || error("chain must have 10 blocks")
+    # @assert length(chain) == 10 || error("ChainedESPBlock4 must have 10 blocks")
     return chain[1:alpha]
 end

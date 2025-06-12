@@ -17,9 +17,9 @@ function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
     # encoder
     e1 = Chain(CBlock(ch_in, chs[1], activation),   Dropout(edrops[1]))
     e2 = Chain(MCBlock(chs[1], chs[2], activation), Dropout(edrops[2]))
-    e3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(edrops[3]))   # Dropout(0.1)
-    e4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(edrops[4]))   # Dropout(0.2)
-    e5 = Chain(MCBlock(chs[4], chs[5], activation), Dropout(edrops[5]))   # Dropout(0.25)
+    e3 = Chain(MCBlock(chs[2], chs[3], activation), Dropout(edrops[3]))
+    e4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(edrops[4]))
+    e5 = Chain(MCBlock(chs[4], chs[5], activation), Dropout(edrops[5]))
 
     # up convolutions
     u4 = UpBlock(chs[5], chs[4], activation)
@@ -28,8 +28,8 @@ function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
     u1 = UpBlock(chs[2], chs[1], activation)
 
     # decoder
-    d4 = Chain(CBlock(chs[5], chs[4], activation), Dropout(ddrops[4]))   # Dropout(0.2)
-    d3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(ddrops[3]))   # Dropout(0.1)
+    d4 = Chain(CBlock(chs[5], chs[4], activation), Dropout(ddrops[4]))
+    d3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(ddrops[3]))
     d2 = Chain(CBlock(chs[3], chs[2], activation), Dropout(ddrops[2]))
     d1 = Chain(CBlock(chs[2], chs[1], activation), Dropout(ddrops[1]))
     
