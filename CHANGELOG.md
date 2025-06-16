@@ -1,3 +1,6 @@
+### v0.3.1
+* Fix sigmoid output activation.
+
 ### v0.3.0
 * MobileUNet: Recursions eliminated from irblocks.
 * ESPNet: ConvPReLU replaced by leakyrelu due to long compilation time.

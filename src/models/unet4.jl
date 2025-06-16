@@ -79,6 +79,6 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                   edrops=(0.0, 0.0, 0.1, 0.2),
                   ddrops=(0.0, 0.0, 0.1),
     )
-    act = ch_out == 1 ? x -> σ(x) : x -> softmax(x; dims=3)
+    act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
     return Chain(model, x->x[end], act)
 end
