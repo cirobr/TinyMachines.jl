@@ -2,9 +2,28 @@
 downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
 
 
-# ESPBlock1 is a single ESP block with 1 dilated convolution, plus stride for downsampling
-function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
-                   stride::Int=1,             # stride for modulated downsampling
+# generic ESP block with K dilated convolutions
+function esp(ch_in::Int, ch_out::Int; K::Int=4)   # input/output channels
+    @assert ch_out % K == 0 || error("ch_out must be divisible by K")
+
+    d = ch_out ÷ K
+    dils = [2^(k-1) for k in 1:K]  # dilated indices
+
+    pointwise = ConvK1(ch_in, d)
+    vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
+              BatchNorm(d),
+              ConvPReLU(d)
+              # leakyrelu
+              ) for k in 1:K]
+    dilated = Chain(vector...)
+
+    return pointwise, dilated
+end
+
+
+# ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
+function ESPBlock1(ch_in::Int, ch_out::Int;     # input/output channels
+                   stride::Int=1,               # stride for modulated downsampling
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
     return Chain(
@@ -17,24 +36,7 @@ function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
 end
 
 
-# ESPBlock4 is a single ESP block with 4 parallel dilated convolutions, and no stride
-function esp4(ch_in::Int, ch_out::Int)   # input/output channels
-    K = 4
-    dils = [1, 2, 4, 8]
-    @assert ch_out % K == 0 || error("ch_out must be divisible by 4")
-
-    d = ch_out ÷ K
-    pointwise = ConvK1(ch_in, d)
-    vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
-              BatchNorm(d),
-              ConvPReLU(d)
-              # leakyrelu
-              ) for k in 1:K]
-    dilated = Chain(vector...)
-
-    return pointwise, dilated
-end
-
+# ESPBlock4 is a ESP block with 4 parallel dilated convolutions, and no stride
 struct ESPBlock4
     pointwise::Conv
     dilated::Chain
@@ -42,7 +44,7 @@ end
 @layer ESPBlock4
 
 function ESPBlock4(ch_in::Int, ch_out::Int)
-    pointwise, dilated = esp4(ch_in, ch_out)
+    pointwise, dilated = esp(ch_in, ch_out, K=4)
     return ESPBlock4(pointwise, dilated)
 end
 
