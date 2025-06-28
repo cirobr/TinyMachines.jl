@@ -21,6 +21,11 @@ function esp(ch_in::Int, ch_out::Int; K::Int=4)   # input/output channels
 end
 
 
+struct ESPBlock1
+    conv::Conv
+end
+@layer ESPBlock1
+
 # ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
 function ESPBlock1(ch_in::Int, ch_out::Int;     # input/output channels
                    stride::Int=1,               # stride for modulated downsampling
@@ -33,6 +38,12 @@ function ESPBlock1(ch_in::Int, ch_out::Int;     # input/output channels
         ConvPReLU(ch_out)
         # leakyrelu
     )
+end
+
+function (m::ESPBlock1)(x)
+    yhat = m.conv(x)                  # pointwise convolution
+    stride = size(x) != size(yhat)    # check if downsampling is applied
+    return stride ? yhat : x + yhat   # no residual connection if downsampling
 end
 
 
