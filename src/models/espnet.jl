@@ -1,5 +1,4 @@
 struct espnet
-    downsampling::MeanPool
     encoder::Chain
     bridges::Chain
     decoder::Chain
@@ -14,14 +13,11 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                 edrops=(0.0, 0.0, 0.0),        # dropout rates for encoder
                 ddrops=(0.0, 0.0),             # dropout rates for decoder
 )
-    # downsampling
-    ds = MeanPool((3,3); pad=SamePad(), stride=2)
-
     # encoder
     e1  = Chain(ConvK3(ch_in, 16; stride=2),
                 BatchNorm(16),
-                # ConvPReLU(16),
-                leakyrelu,
+                ConvPReLU(16),
+                # leakyrelu,
                 Dropout(edrops[1]),
     )
 
@@ -39,15 +35,15 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     # decoder
     d2 = Chain(ConvTranspK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
-            #    ConvPReLU(ch_out),
-               leakyrelu,
+               ConvPReLU(ch_out),
+            #    leakyrelu,
                Dropout(ddrops[2]),
     )
     d1 = Chain(ESPBlock1(2*ch_out, ch_out; stride=1),
                ConvTranspK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
-            #    ConvPReLU(ch_out),
-               leakyrelu,
+               ConvPReLU(ch_out),
+            #    leakyrelu,
                Dropout(ddrops[1]),
     )
     d0 = Chain(ConvK1(2*ch_out, ch_out),
@@ -55,25 +51,26 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
 
     # output chains
-    downsampling = ds
     encoder = Chain(e1=e1, e2a=e2a, e2b=e2b, e3a=e3a, e3b=e3b)
     bridges = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d2=d2, d1=d1, d0=d0)
 
-    return espnet(downsampling, encoder, bridges, decoder)   # struct output
+    return espnet(encoder, bridges, decoder)   # struct output
 end
 
 
 function (m::espnet)(x)
-    # encoder
-    ds1 = m.downsampling(x)
-    out1 = m.encoder[:e1](x)
-    ct1 = cat(ds1, out1, dims=3)
+    # input image downsampling
+    x1 = downsampling(x)
+    x2 = downsampling(x1)
 
-    ds2 = m.downsampling(ds1)
+    # encoder
+    out1 = m.encoder[:e1](x)
+    ct1 = cat(x1, out1, dims=3)
+
     out2a = m.encoder[:e2a](ct1)
     out2b = m.encoder[:e2b](out2a)
-    ct2 = cat(ds2, out2a, out2b, dims=3)
+    ct2 = cat(x2, out2a, out2b, dims=3)
     
     out3a = m.encoder[:e3a](ct2)
     out3b = m.encoder[:e3b](out3a)
@@ -93,12 +90,11 @@ function (m::espnet)(x)
     d1 = m.decoder[:d1](ct4)
     ct5 = cat(b1, d1, dims=3)
 
-    d0 = m.decoder[:d0](ct5)
-    logits = d0
+    logits = m.decoder[:d0](ct5)
 
-    feature_maps = [ds1, out1, ct1, ds2, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:10]
-                    b1, b2, b3,                                                # bridges [11:13]
-                    d2, ct4, d1, ct5, logits]                                  # decoder [14:18]
+    feature_maps = [out1, ct1, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:8]
+                    b1, b2, b3,                                      # bridges [9:11]
+                    d2, ct4, d1, ct5, logits]                        # decoder [12:16]
     return feature_maps
 end
 

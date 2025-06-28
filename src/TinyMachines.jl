@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, MobileUNet, ESPNet   # models
 export unet5, unet4, mobileunet, espnet   # constructors
-# export ConvPReLU                          # special layers
+export ConvPReLU                          # special layers
 
 import Flux
 import Flux:
@@ -21,10 +21,10 @@ const w3 = 3 * 3
 const w4 = 4 * 4
 const kf = 1.f-2
 
-# include("./functions/misc.jl")               # miscellaneous functions (e.g. fpos(), fneg(), etc.)
+include("./functions/misc.jl")               # miscellaneous functions (e.g. fpos(), fneg(), etc.)
 
 include("./functions/convlayers.jl")         # convolutional layers (custom conv + activation)
-# include("./functions/activationlayers.jl")   # activation layers (prelu)
+include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
 include("./functions/irblocks.jl")           # inverted residual blocks
 include("./functions/espblocks.jl")          # esp blocks

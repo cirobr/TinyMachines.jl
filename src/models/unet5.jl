@@ -67,8 +67,7 @@ function (m::unet5)(x::AbstractArray{Float32,4})
     cat1 = cat(enc1, up1; dims=3)
     dec1 = m.decoder[:d1](cat1)
 
-    dec0 = m.decoder[:d0](dec1)
-    logits = dec0
+    logits = m.decoder[:d0](dec1)
 
     feature_maps = [enc1, enc2, enc3, enc4, enc5,     # encoder[1:5]
                     dec4, dec3, dec2, dec1, logits]   # decoder[6:10]

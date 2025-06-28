@@ -1,5 +1,9 @@
+### v0.3.2
+* Cleanup code.
+* ConvPReLU returns.
+
 ### v0.3.1
-* Fix sigmoid output activation.
+* Fixed sigmoid output activation.
 
 ### v0.3.0
 * MobileUNet: Recursions eliminated from irblocks.

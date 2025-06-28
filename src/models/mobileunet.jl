@@ -83,8 +83,8 @@ function (m::mobileunet)(x)
     l6 = m.ir[3](cat(l5, x2; dims=3))
     l7 = m.ct[4](l6)
     l8 = m.ir[4](cat(l7, x1; dims=3))
-    l9 = m.ct[5](l8)
-    logits = l9
+    
+    logits = m.ct[5](l8)
 
     # output
     feature_maps = [x1, x2, x3, x4, x5,                       # encoder [1:5]

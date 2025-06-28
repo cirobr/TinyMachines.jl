@@ -1,33 +1,36 @@
-# ESPBlock1 is a single ESP block with 1 parallel dilated convolution
-# It is a special case of ESPBlock4 with K=1
+# input image downsampling
+downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
+
+
+# ESPBlock1 is a single ESP block with 1 dilated convolution, plus stride for downsampling
 function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
                    stride::Int=1,             # stride for modulated downsampling
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
     return Chain(
         ConvK1(ch_in, ch_out),                  # pointwise convolution
-        ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilated convolution
+        ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilation & downsampling
         BatchNorm(ch_out),
-        # ConvPReLU(ch_out)
-        leakyrelu
+        ConvPReLU(ch_out)
+        # leakyrelu
     )
 end
 
 
-
-# ESPBlock4 is a single ESP block with 4 parallel dilated convolutions
+# ESPBlock4 is a single ESP block with 4 parallel dilated convolutions, and no stride
 function esp4(ch_in::Int, ch_out::Int)   # input/output channels
     K = 4
     dils = [1, 2, 4, 8]
-    @assert mod(ch_out, K) == 0 || error("ch_out must be divisible by 4")
+    @assert ch_out % K == 0 || error("ch_out must be divisible by 4")
 
     d = ch_out ÷ K
     pointwise = ConvK1(ch_in, d)
-    chain1 = Chain( DilatedConvK3(d, d; dilation=dils[1]), BatchNorm(d), leakyrelu )
-    chain2 = Chain( DilatedConvK3(d, d; dilation=dils[2]), BatchNorm(d), leakyrelu )
-    chain3 = Chain( DilatedConvK3(d, d; dilation=dils[3]), BatchNorm(d), leakyrelu )
-    chain4 = Chain( DilatedConvK3(d, d; dilation=dils[4]), BatchNorm(d), leakyrelu )
-    dilated = Chain(chain1, chain2, chain3, chain4)
+    vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
+              BatchNorm(d),
+              ConvPReLU(d)
+              # leakyrelu
+              ) for k in 1:K]
+    dilated = Chain(vector...)
 
     return pointwise, dilated
 end
@@ -60,18 +63,6 @@ function (m::ESPBlock4)(x)
 end
 
 function ChainedESPBlock4(ch::Int; alpha::Int=1)
-    @assert alpha ∈ 1:10 || error("alpha must be in the range 1:10")
-    chain = Chain(ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-                  ESPBlock4(ch, ch),
-    )
-    # @assert length(chain) == 10 || error("ChainedESPBlock4 must have 10 blocks")
-    return chain[1:alpha]
+    vector = [ESPBlock4(ch, ch) for _ in 1:alpha]
+    return Chain(vector...)
 end

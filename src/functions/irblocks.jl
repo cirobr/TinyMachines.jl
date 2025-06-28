@@ -51,20 +51,6 @@ function ChainedIRBlock1(ch::Int,                  # input/output channels
                          t::Int,                   # BRBlock internal channel expansion factor
                          n::Int                    # number of chained blocks
 )
-    @assert n ∈ 1:10 || error("n must be in the range 1:10")
-    chain = Chain(
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-        IRBlock1(ch, ch, activation, t=t),
-    )
-
-    # @assert length(chain) == 10 || error("ChainedIRBlock1 must have 10 blocks")
-    return chain[1:n]
+    vector = [IRBlock1(ch, ch, activation, t=t) for _ in 1:n]
+    return Chain(vector...)
 end
