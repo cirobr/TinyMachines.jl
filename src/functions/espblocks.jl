@@ -21,12 +21,12 @@ function esp(ch_in::Int, ch_out::Int; K::Int=4)   # input/output channels
 end
 
 
+# ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
 struct ESPBlock1
     chain::Conv
 end
 @layer ESPBlock1
 
-# ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
 function ESPBlock1(ch_in::Int, ch_out::Int;     # input/output channels
                    stride::Int=1,               # stride for modulated downsampling
 )
