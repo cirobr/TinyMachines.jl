@@ -1,6 +1,6 @@
 ### v0.3.2
-* Cleanup code.
-* ConvPReLU returns.
+* Cleanup, more efficient code.
+* ESPNet: ConvPReLU returned.
 
 ### v0.3.1
 * Fixed sigmoid output activation.
