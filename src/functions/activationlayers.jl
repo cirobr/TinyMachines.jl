@@ -18,7 +18,7 @@ end
 
 
 struct ArrayPReLU
-    v::Array
+    v::AbstractArray
 end
 @layer ArrayPReLU
 
