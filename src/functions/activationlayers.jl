@@ -14,5 +14,6 @@ function ConvPReLU(ch_in::Int)
 end
 
 function (m::ConvPReLU)(x)
-    return fpos.(float(x)) .+ (m.conv(fneg.(float(x))))
+    # return fpos.(float(x)) .+ (m.conv(fneg.(float(x))))
+    return fpos.(x) .+ (m.conv(fneg.(x)))
 end
