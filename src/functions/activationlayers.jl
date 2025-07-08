@@ -18,7 +18,8 @@ end
 
 
 struct ArrayPReLU
-    v::AbstractArray
+    # v::AbstractArray
+    v::Array{Float32, 3}
 end
 @layer ArrayPReLU
 
