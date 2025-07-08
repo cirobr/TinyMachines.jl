@@ -1,5 +1,5 @@
 ### v0.3.3
-* ConvPReLU improved speed.
+* PReLU improved compile speed.
 
 ### v0.3.2
 * Cleanup, more efficient code.

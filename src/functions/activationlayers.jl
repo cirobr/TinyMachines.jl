@@ -18,16 +18,19 @@ end
 
 
 struct ArrayPReLU
-    # v::AbstractArray
-    v::Array{Float32, 3}
+    # vector::AbstractArray
+    vector::Array{Float32, 3}
 end
 @layer ArrayPReLU
 
 function ArrayPReLU(ch::Int)
-    v = rand32(1,1,ch)
-    return ArrayPReLU(v)
+    vector = rand32(1,1,ch)
+    return ArrayPReLU(vector)
 end
 
 function (m::ArrayPReLU)(x)
-    return fpos.(x) .+ (m.v .* fneg.(x))
+    return fpos.(x) .+ (m.vector .* fneg.(x))
 end
+
+### working prelu
+PReLU = ArrayPReLU

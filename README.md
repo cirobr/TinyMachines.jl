@@ -33,8 +33,8 @@ Reference:
 * Efficient Spatial Pyramid of Dilated Convolutions for Semantic Segmentation" ([arXiv](https://arxiv.org/abs/1803.06815)). Credits: Mehta, Sachin; Rastegari, Mohammad; Caspi, Anat; Shapiro, Linda; and Hajishirzi, Hannaneh.
 
 
-## ConvPReLU
-ConvPReLU is an implementation of the PReLU trainable nonlinearity, which is incorporated in ESPNet. 
+## PReLU
+PReLU is a trainable nonlinearity, which is incorporated in ESPNet.
 
 Reference:
 * "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification" ([arXiv](https://arxiv.org/abs/1502.01852)). Credits: Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
@@ -139,8 +139,8 @@ espnet(3, 1;                              # input/output channels
 ```
 
 
-## ConvPReLU
+## PReLU
 
 ```
-ConvPReLU(ch_in)   # number of input channels
+PReLU(ch)   # number of channels
 ```

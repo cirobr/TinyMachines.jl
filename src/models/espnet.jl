@@ -6,7 +6,7 @@ end
 @layer espnet
 
 
-# ConvPReLU is incorporated, no need to pass activation function
+# PReLU is incorporated, no need to pass activation function
 function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                 alpha2::Int=2,                 # expansion factor in encoder stage 2
                 alpha3::Int=3,                 # expansion factor in encoder stage 3
@@ -16,7 +16,7 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     # encoder
     e1  = Chain(ConvK3(ch_in, 16; stride=2),
                 BatchNorm(16),
-                ConvPReLU(16),
+                PReLU(16),
                 # leakyrelu,
                 Dropout(edrops[1]),
     )
@@ -35,14 +35,14 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     # decoder
     d2 = Chain(ConvTranspK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
-               ConvPReLU(ch_out),
+               PReLU(ch_out),
             #    leakyrelu,
                Dropout(ddrops[2]),
     )
     d1 = Chain(ESPBlock1(2*ch_out, ch_out; stride=1),
                ConvTranspK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
-               ConvPReLU(ch_out),
+               PReLU(ch_out),
             #    leakyrelu,
                Dropout(ddrops[1]),
     )

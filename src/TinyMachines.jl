@@ -3,7 +3,7 @@ module TinyMachines
 
 export UNet5, UNet4, MobileUNet, ESPNet   # models
 export unet5, unet4, mobileunet, espnet   # constructors
-export ConvPReLU, ArrayPReLU              # activation layers
+export PReLU                         # activation layer
 
 import Flux
 import Flux:
@@ -27,7 +27,7 @@ include("./functions/convlayers.jl")         # convolutional layers (custom conv
 include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
 include("./functions/irblocks.jl")           # inverted residual blocks
-include("./functions/espblocks-array.jl")          # esp blocks
+include("./functions/espblocks.jl")          # esp blocks
 
 # models
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -35,7 +35,7 @@ const defaultChannels = [64, 128, 256, 512, 1024]
 include("./models/unet5.jl")
 include("./models/unet4.jl")
 include("./models/mobileunet.jl")
-include("./models/espnet-array.jl")
+include("./models/espnet.jl")
 
 
 end   # module
