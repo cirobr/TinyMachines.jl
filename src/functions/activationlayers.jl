@@ -32,5 +32,7 @@ function (m::ArrayPReLU)(x)
     return fpos.(x) .+ (m.vector .* fneg.(x))
 end
 
+
+
 ### working prelu
 PReLU = ArrayPReLU
