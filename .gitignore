@@ -1,8 +1,11 @@
 /Manifest.toml
 .vscode/
+coco/
+coco
 dataset/
-dev/models/
-dev/tblogs/
-examples/models/
-examples/tblogs/
+models/
+tblogs/
 temp/
+temp
+tmp/
+tmp
