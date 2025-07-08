@@ -12,5 +12,5 @@ function ConvPReLU(ch::Int)
 end
 
 function (m::ConvPReLU)(x)
-    return fpos.(x) .+ (m.conv(fneg.(x)))
+    return fpos.(x) #.+ (m.conv(fneg.(x)))
 end
