@@ -3,8 +3,8 @@
 coco/
 coco
 dataset/
-models/
-tblogs/
+dev/models/
+dev/tblogs/
 temp/
 temp
 tmp/
