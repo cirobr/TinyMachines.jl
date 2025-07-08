@@ -1,3 +1,6 @@
+### v0.3.3
+* ConvPReLU improved speed.
+
 ### v0.3.2
 * Cleanup, more efficient code.
 * ESPNet: ConvPReLU returned.
