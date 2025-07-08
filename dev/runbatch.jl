@@ -10,7 +10,7 @@ Template for executing multiple scripts in series.
 envpath    = "./"
 cudadevice = 1
 nepochs    = 1 #400
-debugflag  = true
+debugflag  = false
 
 ### environment
 using Pkg
