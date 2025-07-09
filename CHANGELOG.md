@@ -1,3 +1,7 @@
+### v0.3.4
+* PReLU improved compile speed.
+* Cleanup code.
+
 ### v0.3.3
 * PReLU improved compile speed.
 
