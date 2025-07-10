@@ -6,7 +6,7 @@
 
 A collection of tiny machine learning models for semantic image segmentation in IoT devices, written in Julia/Flux.
 
-Besides regular mask outputs, all models deliver their internal feature maps as outputs, which are useful for model compression through knowledge distillation.
+Besides regular mask outputs, all models deliver their internal feature maps as additional outputs, which are useful for model compression through knowledge distillation.
 
 
 ## UNet5, UNet4
@@ -21,9 +21,8 @@ Reference:
 
 Mobile-Unet has the same encoder structure as the Mobilenet-V2 classification model, and the same u-shape and skip connection principles as the U-Net.
 
-References:
+Reference:
 * "Mobile-Unet: An efficient convolutional neural network for fabric defect detection" ([doi.org](https://doi.org/10.1177/0040517520928604)). Credits: Jing, Junfeng; Wang, Zhen; Ratsch, Matthias; and Zhang, Huanhuan.
-* MobileNetV2: Inverted Residuals and Linear Bottleneck" ([arxiv]https://doi.org/10.48550/arXiv.1801.04381). Credits: Sandler, Mark; Howard, Andrew; Zhu, Menglong; Zhmoginov, Andrey; and Chen, Liang-Chen.
 
 
 ## ESPNet
