@@ -45,7 +45,7 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                act_ch_out,
                Dropout(ddrops[2]),
     )
-    d1 = Chain(ESPBlock1(2*ch_out, ch_out; stride=1),
+    d1 = Chain(ESPBlock1(2*ch_out, ch_out; activation=activation, stride=1),
                ConvTranspK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
                act_ch_out,

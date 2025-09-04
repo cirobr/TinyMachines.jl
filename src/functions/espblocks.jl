@@ -4,8 +4,9 @@ downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
 
 # generic ESP block with K dilated convolutions
 function esp(ch_in::Int, ch_out::Int;   # input/output channels
-             activation="prelu",        # activation function
-             K::Int=4)                  # number of dilated convolutions
+             activation,                # activation function
+             K::Int                     # number of dilated convolutions
+)
     @assert ch_out % K == 0 || error("ch_out must be divisible by K")
 
     d = ch_out ÷ K
@@ -31,8 +32,8 @@ end
 @layer ESPBlock1
 
 function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
-                   activation="prelu",        # activation function
-                   stride::Int=1,             # stride for downsampling modulation
+                   activation,                # activation function
+                   stride::Int,               # stride for downsampling modulation
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
 
@@ -60,7 +61,7 @@ struct ESPBlock4
 end
 @layer ESPBlock4
 
-function ESPBlock4(ch_in::Int, ch_out::Int; activation="prelu")
+function ESPBlock4(ch_in::Int, ch_out::Int; activation)
     pointwise, dilated = esp(ch_in, ch_out, activation=activation, K=4)
     return ESPBlock4(pointwise, dilated)
 end
