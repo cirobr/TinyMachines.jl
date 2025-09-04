@@ -22,9 +22,9 @@ function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     e4 = Chain(MCBlock(chs[3], chs[4], activation), Dropout(edrops[4]))
 
     # up convolutions
-    u3 = UpBlock(chs[4], chs[3], activation)
-    u2 = UpBlock(chs[3], chs[2], activation)
-    u1 = UpBlock(chs[2], chs[1], activation)
+    u3 = ConvTranspK2(chs[4], chs[3], activation; stride=2)
+    u2 = ConvTranspK2(chs[3], chs[2], activation; stride=2)
+    u1 = ConvTranspK2(chs[2], chs[1], activation; stride=2)
 
     # decoder
     d3 = Chain(CBlock(chs[4], chs[3], activation), Dropout(ddrops[3]))

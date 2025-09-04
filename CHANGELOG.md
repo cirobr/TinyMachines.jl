@@ -1,6 +1,6 @@
 ### v0.3.5
 * ESPNet and espnet now accept any activation function.
-* More efficient code for espblocks and irblocks.
+* More efficient code for all architectures.
 
 ### v0.3.4
 * PReLU improved compile speed.
