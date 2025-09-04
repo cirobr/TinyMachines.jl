@@ -3,17 +3,20 @@ downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
 
 
 # generic ESP block with K dilated convolutions
-function esp(ch_in::Int, ch_out::Int; K::Int=4)   # input/output channels
+function esp(ch_in::Int, ch_out::Int;   # input/output channels
+             activation="prelu",        # activation function
+             K::Int=4)                  # number of dilated convolutions
     @assert ch_out % K == 0 || error("ch_out must be divisible by K")
 
     d = ch_out ÷ K
     dils = [2^(k-1) for k in 1:K]  # dilated indices
 
+    act = activation == "prelu" ? PReLU(d) : activation
+
     pointwise = ConvK1(ch_in, d)
     vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
               BatchNorm(d),
-              PReLU(d)
-              # leakyrelu
+              act
               ) for k in 1:K]
     dilated = Chain(vector...)
 
@@ -27,16 +30,18 @@ struct ESPBlock1
 end
 @layer ESPBlock1
 
-function ESPBlock1(ch_in::Int, ch_out::Int;     # input/output channels
-                   stride::Int=1,               # stride for modulated downsampling
+function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
+                   activation="prelu",        # activation function
+                   stride::Int=1,             # stride for downsampling modulation
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
+
+    act = activation == "prelu" ? PReLU(ch_out) : activation
     return Chain(
         ConvK1(ch_in, ch_out),                  # pointwise convolution
         ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilation & downsampling
         BatchNorm(ch_out),
-        PReLU(ch_out)
-        # leakyrelu
+        act
     )
 end
 
@@ -54,8 +59,8 @@ struct ESPBlock4
 end
 @layer ESPBlock4
 
-function ESPBlock4(ch_in::Int, ch_out::Int)
-    pointwise, dilated = esp(ch_in, ch_out, K=4)
+function ESPBlock4(ch_in::Int, ch_out::Int; activation="prelu")
+    pointwise, dilated = esp(ch_in, ch_out, activation=activation, K=4)
     return ESPBlock4(pointwise, dilated)
 end
 
@@ -75,7 +80,7 @@ function (m::ESPBlock4)(x)
     return x + yhat                              # residual connection
 end
 
-function ChainedESPBlock4(ch::Int; alpha::Int=1)
-    vector = [ESPBlock4(ch, ch) for _ in 1:alpha]
+function ChainedESPBlock4(ch::Int; activation="prelu", alpha::Int=1)
+    vector = [ESPBlock4(ch, ch, activation=activation) for _ in 1:alpha]
     return Chain(vector...)
 end

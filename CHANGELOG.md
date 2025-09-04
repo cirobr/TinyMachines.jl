@@ -1,3 +1,6 @@
+### v0.3.5
+* ESPNet and espnet now accepts any activation function.
+
 ### v0.3.4
 * PReLU improved compile speed.
 * Cleanup code.

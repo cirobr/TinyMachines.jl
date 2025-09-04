@@ -130,6 +130,7 @@ mobileunet(3, 1;                          # input/output channels
 ```
 # ConvPReLU is incorporated, no need to pass activation function
 espnet(3, 1;                              # input/output channels
+    activation = "prelu",                 # activation function (if "prelu", use between quotes)
     alpha2 = 2,                           # expansion factor in encoder stage 2
     alpha3 = 3,                           # expansion factor in encoder stage 3
     edrops = (0.0, 0.0, 0.0),             # dropout rates for encoder
