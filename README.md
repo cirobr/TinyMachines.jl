@@ -85,7 +85,6 @@ MobileUNet(3, 1;        # input/output channels
 
 ```
 # Model calls for alpha2=5, alpha3=8, which differ from default constructor
-# ConvPReLU is incorporated, no need to pass activation function
 ESPNet(3, 1;             # input/output channels
     activation="prelu"   # activation function (if "prelu", use between quotes) 
 )
