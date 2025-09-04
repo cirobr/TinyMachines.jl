@@ -66,27 +66,27 @@ model = UNet5(3,2)   # softmax output
 ## Models
 
 ```
-UNet5(3, 1;              # input/output channels
-    activation = relu,   # activation function
+UNet5(3, 1;                # input/output channels
+    activation = relu,     # activation function
 )
 ```
 
 ```
-UNet4(3, 1;              # input/output channels
-    activation = relu,   # activation function
+UNet4(3, 1;                # input/output channels
+    activation = relu,     # activation function
 )
 ```
 
 ```
-MobileUNet(3, 1;        # input/output channels
-    activation=relu6,   # activation function
+MobileUNet(3, 1;           # input/output channels
+    activation = relu6,    # activation function
 )
 ```
 
 ```
 # Model calls for alpha2=5, alpha3=8, which differ from default constructor
-ESPNet(3, 1;             # input/output channels
-    activation="prelu"   # activation function (if "prelu", use between quotes) 
+ESPNet(3, 1;               # input/output channels
+    activation = "prelu"   # activation function (if "prelu", use between quotes) 
 )
 ```
 

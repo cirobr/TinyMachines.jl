@@ -37,7 +37,6 @@ function IRBlock1(ch_in::Int, ch_out::Int,   # input/output channels
 end
 
 
-
 # irblock stride 2
 function IRBlock2(ch_in::Int, ch_out::Int,   # input/output channels
                   activation::Function;      # activation function
