@@ -66,6 +66,7 @@ model = UNet5(3,2)   # softmax output
 ## Models
 
 ```
+# Both UNet5() and UNet() calls are the same classic U-Net
 UNet5(3, 1;                # input/output channels
     activation = relu,     # activation function
 )
@@ -96,6 +97,7 @@ ESPNet(3, 1;               # input/output channels
 Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters are chosen for performance.
 
 ```
+# Both unet5() and unet() calls are the same classic unet
 unet5(3, 1;                               # input/output channels
     activation = relu,                    # activation function
     alpha = 1,                            # channels divider
@@ -113,7 +115,7 @@ unet4(3, 1;                               # input/output channels
 )
 ```
 
-UNet5() has internally five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
+Both unet5() and unet() call the same classic U-Net with five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
 
 UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
 
