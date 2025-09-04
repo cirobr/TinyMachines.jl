@@ -17,22 +17,30 @@ function mobileunet(ch_in::Int=3, ch_out::Int=1;       # input/output channels
                 IRBlock1(32, 16, activation, t=1),
                 Dropout(edrops[1]),
     )
+
     d2 = Chain( IRBlock2(16, 24, activation, t=6),
-                ChainedIRBlock1(24, activation, t=6, n=1),
+                IRBlock1(24, 24, activation, t=6),
                 Dropout(edrops[2]),
     )
+
+    v3 = [IRBlock1(32, 32, activation, t=6) for _ in 1:2]
     d3 = Chain( IRBlock2(24, 32, activation, t=6),
-                ChainedIRBlock1(32, activation, t=6, n=2),
+                Chain(v3...),
                 Dropout(edrops[3]),
     )
+
+    v4a = [IRBlock1(64, 64, activation, t=6) for _ in 1:3]
+    v4b = [IRBlock1(96, 96, activation, t=6) for _ in 1:2]
     d4 = Chain( IRBlock2(32, 64, activation, t=6),
-                ChainedIRBlock1(64, activation, t=6, n=3),
+                Chain(v4a...),
                 IRBlock1(64, 96, activation, t=6),
-                ChainedIRBlock1(96, activation, t=6, n=2),
+                Chain(v4b...),
                 Dropout(edrops[4]),
     )
+
+    v5 = [IRBlock1(160, 160, activation, t=6) for _ in 1:2]
     d5 = Chain( IRBlock2(96, 160, activation, t=6),
-                ChainedIRBlock1(160, activation, t=6, n=2),
+                Chain(v5...),
                 IRBlock1(160, 320, activation, t=6),
                 ConvK1(320, 1280),
                 BatchNorm(1280, activation),

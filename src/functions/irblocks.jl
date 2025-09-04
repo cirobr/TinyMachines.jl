@@ -36,14 +36,6 @@ function IRBlock1(ch_in::Int, ch_out::Int,   # input/output channels
     )
 end
 
-function ChainedIRBlock1(ch::Int,                  # input/output channels
-                         activation::Function;     # activation function
-                         t::Int,                   # BRBlock internal channel expansion factor
-                         n::Int                    # number of chained blocks
-)
-    vector = [IRBlock1(ch, ch, activation, t=t) for _ in 1:n]
-    return Chain(vector...)
-end
 
 
 # irblock stride 2
