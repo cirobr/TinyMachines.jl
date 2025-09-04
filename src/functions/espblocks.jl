@@ -12,7 +12,6 @@ function esp(ch_in::Int, ch_out::Int;   # input/output channels
     dils = [2^(k-1) for k in 1:K]  # dilated indices
 
     act = activation == "prelu" ? PReLU(d) : activation
-
     pointwise = ConvK1(ch_in, d)
     vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
               BatchNorm(d),
