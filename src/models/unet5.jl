@@ -73,6 +73,7 @@ function (m::unet5)(x::AbstractArray{Float32,4})
                     dec4, dec3, dec2, dec1, logits]   # decoder[6:10]
     return feature_maps
 end
+const unet = unet5
 
 
 function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
@@ -87,3 +88,4 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
     act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
     return Chain(model, x->x[end], act)
 end
+const UNet = UNet5
