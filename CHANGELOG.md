@@ -1,6 +1,7 @@
 ### v0.3.5
 * ESPNet and espnet now accept any activation function.
 * More efficient code for all architectures.
+* Added UNet = UNet5 and unet = unet5 calls.
 
 ### v0.3.4
 * PReLU improved compile speed.
