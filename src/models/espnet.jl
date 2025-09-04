@@ -26,10 +26,13 @@ function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
     )
 
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
-    e2b = Chain(ChainedESPBlock4(64; activation=activation, alpha=alpha2), Dropout(edrops[2]))
+    
+    v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
+    e2b = Chain(v2b..., Dropout(edrops[2]))
 
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
-    e3b = Chain(ChainedESPBlock4(128; activation=activation, alpha=alpha3), Dropout(edrops[3]))
+    v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
+    e3b = Chain(v3b..., Dropout(edrops[3]))
 
     # bridges
     b1 = ConvK1(19,  ch_out)

@@ -24,6 +24,7 @@ function esp(ch_in::Int, ch_out::Int;   # input/output channels
 end
 
 
+
 # ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
 struct ESPBlock1
     chain::Conv
@@ -52,6 +53,7 @@ function (m::ESPBlock1)(x)
 end
 
 
+
 # ESPBlock4 is a ESP block with 4 parallel dilated convolutions, and no stride
 struct ESPBlock4
     pointwise::Conv
@@ -78,9 +80,4 @@ function (m::ESPBlock4)(x)
 
     yhat = cat(sum1, sum2, sum3, sum4; dims=3)   # concatenate
     return x + yhat                              # residual connection
-end
-
-function ChainedESPBlock4(ch::Int; activation="prelu", alpha::Int=1)
-    vector = [ESPBlock4(ch, ch, activation=activation) for _ in 1:alpha]
-    return Chain(vector...)
 end
