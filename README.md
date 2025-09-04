@@ -115,9 +115,7 @@ unet4(3, 1;                               # input/output channels
 )
 ```
 
-Both unet5() and unet() call the same classic U-Net with five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels.
-
-UNet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
+Both unet5() and unet() call the same classic U-Net with five encoder/decoder stages, each of them delivering features with respectivelly $[64, 128, 256, 512, 1024]$ channels. unet4() has four encoder/decoder stages and $[64, 128, 256, 512]$ channels.
 
 Argument $alpha$ in unets modulates the number of internal channels proportionally. For instance, $alpha == 2$ delivers $[32, 64, 128, 256, 512]$ channels.
 
