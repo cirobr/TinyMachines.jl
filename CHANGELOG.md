@@ -1,3 +1,6 @@
+### v0.3.6
+* Compatibility to JUlia v1.12
+
 ### v0.3.5
 * ESPNet and espnet now accept any activation function.
 * More efficient code for all architectures.
