@@ -36,7 +36,9 @@ end
 
 
 function UpConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
-    return Chain(Upsample(scale=(4,4)), ConvK2(ch_in, ch_out, activation))
+    return Chain(Upsample(scale=(4,4)),
+                 ConvK2(ch_in, ch_out, activation)
+    )
 end
 
 
