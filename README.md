@@ -53,7 +53,7 @@ With no arguments, all models accept 3-channels Float32 input and deliver 2-chan
 Remark: Final activation has been removed from all models, from v0.3.7 onwards. Constructors remain unchanged.
 
 ```
-model = UNet5() = UNet5(3,2)   # three input channels, two output channel
+model = UNet5() = UNet5(3,2)   # three input channels, two output channels
 
 model = UNet4(3,5)   # three input channels, five output channels
 
