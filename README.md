@@ -49,17 +49,14 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 
 ## Syntax
 
-With no arguments, all models accept 3-channels Float32 input and deliver 1-channel mask with sigmoid output activation.
+With no arguments, all models accept 3-channels Float32 input and deliver 2-channels logits output
+Remark: Final activation has been removed from all models, from v0.3.7 onwards. Constructors remain unchanged.
 
 ```
-model = UNet5()      # sigmoid output
-model = UNet4(3,1)   # sigmoid output
-```
+model = UNet5() = UNet5(3,2)   # three input channels, two output channel
 
-If ch_out > 1, output activation becomes softmax. For instance, a model with 3-channels input and 2-channels output becomes:
+model = UNet4(3,5)   # three input channels, five output channels
 
-```
-model = UNet5(3,2)   # softmax output
 ```
 
 
@@ -67,26 +64,26 @@ model = UNet5(3,2)   # softmax output
 
 ```
 # Both UNet5() and UNet() calls are the same classic U-Net
-UNet5(3, 1;                # input/output channels
+UNet5(3, 2;                # input/output channels
     activation = relu,     # activation function
 )
 ```
 
 ```
-UNet4(3, 1;                # input/output channels
+UNet4(3, 2;                # input/output channels
     activation = relu,     # activation function
 )
 ```
 
 ```
-MobileUNet(3, 1;           # input/output channels
+MobileUNet(3, 2;           # input/output channels
     activation = relu6,    # activation function
 )
 ```
 
 ```
 # Model calls for alpha2=5, alpha3=8, which differ from default constructor
-ESPNet(3, 1;               # input/output channels
+ESPNet(3, 2;               # input/output channels
     activation = "prelu"   # activation function (if "prelu", use between quotes) 
 )
 ```

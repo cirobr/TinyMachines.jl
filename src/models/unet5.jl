@@ -5,7 +5,7 @@ struct unet5
 end
 @layer unet5
 
-function unet5(ch_in::Int=3, ch_out::Int=1;          # input/output channels
+function unet5(ch_in::Int=3, ch_out::Int=2;          # input/output channels
                activation::Function = relu,          # activation function
                alpha::Int           = 1,             # channels divider
                edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
@@ -76,7 +76,7 @@ end
 const unet = unet5
 
 
-function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+function UNet5(ch_in::Int=3, ch_out::Int=2;    # input/output channels
                activation::Function = relu,    # activation function
 )
     model = unet5(ch_in, ch_out;
@@ -85,7 +85,6 @@ function UNet5(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                   edrops=(0.0, 0.0, 0.1, 0.2, 0.25),
                   ddrops=(0.0, 0.0, 0.1, 0.2),
     )
-    act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
-    return Chain(model, x->x[end], act)
+    return Chain(model, x->x[end])
 end
 const UNet = UNet5

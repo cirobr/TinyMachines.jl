@@ -6,7 +6,7 @@ end
 @layer unet4
 
 
-function unet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+function unet4(ch_in::Int=3, ch_out::Int=2;    # input/output channels
                activation::Function = relu,    # activation function
                alpha::Int           = 1,       # channels divider
                edrops = (0.0, 0.0, 0.0, 0.0),  # dropout rates
@@ -69,7 +69,7 @@ function (m::unet4)(x::AbstractArray{Float32,4})
 end
 
 
-function UNet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
+function UNet4(ch_in::Int=3, ch_out::Int=2;    # input/output channels
                activation::Function = relu,    # activation function
 )
     model = unet4(ch_in, ch_out;
@@ -78,6 +78,5 @@ function UNet4(ch_in::Int=3, ch_out::Int=1;    # input/output channels
                   edrops=(0.0, 0.0, 0.1, 0.2),
                   ddrops=(0.0, 0.0, 0.1),
     )
-    act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
-    return Chain(model, x->x[end], act)
+    return Chain(model, x->x[end])
 end

@@ -1,5 +1,8 @@
+### v0.3.7
+* Remove final activation from all models (expose logits).
+
 ### v0.3.6
-* Compatibility to JUlia v1.12
+* Compatibility to Julia v1.12
 
 ### v0.3.5
 * ESPNet and espnet now accept any activation function.

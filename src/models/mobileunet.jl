@@ -6,7 +6,7 @@ end
 @layer mobileunet
 
 
-function mobileunet(ch_in::Int=3, ch_out::Int=1;       # input/output channels
+function mobileunet(ch_in::Int=3, ch_out::Int=2;       # input/output channels
                     activation::Function=relu6,        # activation function
                     edrops=(0.0, 0.0, 0.0, 0.0, 0.0),  # dropout rates
                     ddrops=(0.0, 0.0, 0.0, 0.0),       # dropout rates
@@ -101,7 +101,7 @@ function (m::mobileunet)(x)
 end
 
 
-function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+function MobileUNet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
                     activation::Function=relu6,    # activation function
 )
     model = mobileunet(ch_in, ch_out;
@@ -109,6 +109,5 @@ function MobileUNet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
                        edrops=(0.05, 0.05, 0.05, 0.1, 0.2),
                        ddrops=(0.0, 0.0, 0.0, 0.0),
     )
-    act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
-    return Chain(model, x->x[end], act)
+    return Chain(model, x->x[end])
 end

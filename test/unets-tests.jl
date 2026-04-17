@@ -1,7 +1,7 @@
 @info "unets tests..."
 
 # UNet4
-modelcpu = UNet4()
+modelcpu = Chain(UNet4(3,1), sigmoid)
 yhat  = modelcpu(x3)
 @test size(yhat) == (256, 256, 1, 1)
 
@@ -18,7 +18,7 @@ yhat  = modelcpu(x3)
 
 
 # UNet5
-modelcpu = UNet5()
+modelcpu = Chain(UNet5(3,1), sigmoid)
 yhat  = modelcpu(x3)
 @test size(yhat) == (256, 256, 1, 1)
 

@@ -1,6 +1,6 @@
 @info "mobileunet tests..."
 
-modelcpu = MobileUNet()
+modelcpu = Chain(MobileUNet(3,1), sigmoid)
 yhat  = modelcpu(x3)
 @test size(yhat) == (256,256,1,1)
 

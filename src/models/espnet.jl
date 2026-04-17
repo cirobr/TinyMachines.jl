@@ -7,7 +7,7 @@ end
 
 
 # PReLU is incorporated, no need to pass activation function
-function espnet(ch_in::Int=3, ch_out::Int=1;   # input/output channels
+function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
                 activation = "prelu",          # activation function
                 alpha2::Int=2,                 # expansion factor in encoder stage 2
                 alpha3::Int=3,                 # expansion factor in encoder stage 3
@@ -104,7 +104,7 @@ function (m::espnet)(x)
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=1; activation="prelu")   # input/output channels
+function ESPNet(ch_in::Int=3, ch_out::Int=2; activation="prelu")   # input/output channels
     model = espnet(ch_in, ch_out;
                    activation=activation,
                    alpha2=5,
@@ -112,6 +112,5 @@ function ESPNet(ch_in::Int=3, ch_out::Int=1; activation="prelu")   # input/outpu
                    edrops=(0.0, 0.1, 0.3),
                    ddrops=(0.0, 0.0),
     )
-    act = ch_out == 1 ? x -> σ.(x) : x -> softmax(x; dims=3)
-    return Chain(model, x->x[end], act)
+    return Chain(model, x->x[end])
 end
