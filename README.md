@@ -50,6 +50,7 @@ Credits for the implementations in Julia/Flux go to Ciro B Rosa.
 ## Syntax
 
 With no arguments, all models accept 3-channels Float32 input and deliver 2-channels logits output
+
 Remark: Final activation has been removed from all models, from v0.3.7 onwards. Constructors remain unchanged.
 
 ```
