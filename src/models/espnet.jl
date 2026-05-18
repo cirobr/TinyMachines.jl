@@ -15,8 +15,8 @@ function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
                 ddrops=(0.0, 0.0),             # dropout rates for decoder
 )
     # activations
-    act_16     = activation == "prelu" ? PReLU(16) : activation
-    act_ch_out = activation == "prelu" ? PReLU(ch_out) : activation
+    act_16     = ( activation == "prelu" ? PReLU(16) : activation )
+    act_ch_out = ( activation == "prelu" ? PReLU(ch_out) : activation )
 
     # encoder
     e1  = Chain(ConvK3(ch_in, 16; stride=2),
@@ -70,36 +70,35 @@ function (m::espnet)(x)
     x2 = downsampling(x1)
 
     # encoder
-    out1 = m.encoder[:e1](x)
+    out1 = m.encoder.layers.e1(x)
     ct1 = cat(x1, out1, dims=3)
 
-    out2a = m.encoder[:e2a](ct1)
-    out2b = m.encoder[:e2b](out2a)
+    out2a = m.encoder.layers.e2a(ct1)
+    out2b = m.encoder.layers.e2b(out2a)
     ct2 = cat(x2, out2a, out2b, dims=3)
     
-    out3a = m.encoder[:e3a](ct2)
-    out3b = m.encoder[:e3b](out3a)
+    out3a = m.encoder.layers.e3a(ct2)
+    out3b = m.encoder.layers.e3b(out3a)
     ct3 = cat(out3a, out3b, dims=3)
 
 
     # bridges
-    b1 = m.bridges[:b1](ct1)
-    b2 = m.bridges[:b2](ct2)
-    b3 = m.bridges[:b3](ct3)
+    b1 = m.bridges.layers.b1(ct1)
+    b2 = m.bridges.layers.b2(ct2)
+    b3 = m.bridges.layers.b3(ct3)
 
 
     # decoder
-    d2 = m.decoder[:d2](b3)
+    d2 = m.decoder.layers.d2(b3)
     ct4 = cat(b2, d2, dims=3)
 
-    d1 = m.decoder[:d1](ct4)
+    d1 = m.decoder.layers.d1(ct4)
     ct5 = cat(b1, d1, dims=3)
 
-    logits = m.decoder[:d0](ct5)
+    logits = m.decoder.layers.d0(ct5)
 
-    feature_maps = [out1, ct1, out2a, out2b, ct2, out3a, out3b, ct3, # encoder [1:8]
-                    b1, b2, b3,                                      # bridges [9:11]
-                    d2, ct4, d1, ct5, logits]                        # decoder [12:16]
+    # output encoder [1:8], logits[end]
+    feature_maps = [out1, ct1, out2a, out2b, ct2, out3a, out3b, ct3, logits]
     return feature_maps
 end
 

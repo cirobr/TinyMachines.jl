@@ -67,36 +67,35 @@ function mobileunet(ch_in::Int=3, ch_out::Int=2;       # input/output channels
     ct5 = ConvTranspK4(16, ch_out)
 
     # output chains
-    d  = Chain(d1, d2, d3, d4, d5)
-    ct = Chain(ct1, ct2, ct3, ct4, ct5)
-    ir = Chain(ir1, ir2, ir3, ir4)
+    d  = Chain(d1=d1, d2=d2, d3=d3, d4=d4, d5=d5)
+    ct = Chain(ct1=ct1, ct2=ct2, ct3=ct3, ct4=ct4, ct5=ct5)
+    ir = Chain(ir1=ir1, ir2=ir2, ir3=ir3, ir4=ir4)
 
     return mobileunet(d, ct, ir)   # struct output
 end
 
 function (m::mobileunet)(x)
     # encoder
-    x1 = m.d[1](x)
-    x2 = m.d[2](x1)
-    x3 = m.d[3](x2)
-    x4 = m.d[4](x3)
-    x5 = m.d[5](x4)
+    x1 = m.d.layers.d1(x)
+    x2 = m.d.layers.d2(x1)
+    x3 = m.d.layers.d3(x2)
+    x4 = m.d.layers.d4(x3)
+    x5 = m.d.layers.d5(x4)
 
     # decoder
-    l1 = m.ct[1](x5)
-    l2 = m.ir[1](cat(l1, x4; dims=3))
-    l3 = m.ct[2](l2)
-    l4 = m.ir[2](cat(l3, x3; dims=3))
-    l5 = m.ct[3](l4)
-    l6 = m.ir[3](cat(l5, x2; dims=3))
-    l7 = m.ct[4](l6)
-    l8 = m.ir[4](cat(l7, x1; dims=3))
+    l1 = m.ct.layers.ct1(x5)
+    l2 = m.ir.layers.ir1(cat(l1, x4; dims=3))
+    l3 = m.ct.layers.ct2(l2)
+    l4 = m.ir.layers.ir2(cat(l3, x3; dims=3))
+    l5 = m.ct.layers.ct3(l4)
+    l6 = m.ir.layers.ir3(cat(l5, x2; dims=3))
+    l7 = m.ct.layers.ct4(l6)
+    l8 = m.ir.layers.ir4(cat(l7, x1; dims=3))
     
-    logits = m.ct[5](l8)
+    logits = m.ct.layers.ct5(l8)
 
-    # output
-    feature_maps = [x1, x2, x3, x4, x5,                       # encoder [1:5]
-                    l1, l2, l3, l4, l5, l6, l7, l8, logits]   # decoder [6:14]
+    # output encoder [1:5], logits[end]
+    feature_maps = [x1, x2, x3, x4, x5, logits]
     return feature_maps
 end
 

@@ -45,32 +45,32 @@ end
 
 
 function (m::unet5)(x::AbstractArray{Float32,4})
-    enc1 = m.encoder[:e1](x)
-    enc2 = m.encoder[:e2](enc1)
-    enc3 = m.encoder[:e3](enc2)
-    enc4 = m.encoder[:e4](enc3)
-    enc5 = m.encoder[:e5](enc4)
+    enc1 = m.encoder.layers.e1(x)
+    enc2 = m.encoder.layers.e2(enc1)
+    enc3 = m.encoder.layers.e3(enc2)
+    enc4 = m.encoder.layers.e4(enc3)
+    enc5 = m.encoder.layers.e5(enc4)
 
-    up4 = m.upconvs[:u4](enc5)
+    up4 = m.upconvs.layers.u4(enc5)
     cat4 = cat(enc4, up4; dims=3)
-    dec4 = m.decoder[:d4](cat4)
+    dec4 = m.decoder.layers.d4(cat4)
 
-    up3 = m.upconvs[:u3](dec4)
+    up3 = m.upconvs.layers.u3(dec4)
     cat3 = cat(enc3, up3; dims=3)
-    dec3 = m.decoder[:d3](cat3)
+    dec3 = m.decoder.layers.d3(cat3)
     
-    up2 = m.upconvs[:u2](dec3)
+    up2 = m.upconvs.layers.u2(dec3)
     cat2 = cat(enc2, up2; dims=3)
-    dec2 = m.decoder[:d2](cat2)
+    dec2 = m.decoder.layers.d2(cat2)
 
-    up1 = m.upconvs[:u1](dec2)
+    up1 = m.upconvs.layers.u1(dec2)
     cat1 = cat(enc1, up1; dims=3)
-    dec1 = m.decoder[:d1](cat1)
+    dec1 = m.decoder.layers.d1(cat1)
 
-    logits = m.decoder[:d0](dec1)
+    logits = m.decoder.layers.d0(dec1)
 
-    feature_maps = [enc1, enc2, enc3, enc4, enc5,     # encoder[1:5]
-                    dec4, dec3, dec2, dec1, logits]   # decoder[6:10]
+    # output encoder [1:5], logits[end]
+    feature_maps = [enc1, enc2, enc3, enc4, enc5, logits]
     return feature_maps
 end
 const unet = unet5

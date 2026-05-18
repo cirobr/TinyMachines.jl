@@ -14,7 +14,7 @@ dict = Dict{Any, String}(
 
 # training
 for (model, modelname) in dict
-    @info "... training $modelname"
+    @info "training $modelname ..."
     loss(model,x,y) = Flux.logitcrossentropy(model(x), y; dims=3)
     opt = Flux.Adam()
     opt_state = Flux.setup(opt, model)

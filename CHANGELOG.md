@@ -1,3 +1,7 @@
+### v0.4.0
+* New model structures to speed up training.
+* Feature maps availability reduced to encoders and logits.
+
 ### v0.3.7
 * Remove final activation from all models (expose logits).
 

@@ -67,17 +67,13 @@ function ESPBlock4(ch_in::Int, ch_out::Int; activation)
 end
 
 function (m::ESPBlock4)(x)
-    pw = m.pointwise(x)                          # pointwise convolution
+    pw = m.pointwise(x)                    # pointwise convolution
     
-    sum1 = m.dilated[1](pw)                      # dilated convolutions
-    sum2 = m.dilated[2](pw)
-    sum3 = m.dilated[3](pw)
-    sum4 = m.dilated[4](pw)
+    d1 = m.dilated[1](pw)                  # dilated convolutions
+    d2 = m.dilated[2](pw) + d1
+    d3 = m.dilated[3](pw) + d2
+    d4 = m.dilated[4](pw) + d3
 
-    sum2 += sum1                                 # hierarchical sums
-    sum3 += sum2
-    sum4 += sum3
-
-    yhat = cat(sum1, sum2, sum3, sum4; dims=3)   # concatenate
-    return x + yhat                              # residual connection
+    yhat = cat(d1, d2, d3, d4; dims=3)     # concatenate
+    return x + yhat                        # residual connection
 end
