@@ -89,6 +89,47 @@ ESPNet(3, 2;               # input/output channels
 )
 ```
 
+## Features
+
+```
+model = UNet5()
+
+yhat  = model(x)    # return_features default to false, yhat = logits
+
+yhat  = model(x; return_features=true)
+yhat.logits         # output logits (same output for return_features=false)
+yhat.encoder.enc1   # output encoder feature first level
+yhat.encoder.enc2
+yhat.encoder.enc3
+yhat.encoder.enc4
+yhat.encoder.enc5   # output encoder feature fifth level
+```
+
+```
+model = MobileUNet()
+
+yhat  = model(x)    # return_features default to false, yhat = logits
+
+yhat  = model(x; return_features=true)
+yhat.logits         # output logits (same output for return_features=false)
+yhat.encoder.x1     # output encoder feature first level
+yhat.encoder.x2
+yhat.encoder.x3
+yhat.encoder.x4
+yhat.encoder.x5     # output encoder feature fifth level
+```
+
+```
+model = ESPNet()
+
+yhat  = model(x)    # return_features default to false, yhat = logits
+
+yhat  = model(x; return_features=true)
+yhat.logits         # output logits (same output for return_features=false)
+yhat.encoder.ct1    # output encoder feature first level
+yhat.encoder.ct2
+yhat.encoder.ct3    # output encoder feature third level
+```
 
 ## Constructors
 
