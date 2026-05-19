@@ -44,7 +44,7 @@ function unet5(ch_in::Int=3, ch_out::Int=2;          # input/output channels
 end
 
 
-function (m::unet5)(x::AbstractArray{Float32,4})
+function (m::unet5)(x::AbstractArray; return_features::Bool = false)
     enc1 = m.encoder.layers.e1(x)
     enc2 = m.encoder.layers.e2(enc1)
     enc3 = m.encoder.layers.e3(enc2)
@@ -69,9 +69,14 @@ function (m::unet5)(x::AbstractArray{Float32,4})
 
     logits = m.decoder.layers.d0(dec1)
 
-    # output encoder [1:5], logits[end]
-    feature_maps = [enc1, enc2, enc3, enc4, enc5, logits]
-    return feature_maps
+    # output features, logits
+    if return_features
+        return (logits  = logits,
+                encoder = (enc1=enc1, enc2=enc2, enc3=enc3, enc4=enc4, enc5=enc5)
+        )
+    else
+        return logits
+    end
 end
 const unet = unet5
 
@@ -79,12 +84,11 @@ const unet = unet5
 function UNet5(ch_in::Int=3, ch_out::Int=2;    # input/output channels
                activation::Function = relu,    # activation function
 )
-    model = unet5(ch_in, ch_out;
+    return unet5(ch_in, ch_out;
                   activation=activation,
                   alpha=1,
                   edrops=(0.0, 0.0, 0.1, 0.2, 0.25),
                   ddrops=(0.0, 0.0, 0.1, 0.2),
     )
-    return Chain(model, x->x[end])
 end
 const UNet = UNet5

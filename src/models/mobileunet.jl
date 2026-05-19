@@ -74,7 +74,7 @@ function mobileunet(ch_in::Int=3, ch_out::Int=2;       # input/output channels
     return mobileunet(d, ct, ir)   # struct output
 end
 
-function (m::mobileunet)(x)
+function (m::mobileunet)(x::AbstractArray; return_features::Bool = false)
     # encoder
     x1 = m.d.layers.d1(x)
     x2 = m.d.layers.d2(x1)
@@ -94,19 +94,23 @@ function (m::mobileunet)(x)
     
     logits = m.ct.layers.ct5(l8)
 
-    # output encoder [1:5], logits[end]
-    feature_maps = [x1, x2, x3, x4, x5, logits]
-    return feature_maps
+    # output features, logits
+    if return_features
+        return (logits  = logits,
+                encoder = (x1=x1, x2=x2, x3=x3, x4=x4, x5=x5)
+        )
+    else
+        return logits
+    end
 end
 
 
 function MobileUNet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
                     activation::Function=relu6,    # activation function
 )
-    model = mobileunet(ch_in, ch_out;
+    return mobileunet(ch_in, ch_out;
                        activation=activation,
                        edrops=(0.05, 0.05, 0.05, 0.1, 0.2),
                        ddrops=(0.0, 0.0, 0.0, 0.0),
     )
-    return Chain(model, x->x[end])
 end

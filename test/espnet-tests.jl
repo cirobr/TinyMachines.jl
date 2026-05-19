@@ -1,23 +1,23 @@
 @info "espnet tests..."
 
+
+# logits output
 m = Chain(ESPNet(3,1), sigmoid)
 yhat = m(x3)
-@test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"
+@test size(yhat) == (256,256,1,1) || @error "logits error"
 
+
+# return_fetuares
 m = espnet(3,2, alpha2=2, alpha3=3)   # implicit activation="prelu"
-yhat = m(x3)
-@test size(yhat[2])   == (128,128,19,1) || @error "size(yhat[2])   == $(size(yhat[2]))"
-@test size(yhat[5])   == (64,64,131,1)  || @error "size(yhat[5])   == $(size(yhat[5]))"
-@test size(yhat[8])   == (32,32,256,1)  || @error "size(yhat[8])   == $(size(yhat[8]))"
-# @test size(yhat[13])  == (64,64,4,1)    || @error "size(yhat[13])  == $(size(yhat[13]))"
-# @test size(yhat[15])  == (128,128,4,1)  || @error "size(yhat[15])  == $(size(yhat[15]))"
-@test size(yhat[end]) == (256,256,2,1)  || @error "size(yhat[end]) == $(size(yhat[end]))"
+yhat = m(x3; return_features=true)
+@test size(yhat.encoder.ct1) == (128,128,19,1) || @error "encoder.ct1 error"
+@test size(yhat.encoder.ct2) == (64,64,131,1)  || @error "encoder.ct2 error"
+@test size(yhat.encoder.ct3) == (32,32,256,1)  || @error "encoder.ct3 error"
+@test size(yhat.logits)      == (256,256,2,1)  || @error "logits error"
 
 m = espnet(3,2, activation=leakyrelu, alpha2=2, alpha3=3)
-yhat = m(x3)
-@test size(yhat[2])   == (128,128,19,1) || @error "size(yhat[2])   == $(size(yhat[2]))"
-@test size(yhat[5])   == (64,64,131,1)  || @error "size(yhat[5])   == $(size(yhat[5]))"
-@test size(yhat[8])   == (32,32,256,1)  || @error "size(yhat[8])   == $(size(yhat[8]))"
-# @test size(yhat[13])  == (64,64,4,1)    || @error "size(yhat[13])  == $(size(yhat[13]))"
-# @test size(yhat[15])  == (128,128,4,1)  || @error "size(yhat[15])  == $(size(yhat[15]))"
-@test size(yhat[end]) == (256,256,2,1)  || @error "size(yhat[end]) == $(size(yhat[end]))"
+yhat = m(x3; return_features=true)
+@test size(yhat.encoder.ct1) == (128,128,19,1) || @error "encoder.ct1 error"
+@test size(yhat.encoder.ct2) == (64,64,131,1)  || @error "encoder.ct2 error"
+@test size(yhat.encoder.ct3) == (32,32,256,1)  || @error "encoder.ct3 error"
+@test size(yhat.logits)      == (256,256,2,1)  || @error "logits error"

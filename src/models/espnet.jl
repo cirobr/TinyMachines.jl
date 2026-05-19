@@ -64,7 +64,7 @@ function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
 end
 
 
-function (m::espnet)(x)
+function (m::espnet)(x::AbstractArray; return_features::Bool = false)
     # input image downsampling
     x1 = downsampling(x)
     x2 = downsampling(x1)
@@ -97,19 +97,24 @@ function (m::espnet)(x)
 
     logits = m.decoder.layers.d0(ct5)
 
-    # output encoder [1:8], logits[end]
-    feature_maps = [out1, ct1, out2a, out2b, ct2, out3a, out3b, ct3, logits]
-    return feature_maps
+    # output features, logits
+    if return_features
+        return (logits  = logits,
+                encoder = (out1=out1, ct1=ct1,     out2a=out2a, out2b=out2b,
+                           ct2=ct2,   out3a=out3a, out3b=out3b, ct3=ct3)
+        )
+    else
+        return logits
+    end
 end
 
 
 function ESPNet(ch_in::Int=3, ch_out::Int=2; activation="prelu")   # input/output channels
-    model = espnet(ch_in, ch_out;
-                   activation=activation,
-                   alpha2=5,
-                   alpha3=8,
-                   edrops=(0.0, 0.1, 0.3),
-                   ddrops=(0.0, 0.0),
+    return espnet(ch_in, ch_out;
+                activation=activation,
+                alpha2=5,
+                alpha3=8,
+                edrops=(0.0, 0.1, 0.3),
+                ddrops=(0.0, 0.0),
     )
-    return Chain(model, x->x[end])
 end
