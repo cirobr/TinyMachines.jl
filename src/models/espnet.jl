@@ -71,37 +71,36 @@ function (m::espnet)(x::AbstractArray; return_features::Bool = false)
 
     # encoder
     out1 = m.encoder.layers.e1(x)
-    ct1 = cat(x1, out1, dims=3)
+    cat1 = cat(x1, out1, dims=3)
 
-    out2a = m.encoder.layers.e2a(ct1)
+    out2a = m.encoder.layers.e2a(cat1)
     out2b = m.encoder.layers.e2b(out2a)
-    ct2 = cat(x2, out2a, out2b, dims=3)
+    cat2 = cat(x2, out2a, out2b, dims=3)
     
-    out3a = m.encoder.layers.e3a(ct2)
+    out3a = m.encoder.layers.e3a(cat2)
     out3b = m.encoder.layers.e3b(out3a)
-    ct3 = cat(out3a, out3b, dims=3)
+    cat3 = cat(out3a, out3b, dims=3)
 
 
     # bridges
-    b1 = m.bridges.layers.b1(ct1)
-    b2 = m.bridges.layers.b2(ct2)
-    b3 = m.bridges.layers.b3(ct3)
+    b1 = m.bridges.layers.b1(cat1)
+    b2 = m.bridges.layers.b2(cat2)
+    b3 = m.bridges.layers.b3(cat3)
 
 
     # decoder
     d2 = m.decoder.layers.d2(b3)
-    ct4 = cat(b2, d2, dims=3)
+    cat4 = cat(b2, d2, dims=3)
 
-    d1 = m.decoder.layers.d1(ct4)
-    ct5 = cat(b1, d1, dims=3)
+    d1 = m.decoder.layers.d1(cat4)
+    cat5 = cat(b1, d1, dims=3)
 
-    logits = m.decoder.layers.d0(ct5)
+    logits = m.decoder.layers.d0(cat5)
 
     # output features, logits
     if return_features
         return (logits  = logits,
-                encoder = (out1=out1, ct1=ct1,     out2a=out2a, out2b=out2b,
-                           ct2=ct2,   out3a=out3a, out3b=out3b, ct3=ct3)
+                encoder = (cat1=cat1, cat2=cat2, cat3=cat3),
         )
     else
         return logits

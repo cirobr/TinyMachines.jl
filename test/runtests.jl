@@ -1,6 +1,7 @@
 using TinyMachines; tm=TinyMachines
 using Test
-using Flux; import Flux: relu
+using Flux
+import Flux: relu
 using Random
 
 Random.seed!(1234)

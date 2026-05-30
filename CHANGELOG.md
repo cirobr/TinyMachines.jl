@@ -1,3 +1,6 @@
+### v0.4.1
+* Minor changes to cleanup code.
+
 ### v0.4.0
 * New model structures to speed up training.
 * Feature maps availability reduced to encoders and logits.

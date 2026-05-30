@@ -5,7 +5,6 @@ function BRBlock(ch_in::Int, ch_out::Int,   # input/output channels
                  t::Int                     # internal channel expansion factor
 )
     ch_exp = ch_in * t
-    gn  = kf * √(w3 * ch_in)
 
     return Chain(
         ConvK1(ch_in, ch_exp),
@@ -15,7 +14,6 @@ function BRBlock(ch_in::Int, ch_out::Int,   # input/output channels
                         pad=SamePad(),
                         bias=true,
                         # dilation=1,
-                        init=kaiming_normal(gain=gn)
         ),
         BatchNorm(ch_exp, activation),
         ConvK1(ch_exp, ch_out)

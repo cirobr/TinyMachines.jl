@@ -126,9 +126,9 @@ yhat  = model(x)    # return_features default to false, yhat = logits
 
 yhat  = model(x; return_features=true)
 yhat.logits         # output logits (same output for return_features=false)
-yhat.encoder.ct1    # output encoder feature first level
-yhat.encoder.ct2
-yhat.encoder.ct3    # output encoder feature third level
+yhat.encoder.cat1   # output encoder feature first level
+yhat.encoder.cat2
+yhat.encoder.cat3   # output encoder feature third level
 ```
 
 ## Constructors
