@@ -37,5 +37,7 @@ include("./models/unet4.jl")
 include("./models/mobileunet.jl")
 include("./models/espnet.jl")
 
+include("./models/preview.jl")
+
 
 end   # module

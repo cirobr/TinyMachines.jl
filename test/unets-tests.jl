@@ -32,3 +32,9 @@ yhat  = modelcpu(x3; return_features=true)
 @test size(yhat.encoder.enc4) == (32,32,256,1)  || @error "encoder.enc4 error"
 @test size(yhat.encoder.enc5) == (16,16,512,1)  || @error "encoder.enc5 error"
 @test size(yhat.logits)       == (256,256,3,1)  || @error "logits error"
+
+
+
+modelcpu = tm.unet5_aux(3,1)
+yhat  = modelcpu(x3)
+@test size(yhat) == (256, 256, 1, 1) || @error "logits error"
