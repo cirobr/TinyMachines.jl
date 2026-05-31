@@ -1,7 +1,7 @@
 concat(x,y) = cat(x,y;dims=3)
 
 
-function unet5_aux(ch_in::Int=3, ch_out::Int=2;          # input/output channels
+function unet5_aux(ch_in::Int=3, ch_out::Int=2;      # input/output channels
                activation::Function = relu,          # activation function
                alpha::Int           = 1,             # channels divider
                edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
