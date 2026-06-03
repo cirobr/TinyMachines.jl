@@ -6,45 +6,52 @@ end
 @layer mobileunet
 
 
-function mobileunet(ch_in::Int=3, ch_out::Int=2;       # input/output channels
-                    activation::Function=relu6,        # activation function
-                    edrops=(0.0, 0.0, 0.0, 0.0, 0.0),  # dropout rates
-                    ddrops=(0.0, 0.0, 0.0, 0.0),       # dropout rates
+function mobileunet(
+    ch_in::Int=3,                      # input channels
+    ch_out::Int=2;                     # output channels
+    activation::Function=relu6,        # activation function
+    edrops=(0.0, 0.0, 0.0, 0.0, 0.0),  # dropout rates
+    ddrops=(0.0, 0.0, 0.0, 0.0),       # dropout rates
 )
     # encoder
-    d1 = Chain( ConvK3(ch_in, 32, stride=2),
-                BatchNorm(32, activation),
-                IRBlock1(32, 16, activation, t=1),
-                Dropout(edrops[1]),
+    d1 = Chain(
+        ConvK3(ch_in, 32, stride=2),
+        BatchNorm(32, activation),
+        IRBlock1(32, 16, activation, t=1),
+        Dropout(edrops[1]),
     )
 
-    d2 = Chain( IRBlock2(16, 24, activation, t=6),
-                IRBlock1(24, 24, activation, t=6),
-                Dropout(edrops[2]),
+    d2 = Chain(
+        IRBlock2(16, 24, activation, t=6),
+        IRBlock1(24, 24, activation, t=6),
+        Dropout(edrops[2]),
     )
 
     v3 = [IRBlock1(32, 32, activation, t=6) for _ in 1:2]
-    d3 = Chain( IRBlock2(24, 32, activation, t=6),
-                Chain(v3...),
-                Dropout(edrops[3]),
+    d3 = Chain(
+        IRBlock2(24, 32, activation, t=6),
+        Chain(v3...),
+        Dropout(edrops[3]),
     )
 
     v4a = [IRBlock1(64, 64, activation, t=6) for _ in 1:3]
     v4b = [IRBlock1(96, 96, activation, t=6) for _ in 1:2]
-    d4 = Chain( IRBlock2(32, 64, activation, t=6),
-                Chain(v4a...),
-                IRBlock1(64, 96, activation, t=6),
-                Chain(v4b...),
-                Dropout(edrops[4]),
+    d4 = Chain(
+        IRBlock2(32, 64, activation, t=6),
+        Chain(v4a...),
+        IRBlock1(64, 96, activation, t=6),
+        Chain(v4b...),
+        Dropout(edrops[4]),
     )
 
     v5 = [IRBlock1(160, 160, activation, t=6) for _ in 1:2]
-    d5 = Chain( IRBlock2(96, 160, activation, t=6),
-                Chain(v5...),
-                IRBlock1(160, 320, activation, t=6),
-                ConvK1(320, 1280),
-                BatchNorm(1280, activation),
-                Dropout(edrops[5]),
+    d5 = Chain(
+        IRBlock2(96, 160, activation, t=6),
+        Chain(v5...),
+        IRBlock1(160, 320, activation, t=6),
+        ConvK1(320, 1280),
+        BatchNorm(1280, activation),
+        Dropout(edrops[5]),
     )
 
     # decoder
@@ -105,12 +112,16 @@ function (m::mobileunet)(x::AbstractArray; return_features::Bool = false)
 end
 
 
-function MobileUNet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
-                    activation::Function=relu6,    # activation function
+function MobileUNet(
+    ch_in::Int=3,
+    ch_out::Int=2;
+    activation::Function=relu6,
 )
-    return mobileunet(ch_in, ch_out;
-                       activation=activation,
-                       edrops=(0.05, 0.05, 0.05, 0.1, 0.2),
-                       ddrops=(0.0, 0.0, 0.0, 0.0),
+    return mobileunet(
+        ch_in,
+        ch_out;
+        activation=activation,
+        edrops=(0.05, 0.05, 0.05, 0.1, 0.2),
+        ddrops=(0.0, 0.0, 0.0, 0.0),
     )
 end

@@ -6,23 +6,25 @@ end
 @layer espnet
 
 
-# PReLU is incorporated, no need to pass activation function
-function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
-                activation = "prelu",          # activation function
-                alpha2::Int=2,                 # expansion factor in encoder stage 2
-                alpha3::Int=3,                 # expansion factor in encoder stage 3
-                edrops=(0.0, 0.0, 0.0),        # dropout rates for encoder
-                ddrops=(0.0, 0.0),             # dropout rates for decoder
+function espnet(
+    ch_in::Int=3,             # input channels
+    ch_out::Int=2;            # output channels
+    activation = "prelu",     # activation function
+    alpha2::Int=2,            # expansion factor in encoder stage 2
+    alpha3::Int=3,            # expansion factor in encoder stage 3
+    edrops=(0.0, 0.0, 0.0),   # dropout rates for encoder
+    ddrops=(0.0, 0.0),        # dropout rates for decoder
 )
     # activations
     act_16     = ( activation == "prelu" ? PReLU(16) : activation )
     act_ch_out = ( activation == "prelu" ? PReLU(ch_out) : activation )
 
     # encoder
-    e1  = Chain(ConvK3(ch_in, 16; stride=2),
-                BatchNorm(16),
-                act_16,
-                Dropout(edrops[1]),
+    e1  = Chain(
+        ConvK3(ch_in, 16; stride=2),
+        BatchNorm(16),
+        act_16,
+        Dropout(edrops[1]),
     )
 
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
@@ -40,19 +42,24 @@ function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
     b3 = ConvK1(256, ch_out)
 
     # decoder
-    d2 = Chain(ConvTrK2(ch_out, ch_out; stride=2),
-               BatchNorm(ch_out),
-               act_ch_out,
-               Dropout(ddrops[2]),
+    d2 = Chain(
+        ConvTrK2(ch_out, ch_out; stride=2),
+        BatchNorm(ch_out),
+        act_ch_out,
+        Dropout(ddrops[2]),
     )
-    d1 = Chain(ESPBlock1(2*ch_out, ch_out; activation=activation, stride=1),
-               ConvTrK2(ch_out, ch_out; stride=2),
-               BatchNorm(ch_out),
-               act_ch_out,
-               Dropout(ddrops[1]),
+
+    d1 = Chain(
+        ESPBlock1(2*ch_out, ch_out; activation=activation, stride=1),
+        ConvTrK2(ch_out, ch_out; stride=2),
+        BatchNorm(ch_out),
+        act_ch_out,
+        Dropout(ddrops[1]),
     )
-    d0 = Chain(ConvK1(2*ch_out, ch_out),
-               ConvTrK2(ch_out, ch_out; stride=2),   # no bn, no activation
+    
+    d0 = Chain(
+        ConvK1(2*ch_out, ch_out),
+        ConvTrK2(ch_out, ch_out; stride=2),   # no bn, no activation
     )
 
     # output chains
@@ -109,12 +116,18 @@ function (m::espnet)(x::AbstractArray; return_features::Bool = false)
 end
 
 
-function ESPNet(ch_in::Int=3, ch_out::Int=2; activation="prelu")   # input/output channels
-    return espnet(ch_in, ch_out;
-                activation=activation,
-                alpha2=5,
-                alpha3=8,
-                edrops=(0.0, 0.1, 0.3),
-                ddrops=(0.0, 0.0),
+function ESPNet(
+    ch_in::Int=3,
+    ch_out::Int=2;
+    activation="prelu"
+)
+    return espnet(
+        ch_in,
+        ch_out;
+        activation=activation,
+        alpha2=5,
+        alpha3=8,
+        edrops=(0.0, 0.1, 0.3),
+        ddrops=(0.0, 0.0),
     )
 end

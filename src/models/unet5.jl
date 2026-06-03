@@ -5,11 +5,13 @@ struct unet5
 end
 @layer unet5
 
-function unet5(ch_in::Int=3, ch_out::Int=2;          # input/output channels
-               activation::Function = relu,          # activation function
-               alpha::Int           = 1,             # channels divider
-               edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-               ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+function unet5(
+    ch_in::Int=3,                         # input channels
+    ch_out::Int=2;                        # output channels
+    activation::Function = relu,          # activation function
+    alpha::Int           = 1,             # channels divider
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )
 
     chs = defaultChannels .÷ alpha
@@ -81,14 +83,18 @@ end
 const unet = unet5
 
 
-function UNet5(ch_in::Int=3, ch_out::Int=2;    # input/output channels
-               activation::Function = relu,    # activation function
+function UNet5(
+    ch_in::Int=3,
+    ch_out::Int=2;
+    activation::Function = relu,
 )
-    return unet5(ch_in, ch_out;
-                  activation=activation,
-                  alpha=1,
-                  edrops=(0.0, 0.0, 0.1, 0.2, 0.25),
-                  ddrops=(0.0, 0.0, 0.1, 0.2),
+    return unet5(
+        ch_in,
+        ch_out;
+        activation=activation,
+        alpha=1,
+        edrops=(0.0, 0.0, 0.1, 0.2, 0.25),
+        ddrops=(0.0, 0.0, 0.1, 0.2),
     )
 end
 const UNet = UNet5
