@@ -40,19 +40,19 @@ function espnet(ch_in::Int=3, ch_out::Int=2;   # input/output channels
     b3 = ConvK1(256, ch_out)
 
     # decoder
-    d2 = Chain(ConvTranspK2(ch_out, ch_out; stride=2),
+    d2 = Chain(ConvTrK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
                act_ch_out,
                Dropout(ddrops[2]),
     )
     d1 = Chain(ESPBlock1(2*ch_out, ch_out; activation=activation, stride=1),
-               ConvTranspK2(ch_out, ch_out; stride=2),
+               ConvTrK2(ch_out, ch_out; stride=2),
                BatchNorm(ch_out),
                act_ch_out,
                Dropout(ddrops[1]),
     )
     d0 = Chain(ConvK1(2*ch_out, ch_out),
-               ConvTranspK2(ch_out, ch_out; stride=2),   # no bn, no activation
+               ConvTrK2(ch_out, ch_out; stride=2),   # no bn, no activation
     )
 
     # output chains

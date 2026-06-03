@@ -36,13 +36,14 @@ end
 
 
 function UpConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
-    return Chain(Upsample(scale=(4,4)),
-                 ConvK2(ch_in, ch_out, activation)
+    return Chain(
+        Upsample(scale=(4,4)),
+        ConvK2(ch_in, ch_out, activation),
     )
 end
 
 
-function ConvTranspK2(ch_in::Int, ch_out::Int, activation::Function=identity;
+function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity;
                       stride::Int=1)
     @assert stride ∈ [1,2] || error("Stride must be 1 or 2.")
     gn = kf * √(w2 * ch_in)
@@ -56,7 +57,7 @@ function ConvTranspK2(ch_in::Int, ch_out::Int, activation::Function=identity;
 end
 
 
-function ConvTranspK4(ch_in::Int, ch_out::Int, activation::Function=identity)
+function ConvTrK4(ch_in::Int, ch_out::Int, activation::Function=identity)
     gn = kf * √(w4 * ch_in)
     
     return ConvTranspose((4,4), ch_in => ch_out, activation;

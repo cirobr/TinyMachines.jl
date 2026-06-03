@@ -48,23 +48,23 @@ function mobileunet(ch_in::Int=3, ch_out::Int=2;       # input/output channels
     )
 
     # decoder
-    ct1 = Chain(ConvTranspK4(1280, 96), BatchNorm(96, activation))
+    ct1 = Chain(ConvTrK4(1280, 96), BatchNorm(96, activation))
     ir1 = IRBlock1(192, 96, activation, t=1)
     ir1 = Chain(ir1, Dropout(ddrops[1]))
 
-    ct2 = Chain(ConvTranspK4(96, 32), BatchNorm(32, activation))
+    ct2 = Chain(ConvTrK4(96, 32), BatchNorm(32, activation))
     ir2 = IRBlock1(64, 32, activation, t=1)
     ir2 = Chain(ir2, Dropout(ddrops[2]))
     
-    ct3 = Chain(ConvTranspK4(32, 24), BatchNorm(24, activation))
+    ct3 = Chain(ConvTrK4(32, 24), BatchNorm(24, activation))
     ir3 = IRBlock1(48, 24, activation, t=1)
     ir3 = Chain(ir3, Dropout(ddrops[3]))
 
-    ct4 = Chain(ConvTranspK4(24, 16), BatchNorm(16, activation))
+    ct4 = Chain(ConvTrK4(24, 16), BatchNorm(16, activation))
     ir4 = IRBlock1(32, 16, activation, t=1)
     ir4 = Chain(ir4, Dropout(ddrops[4]))
 
-    ct5 = ConvTranspK4(16, ch_out)
+    ct5 = ConvTrK4(16, ch_out)
 
     # output chains
     d  = Chain(d1=d1, d2=d2, d3=d3, d4=d4, d5=d5)
