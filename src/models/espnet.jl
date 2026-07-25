@@ -19,39 +19,39 @@ function espnet(
     act_16     = ( activation == "prelu" ? PReLU(16) : activation )
     act_ch_out = ( activation == "prelu" ? PReLU(ch_out) : activation )
 
-    # encoder
-    # stage 1: Parallel includes concatenation with downsampled input
+    # encoder: stage 1
     e1a = Chain(
         ConvK3(ch_in, 16; stride=2),
         BatchNorm(16),
         act_16,
         Dropout(edrops[1]),
     )
+    # Parallel includes concatenation with 1st downsampled input (last-3 channels)
     e1 = Parallel( (x,y)->cat(x,y,dims=3), e1a, downsampling)
 
-    # stage 2: processing + SkipConnection, then Parallel to also
-    # concatenate with the further-downsampled image (extracted from
-    # the last 3 channels of the stage-1 output, which hold the image)
+    # encoder: stage 2
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
     e2b = SkipConnection( Chain(v2b...), (x,m)->cat(x,m,dims=3))
-    feat_branch = Chain(e2a, e2b)
-    # last-3 channels of the 19-ch feature are the downsampled image
-    img_branch = x -> downsampling(x[:, :, end-2:end, :])
-    e2 = Parallel( (img, feat) -> cat(img, feat, dims=3), img_branch, feat_branch)
+    e2_core = Chain(e2a, e2b)
 
-    # stage 3: SkipConnection includes the residual concatenation
+    # last-3 channels from stage-1 output are the downsampled image
+    img_branch = x -> downsampling(x[:, :, end-2:end, :])
+    # Parallel includes concatenation with 2nd downsampled input (last-3 channels)
+    e2 = Parallel( (feat, img) -> cat(feat, img, dims=3), e2_core, img_branch)
+
+    # encoder: stage 3
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
     v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
     e3b = SkipConnection( Chain(v3b...), (x,m)->cat(x,m,dims=3))
     e3 = Chain(e3a, e3b)
 
-    # bridges (untouched)
+    # bridges
     b1 = ConvK1(19,  ch_out)
     b2 = ConvK1(131, ch_out)
     b3 = ConvK1(256, ch_out)
 
-    # decoder (untouched)
+    # decoder
     d2 = Chain(
         ConvTrK2(ch_out, ch_out; stride=2),
         BatchNorm(ch_out),
@@ -88,16 +88,16 @@ function (m::espnet)(x::AbstractArray)
     enc3 = m.encoder.layers.e3(enc2)
 
     # bridges
-    b1 = m.bridges.layers.b1(enc1)
-    b2 = m.bridges.layers.b2(enc2)
-    b3 = m.bridges.layers.b3(enc3)
+    bdg1 = m.bridges.layers.b1(enc1)
+    bdg2 = m.bridges.layers.b2(enc2)
+    bdg3 = m.bridges.layers.b3(enc3)
 
-    # decoder (structure untouched)
-    d2 = m.decoder.layers.d2(b3)
-    dec2 = cat(b2, d2, dims=3)
+    # decoder
+    dec_2 = m.decoder.layers.d2(bdg3)
+    dec2 = cat(bdg2, dec_2, dims=3)
 
-    d1 = m.decoder.layers.d1(dec2)
-    dec1 = cat(b1, d1, dims=3)
+    dec_1 = m.decoder.layers.d1(dec2)
+    dec1 = cat(bdg1, dec_1, dims=3)
 
     # logits
     return m.decoder.layers.d0(dec1)
