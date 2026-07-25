@@ -14,6 +14,7 @@ function unet4(
     edrops = (0.0, 0.0, 0.0, 0.0),   # dropout rates
     ddrops = (0.0, 0.0, 0.0),        # dropout rates
 )
+    # channels
     chs = defaultChannels .÷ alpha
 
     # encoder
