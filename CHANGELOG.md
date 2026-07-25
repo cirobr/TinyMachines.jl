@@ -1,5 +1,5 @@
-### v0.4.1-cleanup
-* Just cleanup: no structural changes, no functional changes.
+### v0.4.1
+* Code cleanup.
 
 ### v0.4.0
 * New model structures to speed up training.
