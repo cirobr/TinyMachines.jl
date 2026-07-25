@@ -28,10 +28,12 @@ function espnet(
     )
     e1 = Parallel( (x,y)->cat(x,y,dims=3), e1a, downsampling)
 
+    ### TODO: concatenation of downsampled image
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
     e2b = SkipConnection( Chain(v2b...), (x,m)->cat(x,m,dims=3))
     e2 = Chain(e2a, e2b)
+    ###
 
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
     v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
