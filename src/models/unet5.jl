@@ -69,7 +69,8 @@ function (m::unet5)(x::AbstractArray)
     cat1 = cat(enc1, up1; dims=3)
     dec1 = m.decoder.layers.d1(cat1)
 
-    return m.decoder.layers.d0(dec1)   # logits
+    # logits
+    return m.decoder.layers.d0(dec1)
 end
 const unet = unet5
 

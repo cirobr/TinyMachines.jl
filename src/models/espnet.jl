@@ -20,21 +20,23 @@ function espnet(
     act_ch_out = ( activation == "prelu" ? PReLU(ch_out) : activation )
 
     # encoder
-    e1  = Chain(
+    e1a = Chain(
         ConvK3(ch_in, 16; stride=2),
         BatchNorm(16),
         act_16,
         Dropout(edrops[1]),
     )
+    e1 = Parallel( (x,y)->cat(x,y,dims=3), e1a, downsampling)
 
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
-    
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
-    e2b = Chain(v2b..., Dropout(edrops[2]))
+    e2b = SkipConnection( Chain(v2b...), (x,m)->cat(x,m,dims=3))
+    e2 = Chain(e2a, e2b)
 
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
     v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
-    e3b = Chain(v3b..., Dropout(edrops[3]))
+    e3b = SkipConnection( Chain(v3b...), (x,m)->cat(x,m,dims=3))
+    e3 = Chain(e3a, e3b)
 
     # bridges
     b1 = ConvK1(19,  ch_out)
@@ -63,7 +65,7 @@ function espnet(
     )
 
     # output chains
-    encoder = Chain(e1=e1, e2a=e2a, e2b=e2b, e3a=e3a, e3b=e3b)
+    encoder = Chain(e1=e1, e2=e2, e3=e3)
     bridges = Chain(b1=b1, b2=b2, b3=b3)
     decoder = Chain(d2=d2, d1=d1, d0=d0)
 
@@ -71,29 +73,21 @@ function espnet(
 end
 
 
-function (m::espnet)(x::AbstractArray; return_features::Bool = false)
+function (m::espnet)(x::AbstractArray)
     # input image downsampling
     x1 = downsampling(x)
     x2 = downsampling(x1)
 
     # encoder
-    f1 = m.encoder.layers.e1(x)
-    enc1 = cat(x1, f1, dims=3)
-
-    f2 = m.encoder.layers.e2a(enc1)
-    f3 = m.encoder.layers.e2b(f2)
-    enc2 = cat(x2, f2, f3, dims=3)
-    
-    f4 = m.encoder.layers.e3a(enc2)
-    f5 = m.encoder.layers.e3b(f4)
-    enc3 = cat(f4, f5, dims=3)
-
+    enc1 = m.encoder.layers.e1(x)
+    f2 = m.encoder.layers.e2(enc1)
+    enc2 = cat(x2, f2, dims=3)
+    enc3 = m.encoder.layers.e3(enc2)
 
     # bridges
     b1 = m.bridges.layers.b1(enc1)
     b2 = m.bridges.layers.b2(enc2)
     b3 = m.bridges.layers.b3(enc3)
-
 
     # decoder
     d2 = m.decoder.layers.d2(b3)
@@ -102,16 +96,8 @@ function (m::espnet)(x::AbstractArray; return_features::Bool = false)
     d1 = m.decoder.layers.d1(dec2)
     dec1 = cat(b1, d1, dims=3)
 
-    logits = m.decoder.layers.d0(dec1)
-
-    # output features, logits
-    if return_features
-        return (logits  = logits,
-                encoder = (enc1=enc1, enc2=enc2, enc3=enc3)
-        )
-    else
-        return logits
-    end
+    # logits
+    return m.decoder.layers.d0(dec1)
 end
 
 
