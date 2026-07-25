@@ -46,7 +46,7 @@ function unet5(
 end
 
 
-function (m::unet5)(x::AbstractArray; return_features::Bool = false)
+function (m::unet5)(x::AbstractArray)
     enc1 = m.encoder.layers.e1(x)
     enc2 = m.encoder.layers.e2(enc1)
     enc3 = m.encoder.layers.e3(enc2)
@@ -69,16 +69,7 @@ function (m::unet5)(x::AbstractArray; return_features::Bool = false)
     cat1 = cat(enc1, up1; dims=3)
     dec1 = m.decoder.layers.d1(cat1)
 
-    logits = m.decoder.layers.d0(dec1)
-
-    # output features, logits
-    if return_features
-        return (logits  = logits,
-                encoder = (enc1=enc1, enc2=enc2, enc3=enc3, enc4=enc4, enc5=enc5)
-        )
-    else
-        return logits
-    end
+    return m.decoder.layers.d0(dec1)   # logits
 end
 const unet = unet5
 
