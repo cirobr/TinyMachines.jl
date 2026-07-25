@@ -14,7 +14,6 @@ function unet4(
     edrops = (0.0, 0.0, 0.0, 0.0),   # dropout rates
     ddrops = (0.0, 0.0, 0.0),        # dropout rates
 )
-
     chs = defaultChannels .÷ alpha
 
     # encoder
@@ -49,7 +48,6 @@ function (m::unet4)(x::AbstractArray)
     enc2 = m.encoder.layers.e2(enc1)
     enc3 = m.encoder.layers.e3(enc2)
     enc4 = m.encoder.layers.e4(enc3)
-
     
     up3 = m.upconvs.layers.u3(enc4)
     cat3 = cat(enc3, up3; dims=3)
