@@ -1,6 +1,6 @@
-### v0.4.1
-* Code cleanup.
-* Removed feature map outputs from unet4(), unet5(): use Flux.activations instead.
+### v0.5.0
+* Major code cleanup: models may not be compatible to previous versions.
+* Removed feature map outputs from all models: use Flux.activations instead.
 
 ### v0.4.0
 * New model structures to speed up training.
