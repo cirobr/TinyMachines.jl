@@ -32,9 +32,8 @@ function espnet(
     # encoder: stage 2
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
-    e2b = Chain(v2b..., Dropout(edrops[2]))
-    e2b = SkipConnection(e2b, (x,m)->cat(x,m,dims=3))
-    e2_main = Chain(e2a, e2b)
+    e2b = SkipConnection( Chain(v2b...), (x,m)->cat(x,m,dims=3))
+    e2_main = Chain(e2a, e2b, Dropout(edrops[2]))
 
     # last-3 channels from stage-1 output are the downsampled image
     img_branch = x -> downsampling(x[:, :, end-2:end, :])
@@ -44,9 +43,8 @@ function espnet(
     # encoder: stage 3
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
     v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
-    e3b = Chain(v3b..., Dropout(edrops[3]))
-    e3b = SkipConnection(e3b, (x,m)->cat(x,m,dims=3))
-    e3 = Chain(e3a, e3b)
+    e3b = SkipConnection( Chain(v3b...), (x,m)->cat(x,m,dims=3))
+    e3 = Chain(e3a, e3b, Dropout(edrops[3]))
 
     # bridges
     b1 = ConvK1(19,  ch_out)
