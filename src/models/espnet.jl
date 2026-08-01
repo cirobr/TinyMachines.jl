@@ -30,8 +30,8 @@ function espnet(
     e1 = Parallel( (feat,img)->cat(feat,img,dims=3), e1a, img_ds1)
 
     # encoder: stage 2
-    e2a = ESPBlock1(19, 64; activation=activation, stride=2)
-    v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
+    e2a = ESP1(19, 64; activation=activation, stride=2)
+    v2b = [ESP4(64, 64, activation=activation) for _ in 1:alpha2]
     e2b = Chain(v2b..., Dropout(edrops[2]))
     e2b = SkipConnection(e2b, (x,m)->cat(x,m,dims=3))
     e2c = Chain(e2a, e2b)
@@ -39,8 +39,8 @@ function espnet(
     e2 = Parallel( (feat,img)->cat(feat,img,dims=3), e2c, img_ds2)
 
     # encoder: stage 3
-    e3a = ESPBlock1(131, 128; activation=activation, stride=2)
-    v3b = [ESPBlock4(128, 128, activation=activation) for _ in 1:alpha3]
+    e3a = ESP1(131, 128; activation=activation, stride=2)
+    v3b = [ESP4(128, 128, activation=activation) for _ in 1:alpha3]
     e3b = Chain(v3b..., Dropout(edrops[3]))
     e3b = SkipConnection(e3b, (x,m)->cat(x,m,dims=3))
     e3 = Chain(e3a, e3b)
@@ -59,7 +59,7 @@ function espnet(
     )
 
     d1 = Chain(
-        ESPBlock1(2*ch_out, ch_out; activation=activation, stride=1),
+        ESP1(2*ch_out, ch_out; activation=activation, stride=1),
         ConvTrK2(ch_out, ch_out; stride=2),
         BatchNorm(ch_out),
         act_ch_out,

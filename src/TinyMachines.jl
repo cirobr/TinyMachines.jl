@@ -27,7 +27,7 @@ include("./functions/convlayers.jl")         # convolutional layers (custom conv
 include("./functions/activationlayers.jl")   # activation layers (prelu)
 include("./functions/unetblocks.jl")         # unet blocks
 include("./functions/irblocks.jl")           # inverted residual blocks
-include("./functions/espblocks.jl")          # esp blocks
+include("./functions/espmodules.jl")         # esp modules
 
 # models
 const defaultChannels = [64, 128, 256, 512, 1024]
