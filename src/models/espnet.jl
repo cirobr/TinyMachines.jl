@@ -34,9 +34,9 @@ function espnet(
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
     e2b = Chain(v2b..., Dropout(edrops[2]))
     e2b = SkipConnection(e2b, (x,m)->cat(x,m,dims=3))
-    e2 = Chain(e2a, e2b)
+    e2c = Chain(e2a, e2b)
     # concatenation with 2nd downsampled image (last-3 channels)
-    e2 = Parallel( (feat,img)->cat(feat,img,dims=3), e2, img_ds2)
+    e2 = Parallel( (feat,img)->cat(feat,img,dims=3), e2c, img_ds2)
 
     # encoder: stage 3
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
