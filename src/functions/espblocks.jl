@@ -1,5 +1,7 @@
 # input image downsampling
 downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
+img_ds1(x) = downsampling(x)                       # downsampling stage-1 input image
+img_ds2(x) = downsampling(x[:, :, end-2:end, :])   # downsampling stage-2 input image (last-3 channels of stage-1 output)
 
 
 # generic ESP block with K dilated convolutions

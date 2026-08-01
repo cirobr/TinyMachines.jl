@@ -26,20 +26,17 @@ function espnet(
         act_16,
         Dropout(edrops[1]),
     )
-    # Parallel includes concatenation with 1st downsampled input (last-3 channels)
-    e1 = Parallel( (feat,img)->cat(feat,img,dims=3), e1a, downsampling)
+    # concatenation with 1st downsampled image
+    e1 = Parallel( (feat,img)->cat(feat,img,dims=3), e1a, img_ds1)
 
     # encoder: stage 2
     e2a = ESPBlock1(19, 64; activation=activation, stride=2)
     v2b = [ESPBlock4(64, 64, activation=activation) for _ in 1:alpha2]
     e2b = Chain(v2b..., Dropout(edrops[2]))
     e2b = SkipConnection(e2b, (x,m)->cat(x,m,dims=3))
-    e2_main = Chain(e2a, e2b)
-
-    # last-3 channels from stage-1 output are the downsampled image
-    img_branch = x -> downsampling(x[:, :, end-2:end, :])
-    # Parallel includes concatenation with 2nd downsampled input (last-3 channels)
-    e2 = Parallel( (feat,img)->cat(feat,img,dims=3), e2_main, img_branch)
+    e2 = Chain(e2a, e2b)
+    # concatenation with 2nd downsampled image (last-3 channels)
+    e2 = Parallel( (feat,img)->cat(feat,img,dims=3), e2, img_ds2)
 
     # encoder: stage 3
     e3a = ESPBlock1(131, 128; activation=activation, stride=2)
