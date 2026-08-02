@@ -114,7 +114,7 @@ function ESPNet(
         activation=activation,
         alpha2=5,
         alpha3=8,
-        edrops=(0.0, 0.1, 0.3),
-        ddrops=(0.0, 0.0),
+        edrops=(0.05, 0.1, 0.2),
+        ddrops=(0.05, 0.1),
     )
 end
