@@ -47,12 +47,14 @@ end
 
 
 function (m::unet5)(x::AbstractArray)
+    # encoder
     enc1 = m.encoder.layers.e1(x)
     enc2 = m.encoder.layers.e2(enc1)
     enc3 = m.encoder.layers.e3(enc2)
     enc4 = m.encoder.layers.e4(enc3)
     enc5 = m.encoder.layers.e5(enc4)
 
+    # decoder
     up4 = m.upconvs.layers.u4(enc5)
     cat4 = cat(enc4, up4; dims=3)
     dec4 = m.decoder.layers.d4(cat4)
