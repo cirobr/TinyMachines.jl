@@ -1,6 +1,6 @@
 ### v0.5.0
 * Major code cleanup: models may not be compatible to previous versions.
-* Removed feature map outputs from all models: instead, Flux.activations can be used on training code for this purpose.
+* Removed feature map outputs from all models (Flux.activations can be used instead).
 
 ### v0.4.0
 * New model structures to speed up training.
