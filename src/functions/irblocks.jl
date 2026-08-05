@@ -13,7 +13,6 @@ function BRBlock(
         DepthwiseConv((3, 3), ch_exp => ch_exp;
                     stride=stride,
                     pad=SamePad(),
-                    bias=true,
                     init=kaiming_normal(),
         ),
         BatchNorm(ch_exp, activation),
