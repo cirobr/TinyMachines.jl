@@ -89,48 +89,6 @@ ESPNet(3, 2;               # input/output channels
 )
 ```
 
-## Features
-
-```
-model = UNet5()
-
-yhat  = model(x)    # return_features default to false, yhat = logits
-
-yhat  = model(x; return_features=true)
-yhat.logits         # output logits (same output for return_features=false)
-yhat.encoder.enc1   # output encoder feature first level
-yhat.encoder.enc2
-yhat.encoder.enc3
-yhat.encoder.enc4
-yhat.encoder.enc5   # output encoder feature fifth level
-```
-
-```
-model = MobileUNet()
-
-yhat  = model(x)    # return_features default to false, yhat = logits
-
-yhat  = model(x; return_features=true)
-yhat.logits         # output logits (same output for return_features=false)
-yhat.encoder.x1     # output encoder feature first level
-yhat.encoder.x2
-yhat.encoder.x3
-yhat.encoder.x4
-yhat.encoder.x5     # output encoder feature fifth level
-```
-
-```
-model = ESPNet()
-
-yhat  = model(x)    # return_features default to false, yhat = logits
-
-yhat  = model(x; return_features=true)
-yhat.logits         # output logits (same output for return_features=false)
-yhat.encoder.ct1    # output encoder feature first level
-yhat.encoder.ct2
-yhat.encoder.ct3    # output encoder feature third level
-```
-
 ## Constructors
 
 Constructors are models which allow access to a multitude of hyperparameters. Each model from above has been build with the aid of these constructors, where hyperparameters are chosen for performance.
@@ -140,8 +98,8 @@ Constructors are models which allow access to a multitude of hyperparameters. Ea
 unet5(3, 1;                               # input/output channels
     activation = relu,                    # activation function
     alpha = 1,                            # channels divider
-    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
 ```
 
@@ -149,8 +107,8 @@ unet5(3, 1;                               # input/output channels
 unet4(3, 1;                               # input/output channels
     activation = relu,                    # activation function
     alpha = 1,                            # channels divider
-    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
 ```
 
@@ -162,8 +120,8 @@ Argument $alpha$ in unets modulates the number of internal channels proportional
 ```
 mobileunet(3, 1;                          # input/output channels
     activation = relu6,                   # activation function
-    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
-    ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
+    edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
+    ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
 ```
 
@@ -173,8 +131,8 @@ espnet(3, 1;                              # input/output channels
     activation = "prelu",                 # activation function (if "prelu", use between quotes)
     alpha2 = 2,                           # expansion factor in encoder stage 2
     alpha3 = 3,                           # expansion factor in encoder stage 3
-    edrops = (0.0, 0.0, 0.0),             # dropout rates for encoder
-    ddrops = (0.0, 0.0),                  # dropout rates for decoder
+    edrops = (0.0, 0.0, 0.0),             # encoder dropout rates
+    ddrops = (0.0, 0.0),                  # decoder dropout rates
 )
 ```
 

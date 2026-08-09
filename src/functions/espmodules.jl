@@ -1,11 +1,14 @@
 # input image downsampling
 downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
+img_ds1(x) = downsampling(x)                       # downsampling stage-1 input image
+img_ds2(x) = downsampling(x[:, :, end-2:end, :])   # downsampling stage-2 input image (last-3 channels of stage-1 output)
 
 
-# generic ESP block with K dilated convolutions
-function esp(ch_in::Int, ch_out::Int;   # input/output channels
-             activation,                # activation function
-             K::Int                     # number of dilated convolutions
+# generic ESP module with K dilated convolutions
+function esp(
+    ch_in::Int, ch_out::Int;   # input/output channels
+    activation,                # activation function
+    K::Int                     # number of dilated convolutions
 )
     @assert ch_out % K == 0 || error("ch_out must be divisible by K")
 
@@ -25,15 +28,16 @@ end
 
 
 
-# ESPBlock1 is a ESP block with 1 dilated convolution, plus stride for downsampling
-struct ESPBlock1
+# ESP1 is a ESP module with 1 dilated convolution, plus stride for downsampling
+struct ESP1
     chain::Conv
 end
-@layer ESPBlock1
+@layer ESP1
 
-function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
-                   activation,                # activation function
-                   stride::Int,               # stride for downsampling modulation
+function ESP1(
+    ch_in::Int, ch_out::Int;   # input/output channels
+    activation,                # activation function
+    stride::Int,               # stride for downsampling modulation
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
 
@@ -46,7 +50,7 @@ function ESPBlock1(ch_in::Int, ch_out::Int;   # input/output channels
     )
 end
 
-function (m::ESPBlock1)(x)
+function (m::ESP1)(x)
     yhat = m.chain(x)            # pointwise convolution
     s = size(x) != size(yhat)    # check if downsampling is applied
     return s ? yhat : x + yhat   # no residual connection if downsampling
@@ -54,19 +58,19 @@ end
 
 
 
-# ESPBlock4 is a ESP block with 4 parallel dilated convolutions, and no stride
-struct ESPBlock4
+# ESP4 is a ESP module with 4 parallel dilated convolutions, and no stride
+struct ESP4
     pointwise::Conv
     dilated::Chain
 end
-@layer ESPBlock4
+@layer ESP4
 
-function ESPBlock4(ch_in::Int, ch_out::Int; activation)
+function ESP4(ch_in::Int, ch_out::Int; activation)
     pointwise, dilated = esp(ch_in, ch_out, activation=activation, K=4)
-    return ESPBlock4(pointwise, dilated)
+    return ESP4(pointwise, dilated)
 end
 
-function (m::ESPBlock4)(x)
+function (m::ESP4)(x)
     pw = m.pointwise(x)                    # pointwise convolution
     
     d1 = m.dilated[1](pw)                  # dilated convolutions
