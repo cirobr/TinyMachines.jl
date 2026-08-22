@@ -1,3 +1,7 @@
+### v0.5.1
+* Bug fix ESP1 constructor.
+* Image downsampling revised for espnet().
+
 ### v0.5.0
 * Major code cleanup: models may not be compatible to previous versions.
 * Removed feature map outputs from all models (Flux.activations can be used instead).

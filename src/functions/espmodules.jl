@@ -1,5 +1,6 @@
 # input image downsampling
-downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
+# downsampling = MeanPool((3,3); pad=SamePad(), stride=2)
+downsampling = MeanPool((2,2); pad=SamePad(), stride=2)
 img_ds1(x) = downsampling(x)                       # downsampling stage-1 input image
 img_ds2(x) = downsampling(x[:, :, end-2:end, :])   # downsampling stage-2 input image (last-3 channels of stage-1 output)
 
@@ -28,9 +29,9 @@ end
 
 
 
-# ESP1 is a ESP module with 1 dilated convolution, plus stride for downsampling
+# ESP1 is a ESP module with one dilated convolution, plus stride for downsampling
 struct ESP1
-    chain::Conv
+    chain::Chain
 end
 @layer ESP1
 
@@ -40,22 +41,25 @@ function ESP1(
     stride::Int,               # stride for downsampling modulation
 )
     @assert stride ∈ 1:2 || error("stride must be 1 or 2")
-
     act = activation == "prelu" ? PReLU(ch_out) : activation
-    return Chain(
-        ConvK1(ch_in, ch_out),                  # pointwise convolution
-        ConvK3(ch_out, ch_out; stride=stride),  # d=1 dilation & downsampling
+
+    chain = Chain(
+        ConvK1(ch_in, ch_out),
+        ConvK3(ch_out, ch_out; stride=stride),
         BatchNorm(ch_out),
         act
     )
+    return ESP1(chain)
 end
 
 function (m::ESP1)(x)
-    yhat = m.chain(x)            # pointwise convolution
-    s = size(x) != size(yhat)    # check if downsampling is applied
-    return s ? yhat : x + yhat   # no residual connection if downsampling
+    yhat = m.chain(x)
+    if size(x) == size(yhat)
+        return x + yhat
+    else
+        return yhat
+    end
 end
-
 
 
 # ESP4 is a ESP module with 4 parallel dilated convolutions, and no stride
