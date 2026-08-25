@@ -27,14 +27,6 @@ function ConvK3(ch_in::Int, ch_out::Int, activation::Function=identity;
 end
 
 
-function UpConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
-    return Chain(
-        Upsample(scale=(4,4)),
-        ConvK2(ch_in, ch_out, activation),
-    )
-end
-
-
 function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity)
     return ConvTranspose((2,2), ch_in => ch_out, activation;
                         stride=2,
