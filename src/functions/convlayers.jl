@@ -35,12 +35,9 @@ function UpConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
 end
 
 
-function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity;
-                      stride::Int=1)
-    @assert stride ∈ [1,2] || error("Stride must be 1 or 2.")
-    
+function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity)
     return ConvTranspose((2,2), ch_in => ch_out, activation;
-                        stride=stride,
+                        stride=2,
                         pad=SamePad(),
                         init=kaiming_normal(),
     )

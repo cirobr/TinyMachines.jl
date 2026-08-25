@@ -24,9 +24,9 @@ function unet4(
     e4 = Chain(MCB(chs[3], chs[4], activation), Dropout(edrops[4]))
 
     # up convolutions
-    u3 = ConvTrK2(chs[4], chs[3], activation; stride=2)
-    u2 = ConvTrK2(chs[3], chs[2], activation; stride=2)
-    u1 = ConvTrK2(chs[2], chs[1], activation; stride=2)
+    u3 = ConvTrK2(chs[4], chs[3], activation)
+    u2 = ConvTrK2(chs[3], chs[2], activation)
+    u1 = ConvTrK2(chs[2], chs[1], activation)
 
     # decoder
     d3 = Chain(CB(chs[4], chs[3], activation), Dropout(ddrops[3]))

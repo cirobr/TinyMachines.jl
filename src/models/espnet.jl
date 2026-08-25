@@ -52,7 +52,7 @@ function espnet(
 
     # decoder
     d2 = Chain(
-        ConvTrK2(ch_out, ch_out; stride=2),
+        ConvTrK2(ch_out, ch_out),
         BatchNorm(ch_out),
         act_ch_out,
         Dropout(ddrops[2]),
@@ -60,7 +60,7 @@ function espnet(
 
     d1 = Chain(
         ESP1(2*ch_out, ch_out; activation=activation, stride=1),
-        ConvTrK2(ch_out, ch_out; stride=2),
+        ConvTrK2(ch_out, ch_out),
         BatchNorm(ch_out),
         act_ch_out,
         Dropout(ddrops[1]),
@@ -68,7 +68,7 @@ function espnet(
     
     d0 = Chain(
         ConvK1(2*ch_out, ch_out),
-        ConvTrK2(ch_out, ch_out; stride=2),   # no bn, no activation
+        ConvTrK2(ch_out, ch_out),   # no bn, no activation
     )
 
     # output chains

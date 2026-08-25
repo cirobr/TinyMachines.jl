@@ -1,6 +1,7 @@
 ### v0.5.1
 * Bug fix ESP1 constructor.
 * Image downsampling revised for espnet().
+* Remove stride option from ConvTrK2().
 
 ### v0.5.0
 * Major code cleanup: models may not be compatible to previous versions.
