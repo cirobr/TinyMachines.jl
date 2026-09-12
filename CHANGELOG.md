@@ -1,3 +1,6 @@
+### v0.5.2
+* Compatibylity to Julia v1.13.
+
 ### v0.5.1
 * Bug fix ESP1 constructor.
 * Image downsampling revised for espnet().
