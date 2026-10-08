@@ -1,5 +1,8 @@
+### v0.6.0
+* unets: dropouts removed from skip path.
+
 ### v0.5.2
-* Compatibylity to Julia v1.13.
+* Compatibility to Julia v1.13.
 
 ### v0.5.1
 * Bug fix ESP1 constructor.
