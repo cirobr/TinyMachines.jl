@@ -1,5 +1,6 @@
 ### v0.6.0
 * unets: dropouts removed from skip path.
+* espnet: 
 
 ### v0.5.2
 * Compatibility to Julia v1.13.

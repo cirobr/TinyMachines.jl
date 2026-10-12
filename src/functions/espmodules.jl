@@ -1,86 +1,149 @@
 # input image downsampling
-downsampling = MeanPool((2,2); stride=2)
-img_ds1(x) = downsampling(x)                       # downsampling stage-1 input image
-img_ds2(x) = downsampling(x[:, :, end-2:end, :])   # downsampling stage-2 input image (last-3 channels of stage-1 output)
-
-
-# generic ESP module with K dilated convolutions
-function esp(
-    ch_in::Int, ch_out::Int;   # input/output channels
-    activation,                # activation function
-    K::Int                     # number of dilated convolutions
+const _pool_2x = MeanPool((3,3); stride=2, pad=1)
+const _pool_4x = Chain(MeanPool((3,3); stride=2, pad=1),
+                       MeanPool((3,3); stride=2, pad=1)
 )
-    @assert ch_out % K == 0 || error("ch_out must be divisible by K")
 
-    d = ch_out ÷ K
-    dils = [2^(k-1) for k in 1:K]  # dilated indices
+img_ds1(x) = _pool_2x(x)   # 2× downsampling of raw input (sample1)
+img_ds2(x) = _pool_4x(x)   # 4× downsampling of raw input (sample2)
 
-    act = activation == "prelu" ? PReLU(d) : activation
-    pointwise = ConvK1(ch_in, d)
-    vector = [Chain(DilatedConvK3(d, d; dilation=dils[k]),
-              BatchNorm(d),
-              act
-              ) for k in 1:K]
-    dilated = Chain(vector...)
 
-    return pointwise, dilated
+
+# ESP downsampling
+struct DownSamplerB
+    c1::Conv
+    bn1::BatchNorm
+    d1::Conv
+    d2::Conv
+    d4::Conv
+    d8::Conv
+    d16::Conv
+    bn::BatchNorm
+    act::Any
+end
+@layer DownSamplerB
+
+function DownSamplerB(ch_in::Int, ch_out::Int; activation = identity)
+    if ch_out < 5   # fallback channels
+        c1  = ConvK3(ch_in, ch_out; stride=2)
+        bn1 = BatchNorm(ch_out)
+        act = (activation == "prelu" ? PReLU(ch_out) : activation)
+        return Chain(c1, bn1, act)
+    end
+    
+    n  = ch_out ÷ 5
+    n1 = ch_out - 4 * n
+    
+    c1  = ConvK3(ch_in, n; stride=2)          # strided 3x3 reducer (no pointwise)
+    bn1 = BatchNorm(n)
+    d1  = DilatedConvK3(n, n1; dilation=1)
+    d2  = DilatedConvK3(n, n;  dilation=2)
+    d4  = DilatedConvK3(n, n;  dilation=4)
+    d8  = DilatedConvK3(n, n;  dilation=8)
+    d16 = DilatedConvK3(n, n;  dilation=16)
+    bn  = BatchNorm(ch_out)
+    act = (activation == "prelu" ? PReLU(ch_out) : activation)
+
+    return DownSamplerB(c1, bn1, d1, d2, d4, d8, d16, bn, act)
+end
+
+function (m::DownSamplerB)(x::AbstractArray)
+    output1 = m.bn1( m.c1(x) )
+    d1  = m.d1(output1)
+    d2  = m.d2(output1)
+    d4  = m.d4(output1)
+    d8  = m.d8(output1)
+    d16 = m.d16(output1)
+
+    add1 = d2
+    add2 = add1 + d4
+    add3 = add2 + d8
+    add4 = add3 + d16
+
+    combine = cat(d1, add1, add2, add3, add4; dims=3)
+    output = m.bn(combine)
+    output = m.act(output)
+    return output
 end
 
 
 
-# ESP1 is a ESP module with one dilated convolution, plus stride for downsampling
-struct ESP1
-    chain::Chain
+# ESP module
+# Used with add=true for encoder repeats, add=false in decoder.
+struct DilatedParallelResidualBlockB
+    c1::Conv
+    bn1::BatchNorm          # BN that belongs to the 1x1 pointwise reduce (matches original C)
+    d1::Conv
+    d2::Conv
+    d4::Conv
+    d8::Conv
+    d16::Conv
+    bn::BatchNorm
+    act::Any
+    add::Bool
 end
-@layer ESP1
+@layer DilatedParallelResidualBlockB
 
-function ESP1(
-    ch_in::Int, ch_out::Int;   # input/output channels
-    activation,                # activation function
-    stride::Int,               # stride for downsampling modulation
-)
-    @assert stride ∈ 1:2 || error("stride must be 1 or 2")
-    act = activation == "prelu" ? PReLU(ch_out) : activation
+function DilatedParallelResidualBlockB(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
+    if ch_out < 5   # fallback channels
+        c   = ConvK1(ch_in, ch_out)
+        bn1 = BatchNorm(ch_out)
+        d   = ConvK3(ch_out, ch_out)
+        bn  = BatchNorm(ch_out)
+        act = (activation == "prelu" ? PReLU(ch_out) : activation)
+        return Chain(c, bn1, d, bn, act)
+    end
 
-    chain = Chain(
-        ConvK1(ch_in, ch_out),
-        ConvK3(ch_out, ch_out; stride=stride),
-        BatchNorm(ch_out),
-        act
-    )
-    return ESP1(chain)
+    n  = ch_out ÷ 5
+    n1 = ch_out - 4 * n
+    
+    c1  = ConvK1(ch_in, n)
+    bn1 = BatchNorm(n)                    # BN after 1x1 reduce (as in original C)
+    d1  = DilatedConvK3(n, n1; dilation=1)
+    d2  = DilatedConvK3(n, n;  dilation=2)
+    d4  = DilatedConvK3(n, n;  dilation=4)
+    d8  = DilatedConvK3(n, n;  dilation=8)
+    d16 = DilatedConvK3(n, n; dilation=16)
+    bn  = BatchNorm(ch_out)
+    act = (activation == "prelu" ? PReLU(ch_out) : activation)
+    
+    return DilatedParallelResidualBlockB(c1, bn1, d1, d2, d4, d8, d16, bn, act, add)
 end
 
-function (m::ESP1)(x)
-    yhat = m.chain(x)
-    if size(x) == size(yhat)
-        return x + yhat
+function (m::DilatedParallelResidualBlockB)(x::AbstractArray)
+    output1 = m.bn1( m.c1(x) )   # 1x1 pointwise reduce + its BN (matches original C)
+    d1  = m.d1(output1)
+    d2  = m.d2(output1)
+    d4  = m.d4(output1)
+    d8  = m.d8(output1)
+    d16 = m.d16(output1)
+
+    add1 = d2
+    add2 = add1 + d4
+    add3 = add2 + d8
+    add4 = add3 + d16
+
+    combine = cat(d1, add1, add2, add3, add4; dims=3)
+
+    if m.add
+        combine = x + combine
+    end
+
+    output = m.bn(combine)
+    output = m.act(output)
+    return output
+end
+
+
+# Backwards-compatible thin wrappers (so existing tests using ESP1/ESP4 still work)
+function ESP1(ch_in::Int, ch_out::Int; activation = identity, stride::Int = 1)
+    if stride == 2
+        return DownSamplerB(ch_in, ch_out; activation=activation)
     else
-        return yhat
+        return DilatedParallelResidualBlockB(ch_in, ch_out; add=true, activation=activation)
     end
 end
 
-
-# ESP4 is a ESP module with 4 parallel dilated convolutions, and no stride
-struct ESP4
-    pointwise::Conv
-    dilated::Chain
-end
-@layer ESP4
-
-function ESP4(ch_in::Int, ch_out::Int; activation)
-    pointwise, dilated = esp(ch_in, ch_out, activation=activation, K=4)
-    return ESP4(pointwise, dilated)
-end
-
-function (m::ESP4)(x)
-    pw = m.pointwise(x)                    # pointwise convolution
-    
-    d1 = m.dilated[1](pw)                  # dilated convolutions
-    d2 = m.dilated[2](pw) + d1
-    d3 = m.dilated[3](pw) + d2
-    d4 = m.dilated[4](pw) + d3
-
-    yhat = cat(d1, d2, d3, d4; dims=3)     # concatenate
-    return x + yhat                        # residual connection
+function ESP4(ch_in::Int, ch_out::Int; activation = identity)
+    return DilatedParallelResidualBlockB(ch_in, ch_out; add=true, activation=activation)
 end
