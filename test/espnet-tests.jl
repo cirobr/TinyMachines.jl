@@ -19,4 +19,13 @@ yhat = m(x3)
 @test size(yhat) == (256,256,5,1) || @error "logits 5ch error"
 
 
-# TODO: encoder test
+# encoder sub-chain (Flux.activations on encoder)
+# stages 1+2 return (fused_feature, original_x) tuples to thread image for fusion ds;
+# the fused_feature is the pre-dropout value used for bridges (except stage3)
+m = espnet(3, 3)
+fs = Flux.activations(m.encoder, x3)
+@test size(fs[1][1]) == (128,128,19,1) || @error "esp e1 fused"
+@test size(fs[2][1]) == (64,64,131,1) || @error "esp e2 fused"
+@test size(fs[3]) == (32,32,256,1) || @error "esp e3 fused"
+yhat = m(x3)
+@test size(yhat) == (256,256,3,1) || @error "esp logits ch3 error"

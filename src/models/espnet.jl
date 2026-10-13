@@ -23,8 +23,8 @@ function (m::ESPEncoderStage1)(x)
     e1_out   = m.e1(x)
     inp1     = m.ds1(x)
     e1_fused = m.fusion1(cat(e1_out, inp1; dims=3))
-    e1_drop  = m.edrop1(e1_fused)          # continuing-path dropout
-    return e1_drop, x                      # pass original image forward
+    # dropout (if any) is applied by caller only on the continuing path to stage 2
+    return e1_fused, x
 end
 
 
@@ -54,13 +54,13 @@ function ESPEncoderStage2(; activation = "prelu", alpha2::Int = 2, edrop = 0.0)
     return ESPEncoderStage2(ds2, e2_down, e2_deep, fusion2, edrop2)
 end
 
-function (m::ESPEncoderStage2)((e1_drop, x))
-    e2_down_out = m.e2_down(e1_drop)
+function (m::ESPEncoderStage2)((prev_drop, x))
+    e2_down_out = m.e2_down(prev_drop)
     e2_deep_out = m.e2_deep(e2_down_out)
     inp2        = m.ds2(x)
     e2_fused    = m.fusion2(cat(e2_down_out, e2_deep_out, inp2; dims=3))
-    e2_drop     = m.edrop2(e2_fused)
-    return e2_drop, x
+    # dropout (if any) applied by caller only on continuing path to stage 3
+    return e2_fused, x
 end
 
 
@@ -85,12 +85,12 @@ function ESPEncoderStage3(; activation = "prelu", alpha3::Int = 3, edrop = 0.0)
     return ESPEncoderStage3(e3_down, e3_deep, fusion3, edrop3)
 end
 
-function (m::ESPEncoderStage3)((e2_drop, x))
-    e3_down_out = m.e3_down(e2_drop)
+function (m::ESPEncoderStage3)((prev_drop, x))
+    e3_down_out = m.e3_down(prev_drop)
     e3_deep_out = m.e3_deep(e3_down_out)
     e3_fused    = m.fusion3(cat(e3_down_out, e3_deep_out; dims=3))
-    e3_drop     = m.edrop3(e3_fused)
-    return e3_drop                         # final stage returns only the feature
+    # dropout (if any) applied by caller for this stage's output to decoder
+    return e3_fused
 end
 
 
@@ -181,16 +181,19 @@ function espnet(
 end
 
 function (m::espnet)(x)
-    # Run once and capture all intermediate fused maps
-    acts = Flux.activations(m.encoder, x)
+    # encoder stages return pre-dropout fused features (for skips) + orig x for ds
+    # dropouts are applied only to the continuing encoder path (except e3 which affects its bridge)
+    e1_fused, _ = m.encoder.layers.e1(x)
+    e1_drop     = m.encoder.layers.e1.edrop1(e1_fused)
+    b1          = m.bridge1(e1_fused)
 
-    e1_fused = acts[1][1]   # stage1 returns (feature, x)
-    e2_fused = acts[2][1]   # stage2 returns (feature, x)
-    e3_fused = acts[3]      # stage3 returns the pure feature
+    e2_fused, _ = m.encoder.layers.e2((e1_drop, x))
+    e2_drop     = m.encoder.layers.e2.edrop2(e2_fused)
+    b2          = m.bridge2(e2_fused)
 
-    b3 = m.bridge3(e3_fused)
-    b2 = m.bridge2(e2_fused)
-    b1 = m.bridge1(e1_fused)
+    e3_fused    = m.encoder.layers.e3((e2_drop, x))
+    e3_drop     = m.encoder.layers.e3.edrop3(e3_fused)
+    b3          = m.bridge3(e3_drop)
 
     d3 = m.d3_up(b3)
     d2_cat = m.dds.layers.ddrop2(cat(b2, d3; dims=3))

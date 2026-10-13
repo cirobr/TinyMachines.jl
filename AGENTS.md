@@ -33,14 +33,14 @@ TinyMachines.jl is a single Julia package (no monorepo) implementing small Flux 
   - `activationlayers.jl` (PReLU struct + call)
   - `unetblocks.jl` (CB, MCB helpers)
   - `irblocks.jl`
-  - `espmodules.jl` (defines module-level `downsampling`, `img_ds1`, `img_ds2`, plus `ESP1`/`ESP4`/`esp`)
+  - `espmodules.jl` (defines `DownSampler` and `ESPModule`)
 - `src/models/`: model structs + constructors:
   - `unet5.jl` (also `UNet`, `unet`, `unet5`)
   - `unet4.jl`
   - `mobileunet.jl`
-  - `espnet2.jl` (defines `espnet`/`ESPNet` with dropout-on-main-path only; old espnet.jl kept for reference)
+  - `espnet.jl` (defines `espnet`/`ESPNet` split into 3 encoder stages + dropout-on-main-path only; `espnet_original.jl` kept for reference)
 - Models are callable structs with `@layer`. Forward passes often do manual `.layers.xxx` indexing (e.g. `m.encoder.layers.e1(x)`) rather than treating sub-chains as full functions.
-- ESPNet quirk: `activation="prelu"` (string) or a Function. PReLU resolution happens inside the constructors before calling the conv helpers. Image fusion uses `Parallel` + `cat` inside the encoder layers.
+- ESPNet quirk: `activation="prelu"` (string) or a Function. PReLU resolution happens inside the constructors before calling the conv helpers. After the stage split, image fusion uses explicit `cat` (plus threading of original image) inside the stage call methods (`ESPEncoderStage*`); `Parallel` is not used for ESPNet. Encoder activations return `(fused, x)` tuples for stages 1/2 (to support image ds) and the fused array for stage 3.
 
 ## Other notes
 
