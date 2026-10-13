@@ -195,16 +195,19 @@ function (m::espnet)(x)
     e3_drop     = m.encoder.layers.e3.edrop3(e3_fused)
     b3          = m.bridge3(e3_drop)
 
-    d3 = m.d3_up(b3)
+    d3     = m.d3_up(b3)
     d2_cat = m.dds.layers.ddrop2(cat(b2, d3; dims=3))
-    d2 = m.d2_up(m.d2_deep(d2_cat))
+    d2     = m.d2_up(m.d2_deep(d2_cat))
     d1_cat = m.dds.layers.ddrop1(cat(b1, d2; dims=3))
+
+    # logits
     return m.d1_up(m.d1_conv(d1_cat))
 end
 
-# paper-faithful:    edrops=(0.0, 0.0, 0.0), ddrops=(0.0, 0.0)
+# paper-faithful:    edrops=(0.0, 0.0, 0.0),   ddrops=(0.0, 0.0)
 # mild overfitting:  edrops=(0.01, 0.05, 0.1), ddrops=(0.05, 0.1)
-# clear overfitting: edrops=(0.05, 0.1, 0.2), ddrops=(0.1, 0.15)
+# clear overfitting: edrops=(0.05, 0.1, 0.2),  ddrops=(0.1, 0.15)
+# maximum depth cited on paper: alpha2=5, alpha3=8
 function ESPNet(
     ch_in::Int=3,
     ch_out::Int=2;
