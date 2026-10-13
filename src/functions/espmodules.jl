@@ -133,17 +133,3 @@ function (m::ESPModule)(x::AbstractArray)
     output = m.act(output)
     return output
 end
-
-
-# Backwards-compatible thin wrappers (so existing tests using ESP1/ESP4 still work)
-function ESP1(ch_in::Int, ch_out::Int; activation = identity, stride::Int = 1)
-    if stride == 2
-        return DownSampler(ch_in, ch_out; activation=activation)
-    else
-        return ESPModule(ch_in, ch_out; add=true, activation=activation)
-    end
-end
-
-function ESP4(ch_in::Int, ch_out::Int; activation = identity)
-    return ESPModule(ch_in, ch_out; add=true, activation=activation)
-end

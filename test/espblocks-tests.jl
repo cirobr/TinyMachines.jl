@@ -1,13 +1,36 @@
-@info "esp modules tests..."
+@info "esp blocks tests..."
 
-m = tm.ESP1(3, 2; activation="prelu", stride=1)
+# DownSampler
+m = tm.DownSampler(3,1; activation="prelu")
 yhat = m(x3)
-@test size(yhat) == (256,256,2,1) || @error "size(yhat) == $(size(yhat))"
+@test size(yhat) == (128,128,1,1) || @error "size(yhat) == $(size(yhat))"
 
-m = tm.ESP1(3, 2; activation="prelu", stride=2)
+m = tm.DownSampler(3,4; activation="prelu")
 yhat = m(x3)
-@test size(yhat) == (128,128,2,1) || @error "size(yhat) == $(size(yhat))"
+@test size(yhat) == (128,128,4,1) || @error "size(yhat) == $(size(yhat))"
 
-m = tm.ESP4(4, 4; activation="prelu")
-yhat = m(x4)
+m = tm.DownSampler(3,5; activation="prelu")
+yhat = m(x3)
+@test size(yhat) == (128,128,5,1) || @error "size(yhat) == $(size(yhat))"
+
+
+# ESP Module
+m = tm.ESPModule(3,1; add=false, activation="prelu")
+yhat = m(x3)
+@test size(yhat) == (256,256,1,1) || @error "size(yhat) == $(size(yhat))"
+
+m = tm.ESPModule(3,4; add=false, activation="prelu")
+yhat = m(x3)
 @test size(yhat) == (256,256,4,1) || @error "size(yhat) == $(size(yhat))"
+
+m = tm.ESPModule(3,5; add=false, activation="prelu")
+yhat = m(x3)
+@test size(yhat) == (256,256,5,1) || @error "size(yhat) == $(size(yhat))"
+
+m = tm.ESPModule(3,3; add=true, activation="prelu")
+yhat = m(x3)
+@test size(yhat) == (256,256,3,1) || @error "size(yhat) == $(size(yhat))"
+
+m = tm.ESPModule(5,5; add=true, activation="prelu")
+yhat = m(x5)
+@test size(yhat) == (256,256,5,1) || @error "size(yhat) == $(size(yhat))"
