@@ -1,18 +1,6 @@
-# input image downsampling
-# const _pool_2x = MeanPool((3,3); stride=2, pad=1)
-# const _pool_4x = Chain(MeanPool((3,3); stride=2, pad=1),
-#                        MeanPool((3,3); stride=2, pad=1)
-# )
-
-# img_ds1(x) = _pool_2x(x)   # 2× downsampling of raw input (sample1)
-# img_ds2(x) = _pool_4x(x)   # 4× downsampling of raw input (sample2)
-
-
-
 # ESP downsampling
 struct DownSampler
     c1::Conv
-    bn1::BatchNorm
     d1::Conv
     d2::Conv
     d4::Conv
@@ -26,16 +14,14 @@ end
 function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     if ch_out < 5   # fallback channels
         c1  = ConvK3(ch_in, ch_out; stride=2)
-        bn1 = BatchNorm(ch_out)
         act = (activation == "prelu" ? PReLU(ch_out) : activation)
-        return Chain(c1, bn1, act)
+        return Chain(c1, BatchNorm(ch_out), act)
     end
     
     n  = ch_out ÷ 5
     n1 = ch_out - 4 * n
     
     c1  = ConvK3(ch_in, n; stride=2)          # strided 3x3 reducer (no pointwise)
-    bn1 = BatchNorm(n)
     d1  = DilatedConvK3(n, n1; dilation=1)
     d2  = DilatedConvK3(n, n;  dilation=2)
     d4  = DilatedConvK3(n, n;  dilation=4)
@@ -44,11 +30,11 @@ function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
 
-    return DownSampler(c1, bn1, d1, d2, d4, d8, d16, bn, act)
+    return DownSampler(c1, d1, d2, d4, d8, d16, bn, act)
 end
 
 function (m::DownSampler)(x::AbstractArray)
-    output1 = m.bn1( m.c1(x) )
+    output1 = m.c1(x)
     d1  = m.d1(output1)
     d2  = m.d2(output1)
     d4  = m.d4(output1)
@@ -72,7 +58,6 @@ end
 # Used with add=true for encoder repeats, add=false in decoder.
 struct ESPModule
     c1::Conv
-    bn1::BatchNorm          # BN that belongs to the 1x1 pointwise reduce (matches original C)
     d1::Conv
     d2::Conv
     d4::Conv
@@ -87,18 +72,16 @@ end
 function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
     if ch_out < 5   # fallback channels
         c   = ConvK1(ch_in, ch_out)
-        bn1 = BatchNorm(ch_out)
         d   = ConvK3(ch_out, ch_out)
         bn  = BatchNorm(ch_out)
         act = (activation == "prelu" ? PReLU(ch_out) : activation)
-        return Chain(c, bn1, d, bn, act)
+        return Chain(c, d, bn, act)
     end
 
     n  = ch_out ÷ 5
     n1 = ch_out - 4 * n
     
     c1  = ConvK1(ch_in, n)
-    bn1 = BatchNorm(n)                    # BN after 1x1 reduce (as in original C)
     d1  = DilatedConvK3(n, n1; dilation=1)
     d2  = DilatedConvK3(n, n;  dilation=2)
     d4  = DilatedConvK3(n, n;  dilation=4)
@@ -107,11 +90,11 @@ function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = ident
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
     
-    return ESPModule(c1, bn1, d1, d2, d4, d8, d16, bn, act, add)
+    return ESPModule(c1, d1, d2, d4, d8, d16, bn, act, add)
 end
 
 function (m::ESPModule)(x::AbstractArray)
-    output1 = m.bn1( m.c1(x) )   # 1x1 pointwise reduce + its BN (matches original C)
+    output1 = m.c1(x)
     d1  = m.d1(output1)
     d2  = m.d2(output1)
     d4  = m.d4(output1)

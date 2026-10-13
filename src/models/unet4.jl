@@ -89,6 +89,7 @@ function (m::unet4)(x::AbstractArray)
 end
 
 
+# dropouts: see UNet5
 function UNet4(
     ch_in::Int  = 3,
     ch_out::Int = 2;

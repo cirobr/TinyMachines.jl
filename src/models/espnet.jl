@@ -20,7 +20,7 @@ struct espnet
     d3_up::ConvTranspose
     d2_deep::Chain
     d2_up::Chain
-    d1_conv::Conv
+    d1_conv::Chain
     d1_up::ConvTranspose
     # dropouts (non-trainable)
     eds::Chain
@@ -113,7 +113,11 @@ function espnet(
         act_ch_out,
     )
 
-    d1_conv = ConvK1(2 * ch_out, ch_out)
+    d1_conv = Chain(
+        ConvK1(2 * ch_out, ch_out),
+        BatchNorm(ch_out),
+        act_ch_out,
+    )
 
     d1_up = ConvTrK2(ch_out, ch_out)
 
@@ -165,13 +169,16 @@ function (m::espnet)(x::AbstractArray)
     d2_up_out = m.d2_up(d2_deep_out)
 
     d1_out_cat = cat(b1_out, d2_up_out; dims=3)
-    d1_conv_out = m.d1_conv(d1_out_cat)
+    d1_out_cat_drop = m.dds.layers.ddrop1(d1_out_cat)
+    d1_conv_out = m.d1_conv(d1_out_cat_drop)
     
     # logits
     return m.d1_up(d1_conv_out)
 end
 
-
+# paper-faithful:    edrops=(0.0, 0.0, 0.0), ddrops=(0.0, 0.0)
+# mild overfitting:  edrops=(0.01, 0.05, 0.1), ddrops=(0.05, 0.1)
+# clear overfitting: edrops=(0.05, 0.1, 0.2), ddrops=(0.1, 0.15)
 function ESPNet(
     ch_in::Int=3,
     ch_out::Int=2;
@@ -183,7 +190,7 @@ function ESPNet(
         activation=activation,
         alpha2=2,          # matches frequently cited paper value (α2=2)
         alpha3=8,          # matches frequently cited paper value (α3=8)
-        edrops=(0.05, 0.1, 0.2),
-        ddrops=(0.05, 0.1),
+        edrops=(0.0, 0.0, 0.0),
+        ddrops=(0.0, 0.0),
     )
 end

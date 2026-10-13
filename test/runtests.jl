@@ -5,7 +5,6 @@ using Random
 
 Random.seed!(1234)
 x3 = randn(Float32, (256,256,3,1))
-# x4 = randn(Float32, (256,256,4,1))
 x5 = randn(Float32, (256,256,5,1))
 
 @info "TinyMachines.jl tests..."
