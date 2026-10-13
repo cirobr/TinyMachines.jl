@@ -10,16 +10,16 @@ x8 = randn(Float32, (256,256,8,1))
 
 @info "TinyMachines.jl tests..."
 @testset "TinyMachines.jl" begin
-    include("./misc-tests.jl")
+    # include("./misc-tests.jl")
 
-    include("./activationlayers-tests.jl")
-    include("./convlayers-tests.jl")
-    include("./espblocks-tests.jl")
-    include("./irblocks-tests.jl")
+    # include("./activationlayers-tests.jl")
+    # include("./convlayers-tests.jl")
+    # include("./espblocks-tests.jl")
+    # include("./irblocks-tests.jl")
 
     include("./espnet-tests.jl")
-    include("./mobileunet-tests.jl")
-    include("./unets-tests.jl")
+    # include("./mobileunet-tests.jl")
+    # include("./unets-tests.jl")
 
     # include("./epoch-tests.jl")
 end

@@ -1,32 +1,36 @@
 struct espnet
+    # image downsamplers
+    ds1::MeanPool
+    ds2::Chain
     # encoder
-    l1::Chain
-    l2_0::DownSamplerB
-    l2::Chain
-    l3_0::DownSamplerB
-    l3::Chain
+    e1::Chain
+    e2_down::DownSampler
+    e2_deep::Chain
+    e3_down::DownSampler
+    e3_deep::Chain
+    #fusion bridges
     fusion1::Chain
     fusion2::Chain
     fusion3::Chain
     # skip connections
-    b1::Conv
-    b2::Conv
-    b3::Conv
+    bridge1::Conv
+    bridge2::Conv
+    bridge3::Conv
     # decoder
-    level3_C::Conv
-    deep_C::Conv
-    br::BatchNorm
-    up_l3::ConvTranspose
-    combine::Chain
-    up_l2::Chain
-    dec_conv::Chain
-    final_up::ConvTranspose
+    # level3_C::Conv
+    # deep_C::Conv
+    # br::BatchNorm
+    d3_up::ConvTranspose
+    d2_deep::Chain
+    d2_up::Chain
+    d1_conv::Conv
+    d1_up::ConvTranspose
     # dropouts (non-trainable)
     eds::Chain
     dds::Chain
 end
-@layer espnet trainable=(l1, l2_0, l2, l3_0, l3, fusion1, fusion2, fusion3, b1, b2, b3,
-                         level3_C, deep_C, br, up_l3, combine, up_l2, dec_conv, final_up)
+@layer espnet #trainable=(l1, l2_0, l2, l3_0, l3, fusion1, fusion2, fusion3, b1, b2, b3,
+                        #  level3_C, deep_C, br, d3_up, d2_deep, up_l2, d1_conv, final_up)
 
 
 function espnet(
@@ -47,47 +51,53 @@ function espnet(
     act_2c     = (activation == "prelu" ? PReLU(2*ch_out) : activation)
 
     # dropouts (applied only on main continuing path, not on fused "skip" features)
-    ed1 = Dropout(edrops[1])
-    ed2 = Dropout(edrops[2])
-    ed3 = Dropout(edrops[3])
+    edrop1 = Dropout(edrops[1])
+    edrop2 = Dropout(edrops[2])
+    edrop3 = Dropout(edrops[3])
 
-    dd2 = Dropout(ddrops[2])
-    dd1 = Dropout(ddrops[1])
+    ddrop2 = Dropout(ddrops[2])
+    ddrop1 = Dropout(ddrops[1])
+
+    # image downsamplers
+    ds1 = MeanPool((3,3); stride=2, pad=1)
+    ds2 = Chain(MeanPool((3,3); stride=2, pad=1),
+                MeanPool((3,3); stride=2, pad=1)
+    )
 
     # encoder
-    l1 = Chain(
+    e1 = Chain(
         ConvK3(ch_in, 16; stride=2),
         BatchNorm(16),
         act_16,
     )
 
-    l2_0 = DownSamplerB(19, 64; activation=activation)
-    v2   = [DilatedParallelResidualBlockB(64, 64; add=true, activation=activation)
-            for _ in 1:alpha2]
-    l2   = Chain(v2...)
+    e2_down = DownSampler(19, 64; activation=activation)
+    v2      = [ESPModule(64, 64; add=true, activation=activation)
+               for _ in 1:alpha2]
+    e2_deep = Chain(v2...)
 
-    l3_0 = DownSamplerB(131, 128; activation=activation)
-    v3   = [DilatedParallelResidualBlockB(128, 128; add=true, activation=activation)
-            for _ in 1:alpha3]
-    l3   = Chain(v3...)
+    e3_down = DownSampler(131, 128; activation=activation)
+    v3      = [ESPModule(128, 128; add=true, activation=activation)
+               for _ in 1:alpha3]
+    e3_deep = Chain(v3...)
 
-    # fusion BRs (BN + act after cat, matching original b1/b2/b3 style before bridges)
+    # fusion bridges (BN + act after cat, matching original b1/b2/b3 style before bridges)
     fusion1 = Chain(BatchNorm(19),  act_19)
     fusion2 = Chain(BatchNorm(131), act_131)
     fusion3 = Chain(BatchNorm(256), act_256)
 
     # bridges (1x1 projections of the fused features)
-    b1 = ConvK1(19,  ch_out)
-    b2 = ConvK1(131, ch_out)
-    b3 = ConvK1(256, ch_out)
+    bridge1 = ConvK1(19,  ch_out)
+    bridge2 = ConvK1(131, ch_out)
+    bridge3 = ConvK1(256, ch_out)
 
-    # === Decoder (light-weight RUM style from original) ===
-    level3_C = ConvK1(131, ch_out)
-    deep_C   = ConvK1(256, ch_out)   # for output2_cat projection
-    br       = BatchNorm(ch_out)
-    up_l3    = ConvTrK2(ch_out, ch_out)
+    # decoder
+    # level3_C = ConvK1(131, ch_out)
+    # deep_C   = ConvK1(256, ch_out)   # for output2_cat projection
+    # br       = BatchNorm(ch_out)
+    d3_up    = ConvTrK2(ch_out, ch_out)
 
-    combine = if ch_out < 5
+    d2_deep = if ch_out < 5
         Chain(
             BatchNorm(2 * ch_out),
             act_2c,
@@ -100,95 +110,72 @@ function espnet(
         Chain(
             BatchNorm(2 * ch_out),
             act_2c,
-            DilatedParallelResidualBlockB(2 * ch_out, ch_out; add=false, activation=activation),
+            ESPModule(2 * ch_out, ch_out; add=false, activation=activation),
         )
     end
 
-    up_l2 = Chain(
+    d2_up = Chain(
         ConvTrK2(ch_out, ch_out),
         BatchNorm(ch_out),
         act_ch_out,
     )
 
-    dec_conv = Chain(
-        ConvK3(19 + ch_out, ch_out),
-        BatchNorm(ch_out),
-        act_ch_out,
-    )
+    d1_conv = ConvK1(2 * ch_out, ch_out)
 
-    final_up = ConvTrK2(ch_out, ch_out)
+    d1_up = ConvTrK2(ch_out, ch_out)
 
     # pack dropouts
-    eds = Chain(ed1=ed1, ed2=ed2, ed3=ed3)
-    dds = Chain(dd2=dd2, dd1=dd1)
+    eds = Chain(edrop1=edrop1, edrop2=edrop2, edrop3=edrop3)
+    dds = Chain(ddrop2=ddrop2, ddrop1=ddrop1)
 
-    return espnet(l1, l2_0, l2, l3_0, l3,
+    return espnet(ds1, ds2,
+                  e1, e2_down, e2_deep, e3_down, e3_deep,
                   fusion1, fusion2, fusion3,
-                  b1, b2, b3,
-                  level3_C, deep_C, br, up_l3, combine, up_l2, dec_conv, final_up,
+                  bridge1, bridge2, bridge3,
+                  d3_up, d2_deep, d2_up, d1_conv, d1_up,
                   eds, dds)
 end
 
 
 function (m::espnet)(x::AbstractArray)
-    # === Encoder (replicates original forward + fusion points) ===
-    output0   = m.l1(x)
-    inp1      = img_ds1(x)
-    fused0    = cat(output0, inp1; dims=3)
-    output0_cat = m.fusion1(fused0)   # BR(19) style
+    # encoder
+    e1_out      = m.e1(x)
+    inp1        = m.ds1(x)
+    e1_out_cat  = cat(e1_out, inp1; dims=3)
+    e1_fused    = m.fusion1(e1_out_cat)
+    e1_fused_drop = m.eds.layers.edrop1(e1_fused)
 
-    # ed1 only on main continuing path (skip/fusion features stay pre-drop)
-    output0d  = m.eds.layers.ed1(output0_cat)
+    e2_down_out = m.e2_down(e1_fused_drop)
+    e2_deep_out = m.e2_deep(e2_down_out)
+    inp2        = m.ds2(x)
+    e2_out_cat  = cat(e2_down_out, e2_deep_out, inp2; dims=3)
+    e2_fused    = m.fusion2(e2_out_cat)
+    e2_fused_drop = m.eds.layers.edrop2(e2_fused)
 
-    output1_0 = m.l2_0(output0d)
-    output1   = output1_0
-    for layer in m.l2
-        output1 = layer(output1)
-    end
+    e3_down_out = m.e3_down(e2_fused_drop)
+    e3_deep_out = m.e3_deep(e3_down_out)
+    e3_out_cat  = cat(e3_down_out, e3_deep_out; dims=3)
+    e3_fused    = m.fusion3(e3_out_cat)
+    e3_fused_drop = m.eds.layers.edrop3(e3_fused)
 
-    inp2 = img_ds2(x)                    # always project the raw input image (original behavior)
-    fused1    = cat(output1, output1_0, inp2; dims=3)
-    output1_cat = m.fusion2(fused1)
+    # bridges
+    b3_out = m.bridge3(e3_fused_drop)   # dropout applied at main flow
+    b2_out = m.bridge2(e2_fused)
+    b1_out = m.bridge1(e1_fused)
 
-    # ed2 only on main
-    output1d = m.eds.layers.ed2(output1_cat)
+    # # decoder
+    d3_up_out = m.d3_up(b3_out); @show size(d3_up_out)
 
-    output2_0 = m.l3_0(output1d)
-    output2   = output2_0
-    for layer in m.l3
-        output2 = layer(output2)
-    end
+    d2_out_cat = cat(b2_out, d3_up_out; dims=3); @show size(d2_out_cat)
+    d2_out_cat_drop = m.dds.layers.ddrop2(d2_out_cat); @show size(d2_out_cat_drop)
+    d2_deep_out = m.d2_deep(d2_out_cat_drop); @show size(d2_deep_out)
+    d2_up_out = m.d2_up(d2_deep_out); @show size(d2_up_out)
 
-    fused2    = cat(output2_0, output2; dims=3)
-    output2_cat = m.fusion3(fused2)
-
-    # ed3 only on main deep path
-    output2d = m.eds.layers.ed3(output2_cat)
-
-    # bridges use the pre-dropout fused features (philosophy from unets)
-    bdg1 = m.b1(output0_cat)
-    bdg2 = m.b2(output1_cat)
-    bdg3 = m.b3(output2d)
-
-    # === Decoder (RUM style from original Python) ===
-    # deep projection + up
-    deep_p = m.br( m.deep_C(output2_cat) )
-    output2_c = m.up_l3(deep_p)
-
-    # mid projection
-    output1_C = m.level3_C(output1_cat)
-
-    # combine
-    comb_in = cat(output1_C, output2_c; dims=3)
-    comb    = m.combine(comb_in)
-    comb_up = m.up_l2(comb)
-
-    # concat with early fused + conv
-    concat  = cat(comb_up, output0_cat; dims=3)
-    dec_out = m.dec_conv(concat)
-
-    # final logits
-    return m.final_up(dec_out)
+    d1_out_cat = cat(b1_out, d2_up_out; dims=3)
+    d1_conv_out = m.d1_conv(d1_out_cat) ### erro
+    
+    # # logits
+    # return m.d1_up(d1_conv_out)
 end
 
 

@@ -1,16 +1,16 @@
 # input image downsampling
-const _pool_2x = MeanPool((3,3); stride=2, pad=1)
-const _pool_4x = Chain(MeanPool((3,3); stride=2, pad=1),
-                       MeanPool((3,3); stride=2, pad=1)
-)
+# const _pool_2x = MeanPool((3,3); stride=2, pad=1)
+# const _pool_4x = Chain(MeanPool((3,3); stride=2, pad=1),
+#                        MeanPool((3,3); stride=2, pad=1)
+# )
 
-img_ds1(x) = _pool_2x(x)   # 2× downsampling of raw input (sample1)
-img_ds2(x) = _pool_4x(x)   # 4× downsampling of raw input (sample2)
+# img_ds1(x) = _pool_2x(x)   # 2× downsampling of raw input (sample1)
+# img_ds2(x) = _pool_4x(x)   # 4× downsampling of raw input (sample2)
 
 
 
 # ESP downsampling
-struct DownSamplerB
+struct DownSampler
     c1::Conv
     bn1::BatchNorm
     d1::Conv
@@ -21,9 +21,9 @@ struct DownSamplerB
     bn::BatchNorm
     act::Any
 end
-@layer DownSamplerB
+@layer DownSampler
 
-function DownSamplerB(ch_in::Int, ch_out::Int; activation = identity)
+function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     if ch_out < 5   # fallback channels
         c1  = ConvK3(ch_in, ch_out; stride=2)
         bn1 = BatchNorm(ch_out)
@@ -44,10 +44,10 @@ function DownSamplerB(ch_in::Int, ch_out::Int; activation = identity)
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
 
-    return DownSamplerB(c1, bn1, d1, d2, d4, d8, d16, bn, act)
+    return DownSampler(c1, bn1, d1, d2, d4, d8, d16, bn, act)
 end
 
-function (m::DownSamplerB)(x::AbstractArray)
+function (m::DownSampler)(x::AbstractArray)
     output1 = m.bn1( m.c1(x) )
     d1  = m.d1(output1)
     d2  = m.d2(output1)
@@ -70,7 +70,7 @@ end
 
 # ESP module
 # Used with add=true for encoder repeats, add=false in decoder.
-struct DilatedParallelResidualBlockB
+struct ESPModule
     c1::Conv
     bn1::BatchNorm          # BN that belongs to the 1x1 pointwise reduce (matches original C)
     d1::Conv
@@ -82,9 +82,9 @@ struct DilatedParallelResidualBlockB
     act::Any
     add::Bool
 end
-@layer DilatedParallelResidualBlockB
+@layer ESPModule
 
-function DilatedParallelResidualBlockB(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
+function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
     if ch_out < 5   # fallback channels
         c   = ConvK1(ch_in, ch_out)
         bn1 = BatchNorm(ch_out)
@@ -107,10 +107,10 @@ function DilatedParallelResidualBlockB(ch_in::Int, ch_out::Int; add::Bool = true
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
     
-    return DilatedParallelResidualBlockB(c1, bn1, d1, d2, d4, d8, d16, bn, act, add)
+    return ESPModule(c1, bn1, d1, d2, d4, d8, d16, bn, act, add)
 end
 
-function (m::DilatedParallelResidualBlockB)(x::AbstractArray)
+function (m::ESPModule)(x::AbstractArray)
     output1 = m.bn1( m.c1(x) )   # 1x1 pointwise reduce + its BN (matches original C)
     d1  = m.d1(output1)
     d2  = m.d2(output1)
@@ -138,12 +138,12 @@ end
 # Backwards-compatible thin wrappers (so existing tests using ESP1/ESP4 still work)
 function ESP1(ch_in::Int, ch_out::Int; activation = identity, stride::Int = 1)
     if stride == 2
-        return DownSamplerB(ch_in, ch_out; activation=activation)
+        return DownSampler(ch_in, ch_out; activation=activation)
     else
-        return DilatedParallelResidualBlockB(ch_in, ch_out; add=true, activation=activation)
+        return ESPModule(ch_in, ch_out; add=true, activation=activation)
     end
 end
 
 function ESP4(ch_in::Int, ch_out::Int; activation = identity)
-    return DilatedParallelResidualBlockB(ch_in, ch_out; add=true, activation=activation)
+    return ESPModule(ch_in, ch_out; add=true, activation=activation)
 end
