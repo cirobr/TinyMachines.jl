@@ -12,14 +12,11 @@ struct espnet
     fusion1::Chain
     fusion2::Chain
     fusion3::Chain
-    # skip connections
+    # bridges / skip connections
     bridge1::Conv
     bridge2::Conv
     bridge3::Conv
     # decoder
-    # level3_C::Conv
-    # deep_C::Conv
-    # br::BatchNorm
     d3_up::ConvTranspose
     d2_deep::Chain
     d2_up::Chain
@@ -29,8 +26,7 @@ struct espnet
     eds::Chain
     dds::Chain
 end
-@layer espnet #trainable=(l1, l2_0, l2, l3_0, l3, fusion1, fusion2, fusion3, b1, b2, b3,
-                        #  level3_C, deep_C, br, d3_up, d2_deep, up_l2, d1_conv, final_up)
+@layer espnet
 
 
 function espnet(
@@ -42,14 +38,6 @@ function espnet(
     edrops=(0.0, 0.0, 0.0),   # dropout rates for encoder main path
     ddrops=(0.0, 0.0),        # dropout rates for decoder main path
 )
-    # activations
-    act_ch_out = (activation == "prelu" ? PReLU(ch_out) : activation)
-    act_16     = (activation == "prelu" ? PReLU(16) : activation)
-    act_19     = (activation == "prelu" ? PReLU(19) : activation)
-    act_131    = (activation == "prelu" ? PReLU(131) : activation)
-    act_256    = (activation == "prelu" ? PReLU(256) : activation)
-    act_2c     = (activation == "prelu" ? PReLU(2*ch_out) : activation)
-
     # dropouts (applied only on main continuing path, not on fused "skip" features)
     edrop1 = Dropout(edrops[1])
     edrop2 = Dropout(edrops[2])
@@ -63,6 +51,14 @@ function espnet(
     ds2 = Chain(MeanPool((3,3); stride=2, pad=1),
                 MeanPool((3,3); stride=2, pad=1)
     )
+
+    # activations
+    act_ch_out = (activation == "prelu" ? PReLU(ch_out) : activation)
+    act_16     = (activation == "prelu" ? PReLU(16) : activation)
+    act_19     = (activation == "prelu" ? PReLU(19) : activation)
+    act_131    = (activation == "prelu" ? PReLU(131) : activation)
+    act_256    = (activation == "prelu" ? PReLU(256) : activation)
+    act_2c     = (activation == "prelu" ? PReLU(2*ch_out) : activation)
 
     # encoder
     e1 = Chain(
@@ -81,7 +77,7 @@ function espnet(
                for _ in 1:alpha3]
     e3_deep = Chain(v3...)
 
-    # fusion bridges (BN + act after cat, matching original b1/b2/b3 style before bridges)
+    # fusion bridges (BN + acttivation after cat)
     fusion1 = Chain(BatchNorm(19),  act_19)
     fusion2 = Chain(BatchNorm(131), act_131)
     fusion3 = Chain(BatchNorm(256), act_256)
@@ -92,9 +88,6 @@ function espnet(
     bridge3 = ConvK1(256, ch_out)
 
     # decoder
-    # level3_C = ConvK1(131, ch_out)
-    # deep_C   = ConvK1(256, ch_out)   # for output2_cat projection
-    # br       = BatchNorm(ch_out)
     d3_up    = ConvTrK2(ch_out, ch_out)
 
     d2_deep = if ch_out < 5
@@ -164,18 +157,18 @@ function (m::espnet)(x::AbstractArray)
     b1_out = m.bridge1(e1_fused)
 
     # # decoder
-    d3_up_out = m.d3_up(b3_out); @show size(d3_up_out)
+    d3_up_out = m.d3_up(b3_out)
 
-    d2_out_cat = cat(b2_out, d3_up_out; dims=3); @show size(d2_out_cat)
-    d2_out_cat_drop = m.dds.layers.ddrop2(d2_out_cat); @show size(d2_out_cat_drop)
-    d2_deep_out = m.d2_deep(d2_out_cat_drop); @show size(d2_deep_out)
-    d2_up_out = m.d2_up(d2_deep_out); @show size(d2_up_out)
+    d2_out_cat = cat(b2_out, d3_up_out; dims=3)
+    d2_out_cat_drop = m.dds.layers.ddrop2(d2_out_cat)
+    d2_deep_out = m.d2_deep(d2_out_cat_drop)
+    d2_up_out = m.d2_up(d2_deep_out)
 
     d1_out_cat = cat(b1_out, d2_up_out; dims=3)
-    d1_conv_out = m.d1_conv(d1_out_cat) ### erro
+    d1_conv_out = m.d1_conv(d1_out_cat)
     
-    # # logits
-    # return m.d1_up(d1_conv_out)
+    # logits
+    return m.d1_up(d1_conv_out)
 end
 
 

@@ -5,10 +5,17 @@
 # m = Chain(ESPNet(3,1), sigmoid)
 m = espnet(3,1)
 yhat = m(x3)
-# @test size(yhat) == (256,256,1,1) || @error "logits error"
+@test size(yhat) == (256,256,1,1) || @error "logits 1ch error"
 
+m = espnet(3,4)
+yhat = m(x3)
+@test size(yhat) == (256,256,4,1) || @error "logits 4ch error"
 
-# # return_fetuares
+m = espnet(3,5)
+yhat = m(x3)
+@test size(yhat) == (256,256,5,1) || @error "logits 5ch error"
+
+# return_fetuares
 # m = espnet(3,2, alpha2=2, alpha3=3)   # implicit activation="prelu"
 # yhat = m(x3; return_features=true)
 # @test size(yhat.encoder.enc1) == (128,128,19,1) || @error "encoder.enc1 error"
