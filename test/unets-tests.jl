@@ -2,9 +2,9 @@
 
 
 # UNet4
-modelcpu = Chain(UNet4(3,1), sigmoid)
+modelcpu = UNet4()
 yhat  = modelcpu(x3)
-@test size(yhat) == (256, 256, 1, 1) || @error "logits error"
+@test size(yhat) == (256, 256, 2, 1) || @error "wrapper error"
 
 # return features
 modelcpu = unet4(3, 3; activation=Flux.leakyrelu, alpha=2)
@@ -18,9 +18,9 @@ yhat  = modelcpu(x3)
 
 
 # UNet5
-modelcpu = Chain(UNet5(3,1), sigmoid)
+modelcpu = UNet5()
 yhat  = modelcpu(x3)
-@test size(yhat) == (256, 256, 1, 1) || @error "logits error"
+@test size(yhat) == (256, 256, 2, 1) || @error "wrapper error"
 
 modelcpu = unet5(3, 3; activation=Flux.leakyrelu, alpha=2)
 fs = Flux.activations(modelcpu.encoder, x3)

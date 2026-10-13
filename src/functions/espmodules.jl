@@ -9,7 +9,7 @@ struct DownSampler
     bn::BatchNorm
     act::Any
 end
-@layer DownSampler
+@layer DownSampler # all trainable
 
 function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     if ch_out < 5   # fallback channels
@@ -67,7 +67,7 @@ struct ESPModule
     act::Any
     add::Bool
 end
-@layer ESPModule
+@layer ESPModule trainable=(c1,d1,d2,d4,d8,d16,bn,act)
 
 function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
     if ch_out < 5   # fallback channels
