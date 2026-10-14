@@ -98,9 +98,9 @@ function UNet4(
     return unet4(
         ch_in,
         ch_out;
-        activation=activation,
-        alpha=1,
-        edrops=(0.0, 0.0, 0.0, 0.5),
-        ddrops=(0.0, 0.0, 0.0),
+        activation = activation,
+        alpha = 1,
+        edrops = (0.0, 0.0, 0.0, 0.5),
+        ddrops = (0.0, 0.0, 0.0),
     )
 end

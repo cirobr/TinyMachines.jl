@@ -134,13 +134,13 @@ end
 )
 
 function espnet(
-    ch_in::Int = 3,
-    ch_out::Int = 2;
-    activation = "prelu",
-    alpha2::Int = 2,
-    alpha3::Int = 3,
-    edrops = (0.0, 0.0, 0.0),
-    ddrops = (0.0, 0.0),
+    ch_in::Int  = 3,            # input channels
+    ch_out::Int = 2;            # output channels
+    activation = "prelu",       # activation function
+    alpha2::Int = 2,            # depth stage 2
+    alpha3::Int = 3,            # depth stage 3
+    edrops = (0.0, 0.0, 0.0),   # encoder dropouts
+    ddrops = (0.0, 0.0),        # decoder dropouts
 )
     encoder = ESPNetEncoder(ch_in; activation, alpha2, alpha3, edrops)
 
@@ -217,9 +217,9 @@ function ESPNet(
         ch_in,
         ch_out;
         activation=activation,
-        alpha2=2,          # matches frequently cited paper value (α2=2)
-        alpha3=8,          # matches frequently cited paper value (α3=8)
-        edrops=(0.0, 0.0, 0.0),
-        ddrops=(0.0, 0.0),
+        alpha2 = 2,          # matches frequently cited paper value (α2=2)
+        alpha3 = 8,          # matches frequently cited paper value (α3=8)
+        edrops = (0.0, 0.0, 0.0),
+        ddrops = (0.0, 0.0),
     )
 end

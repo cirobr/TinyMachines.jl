@@ -8,7 +8,7 @@ yhat  = modelcpu(x3)
 
 # return features
 modelcpu = mobileunet(3, 3; activation=Flux.leakyrelu)
-fs = Flux.activations(modelcpu.d, x3)
+fs = Flux.activations(modelcpu.encoder, x3)
 @test size(fs[1]) == (128,128,16,1) || @error "encoder x1 error"
 @test size(fs[2]) == (64,64,24,1)   || @error "encoder x2 error"
 @test size(fs[3]) == (32,32,32,1)   || @error "encoder x3 error"
