@@ -137,8 +137,8 @@ function espnet(
     ch_in::Int  = 3,            # input channels
     ch_out::Int = 2;            # output channels
     activation = "prelu",       # activation function
-    alpha2::Int = 2,            # depth stage 2
-    alpha3::Int = 3,            # depth stage 3
+    alpha2::Int = 2,            # expansion factor encoder stage 2
+    alpha3::Int = 3,            # expansion factor encoder stage 3
     edrops = (0.0, 0.0, 0.0),   # encoder dropouts
     ddrops = (0.0, 0.0),        # decoder dropouts
 )

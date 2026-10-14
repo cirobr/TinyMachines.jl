@@ -11,7 +11,7 @@ function unet5(
     ch_in::Int  = 3,                      # input channels
     ch_out::Int = 2;                      # output channels
     activation::Function = relu,          # activation function
-    alpha::Int           = 1,             # channels divider
+    alpha::Int           = 1,             # channels divider factor
     edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # dropout rates
     ddrops = (0.0, 0.0, 0.0, 0.0),        # dropout rates
 )

@@ -97,7 +97,7 @@ Constructors are models which allow access to a multitude of hyperparameters. Ea
 # Both unet5() and unet() calls are the same classic unet
 unet5(3, 1;                               # input/output channels
     activation = relu,                    # activation function
-    alpha = 1,                            # channels divider
+    alpha = 1,                            # channels divider factor
     edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
     ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
@@ -106,7 +106,7 @@ unet5(3, 1;                               # input/output channels
 ```
 unet4(3, 1;                               # input/output channels
     activation = relu,                    # activation function
-    alpha = 1,                            # channels divider
+    alpha = 1,                            # channels divider factor
     edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
     ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
@@ -120,6 +120,7 @@ Argument $alpha$ in unets modulates the number of internal channels proportional
 ```
 mobileunet(3, 1;                          # input/output channels
     activation = relu6,                   # activation function
+    t = 6,                                # expansion factor
     edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropout rates
     ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropout rates
 )
@@ -129,8 +130,8 @@ mobileunet(3, 1;                          # input/output channels
 # ConvPReLU is incorporated, no need to pass activation function
 espnet(3, 1;                              # input/output channels
     activation = "prelu",                 # activation function (if "prelu", use between quotes)
-    alpha2 = 2,                           # expansion factor in encoder stage 2
-    alpha3 = 3,                           # expansion factor in encoder stage 3
+    alpha2 = 2,                           # expansion factor encoder stage 2
+    alpha3 = 3,                           # expansion factor encoder stage 3
     edrops = (0.0, 0.0, 0.0),             # encoder dropout rates
     ddrops = (0.0, 0.0),                  # decoder dropout rates
 )

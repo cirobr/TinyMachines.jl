@@ -10,7 +10,7 @@ end
 function mobileunet(
     ch_in::Int = 3,                       # input channels
     ch_out::Int = 2;                      # output channels
-    t::Int = 6,                           # network depth (t=6 follows paper)
+    t::Int = 6,                           # expansion factor (t=6 follows paper)
     activation::Function = relu6,         # activation function
     edrops = (0.0, 0.0, 0.0, 0.0, 0.0),   # encoder dropouts
     ddrops = (0.0, 0.0, 0.0, 0.0),        # decoder dropouts
@@ -130,9 +130,9 @@ function MobileUNet(
 )
     return mobileunet(
         ch_in, ch_out;
-        activation=activation,
-        t=6,
-        edrops=(0.0, 0.0, 0.0, 0.0, 0.0),
-        ddrops=(0.0, 0.0, 0.0, 0.0),
+        activation = activation,
+        t = 6,
+        edrops = (0.0, 0.0, 0.0, 0.0, 0.0),
+        ddrops = (0.0, 0.0, 0.0, 0.0),
     )
 end
