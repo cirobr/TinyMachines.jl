@@ -1,5 +1,5 @@
 ### v0.7.0
-* haar wavelet improvement for unets.
+* wavelet improvement for unets.
 
 ### v0.6.0
 * unets: dropouts removed from skip path.

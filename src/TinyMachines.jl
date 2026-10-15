@@ -4,7 +4,6 @@ module TinyMachines
 export UNet, UNet5, UNet4, MobileUNet, ESPNet   # models
 export unet, unet5, unet4, mobileunet, espnet   # constructors
 export PReLU                                    # activation layer
-export unet5H, UNet5H
 
 import Flux
 import Flux:
@@ -14,6 +13,7 @@ import Flux:
     identity, relu, leakyrelu, relu6, σ, sigmoid, softmax,
     SamePad, kaiming_normal, rand32,
     @layer
+import Wavelets
 
 include("functions/misc.jl")               # miscellaneous functions
 include("functions/convlayers.jl")         # convolutional layers (custom conv + activation)
@@ -21,8 +21,6 @@ include("functions/activationlayers.jl")   # activation layers (prelu)
 include("functions/unetblocks.jl")         # unet blocks
 include("functions/irblocks.jl")           # inverted residual blocks
 include("functions/espmodules.jl")         # esp modules
-
-include("functions/wavelets.jl")
 
 # models
 const defaultChannels = [64, 128, 256, 512, 1024]
@@ -32,7 +30,11 @@ include("models/unet4.jl")
 include("models/mobileunet.jl")
 include("models/espnet.jl")
 
-include("models/unet5-haar.jl")
+# tests
+include("models/unet5_v1a.jl")
+include("models/unet5_v1b.jl")
+include("models/wavelets_v1.jl")
+
 
 
 end   # module

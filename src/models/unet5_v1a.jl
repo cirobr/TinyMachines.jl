@@ -1,13 +1,13 @@
-struct unet5H
+struct unet5_v1a
     encoder::Chain
     upconvs::Chain
     decoder::Chain
     eds::Chain
     dds::Chain
 end
-@layer unet5H trainable=(encoder,upconvs,decoder)
+@layer unet5_v1a trainable=(encoder,upconvs,decoder)
 
-function unet5H(
+function unet5_v1a(
     ch_in::Int  = 3,                      # input channels
     ch_out::Int = 2;                      # output channels
     activation::Function = relu,          # activation function
@@ -32,10 +32,10 @@ function unet5H(
 
     # encoder
     e1 = CB(ch_in, chs[1], activation)
-    e2 = CB(chs[1], chs[2], activation)
-    e3 = CB(chs[2], chs[3], activation)
-    e4 = CB(chs[3], chs[4], activation)
-    e5 = CB(chs[4], chs[5], activation)
+    e2 = HDCB(chs[1], chs[2], activation)
+    e3 = HDCB(chs[2], chs[3], activation)
+    e4 = HDCB(chs[3], chs[4], activation)
+    e5 = HDCB(chs[4], chs[5], activation)
 
     # up convolutions
     u4 = ConvTrK2(chs[5], chs[4], activation)
@@ -44,9 +44,9 @@ function unet5H(
     u1 = ConvTrK2(chs[2], chs[1], activation)
 
     # decoder
-    d4 = CB(chs[5]+chs[3]*3, chs[4], activation)
-    d3 = CB(chs[4]+chs[2]*3, chs[3], activation)
-    d2 = CB(chs[3]+chs[1]*3, chs[2], activation)
+    d4 = CB(chs[5], chs[4], activation)
+    d3 = CB(chs[4], chs[3], activation)
+    d2 = CB(chs[3], chs[2], activation)
     d1 = CB(chs[2], chs[1], activation)
     
     d0 = ConvK1(chs[1], ch_out)
@@ -58,47 +58,36 @@ function unet5H(
     eds = Chain(ed1=ed1, ed2=ed2, ed3=ed3, ed4=ed4, ed5=ed5)
     dds = Chain(dd1=dd1, dd2=dd2, dd3=dd3, dd4=dd4)
 
-    return unet5H(encoder, upconvs, decoder, eds, dds)   # struct output
+    return unet5_v1a(encoder, upconvs, decoder, eds, dds)   # struct output
 end
 
 
-function (m::unet5H)(x::AbstractArray)
+function (m::unet5_v1a)(x::AbstractArray)
     # encoder
     enc1  = m.encoder.layers.e1(x)
     enc1d = m.eds.layers.ed1(enc1)
-
-    ll2, lh2, hl2, hh2 = haar_down(enc1d)#; @show size(ll2)
-    enc2  = m.encoder.layers.e2(ll2)
+    enc2  = m.encoder.layers.e2(enc1d)
     enc2d = m.eds.layers.ed2(enc2)
-    
-    ll3, lh3, hl3, hh3 = haar_down(enc2d)#; @show size(ll3)
-    enc3  = m.encoder.layers.e3(ll3)
+    enc3  = m.encoder.layers.e3(enc2d)
     enc3d = m.eds.layers.ed3(enc3)
-    
-    ll4, lh4, hl4, hh4 = haar_down(enc3d)#; @show size(ll4)
-    enc4  = m.encoder.layers.e4(ll4)
+    enc4  = m.encoder.layers.e4(enc3d)
     enc4d = m.eds.layers.ed4(enc4)
-    
-    ll5, _, _, _ = haar_down(enc4d)
-    enc5  = m.encoder.layers.e5(ll5)
+    enc5  = m.encoder.layers.e5(enc4d)
     enc5d = m.eds.layers.ed5(enc5)
 
     # decoder
     up4   = m.upconvs.layers.u4(enc5d)
-    # cat4  = cat(enc4, up4; dims=3)
-    cat4  = cat(enc4, up4, lh4, hl4, hh4; dims=3)
+    cat4  = cat(enc4, up4; dims=3)
     dec4  = m.decoder.layers.d4(cat4)
     dec4d = m.dds.layers.dd4(dec4)
 
     up3   = m.upconvs.layers.u3(dec4d)
-    # cat3  = cat(enc3, up3; dims=3)
-    cat3  = cat(enc3, up3, lh3, hl3, hh3; dims=3)
+    cat3  = cat(enc3, up3; dims=3)
     dec3  = m.decoder.layers.d3(cat3)
     dec3d = m.dds.layers.dd3(dec3)
 
     up2   = m.upconvs.layers.u2(dec3d)
-    # cat2  = cat(enc2, up2; dims=3)
-    cat2  = cat(enc2, up2, lh2, hl2, hh2; dims=3)
+    cat2  = cat(enc2, up2; dims=3)
     dec2  = m.decoder.layers.d2(cat2)
     dec2d = m.dds.layers.dd2(dec2)
 
@@ -115,12 +104,12 @@ end
 # paper-faithful:    edrops=(0.0, 0.0, 0.0, 0.0, 0.5), ddrops=(0.0, 0.0, 0.0, 0.0)
 # mild overfitting:  edrops=(0.0, 0.0, 0.10, 0.20, 0.25), ddrops=(0.0, 0.0, 0.10, 0.20)
 # clear overfitting: edrops=(0.05, 0.10, 0.15, 0.20, 0.30), ddrops=(0.00, 0.05, 0.10, 0.15)
-function UNet5H(
+function UNet5_v1a(
     ch_in::Int  = 3,
     ch_out::Int = 2;
     activation::Function = relu,
 )
-    return unet5H(
+    return unet5_v1a(
         ch_in,
         ch_out;
         activation = activation,

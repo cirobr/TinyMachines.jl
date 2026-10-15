@@ -33,14 +33,3 @@ HDCB(ch_in, ch_out, activation) = # Haar-Down Conv BatchNorm
         ConvK3(ch_out, ch_out),
         BatchNorm(ch_out, activation),
 )
-
-
-# Simple inverse (for optional reconstruction path or testing)
-function haar_up(LL, LH, HL, HH)
-    # Reconstruct even/odd rows and columns (inverse of the operations above)
-    # This is a minimal version; full reconstruction is straightforward linear combinations
-    H2, W2, C, B = size(LL)
-    # ... implement the four combinations that recover the original even/odd positions
-    # (omitted for brevity — see numerical-tours Haar 2D for the exact formulas)
-    # For training, you often only need the forward path + concatenation of details
-end

@@ -1,0 +1,39 @@
+using Wavelets
+
+
+function haar(x)
+    H, W, C, N = size(x)
+    H_meio = H ÷ 2
+    W_meio = W ÷ 2
+    dwt = Array{undef, (H,W,C,N)}
+
+    wt = wavelet(WT.haar)
+    coeficientes = dwt(imagem_2d, wt, 1)
+
+
+
+"""
+    extrair_subbandas_4d(coeficientes_4d::AbstractArray{T, 4}) where T
+
+Recebe um tensor 4D de coeficientes Wavelet no formato HWCN (já processado por 1 nível de DWT)
+e extrai as 4 sub-bandas (LL, HL, LH, HH) preservando os Canais (C) e o Batch (N).
+"""
+function extrair_subbandas_4d(coeficientes_4d::AbstractArray{T, 4}) where T
+    H, W, C, N = size(coeficientes_4d)
+    
+    H_meio = H ÷ 2
+    W_meio = W ÷ 2
+    
+    # Índices dos quadrantes
+    linhas_altas = (H_meio + 1):H
+    colunas_altas = (W_meio + 1):W
+    
+    # Criamos views para evitar alocação de memória desnecessária
+    # Formato mantido: (H/2, W/2, C, N)
+    LL = view(coeficientes_4d, 1:H_meio,     1:W_meio,      :, :) # Aproximação (Seu Pooling)
+    HL = view(coeficientes_4d, 1:H_meio,     colunas_altas, :, :) # Detalhes Horizontais
+    LH = view(coeficientes_4d, linhas_altas, 1:W_meio,      :, :) # Detalhes Verticais
+    HH = view(coeficientes_4d, linhas_altas, colunas_altas, :, :) # Detalhes Diagonais
+    
+    return LL, HL, LH, HH
+end
