@@ -4,6 +4,7 @@ module TinyMachines
 export UNet, UNet5, UNet4, MobileUNet, ESPNet   # models
 export unet, unet5, unet4, mobileunet, espnet   # constructors
 export PReLU                                    # activation layer
+export unet5H, UNet5H
 
 import Flux
 import Flux:
@@ -28,6 +29,8 @@ include("./models/unet5.jl")
 include("./models/unet4.jl")
 include("./models/mobileunet.jl")
 include("./models/espnet.jl")
+
+include("./models/unet5-haar.jl")
 
 
 end   # module
