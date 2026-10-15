@@ -25,7 +25,7 @@ end
 haar_down_ll(x::AbstractArray) = haar_down(x)[1]
 
 
-HaarCB(ch_in, ch_out, activation) = 
+HDCB(ch_in, ch_out, activation) = # Haar-Down Conv BatchNorm
     Chain(
         # MaxPool((2,2); stride=2),
         x->haar_down_ll(x),

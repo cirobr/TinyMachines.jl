@@ -32,10 +32,10 @@ function unet5H(
 
     # encoder
     e1 = CB(ch_in, chs[1], activation)
-    e2 = HaarCB(chs[1], chs[2], activation)
-    e3 = HaarCB(chs[2], chs[3], activation)
-    e4 = HaarCB(chs[3], chs[4], activation)
-    e5 = HaarCB(chs[4], chs[5], activation)
+    e2 = HDCB(chs[1], chs[2], activation)
+    e3 = HDCB(chs[2], chs[3], activation)
+    e4 = HDCB(chs[3], chs[4], activation)
+    e5 = HDCB(chs[4], chs[5], activation)
 
     # up convolutions
     u4 = ConvTrK2(chs[5], chs[4], activation)
