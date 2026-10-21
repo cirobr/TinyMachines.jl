@@ -2,6 +2,7 @@
 * unets: dropouts removed from skip path.
 * espnet: rewritten for better compatibility with original article.
 * mobileunet: refactor dropouts, added kwarg for network depth.
+* unet5ae: unet5 auto-encoder version.
 
 ### v0.5.2
 * Compatibility to Julia v1.13.
