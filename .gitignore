@@ -1,11 +1,2 @@
-/Manifest.toml
+Manifest.toml
 .vscode/
-coco/
-coco
-dataset/
-dev/models/
-dev/tblogs/
-temp/
-temp
-tmp/
-tmp
