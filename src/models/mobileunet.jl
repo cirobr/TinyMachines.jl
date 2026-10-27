@@ -30,7 +30,7 @@ function mobileunet(
 
     # ── encoder (MobileNetV2 feature extractor) ──────────────
     d1 = Chain(
-        ConvK3(ch_in, 32; stride=2),
+        Conv3(ch_in, 32; stride=2),
         BatchNorm(32, activation),
         IRBlock1(32, 16, activation; t=1),
     )
@@ -56,16 +56,16 @@ function mobileunet(
         IRBlock2(96, 160, activation; t=t),
         Chain([IRBlock1(160, 160, activation; t=t) for _ in 1:2]...),
         IRBlock1(160, 320, activation; t=t),
-        ConvK1(320, 1280),
+        Conv1(320, 1280),
         BatchNorm(1280, activation),
     )
 
     # ── up-convolutions (paper: k=4, s=2) ────────────────────
-    ct1 = Chain(ConvTrK4(1280, 96), BatchNorm(96, activation))
-    ct2 = Chain(ConvTrK4(96,   32), BatchNorm(32, activation))
-    ct3 = Chain(ConvTrK4(32,   24), BatchNorm(24, activation))
-    ct4 = Chain(ConvTrK4(24,   16), BatchNorm(16, activation))
-    ct5 = ConvTrK4(16, ch_out)
+    ct1 = Chain(ConvTr4(1280, 96), BatchNorm(96, activation))
+    ct2 = Chain(ConvTr4(96,   32), BatchNorm(32, activation))
+    ct3 = Chain(ConvTr4(32,   24), BatchNorm(24, activation))
+    ct4 = Chain(ConvTr4(24,   16), BatchNorm(16, activation))
+    ct5 = ConvTr4(16, ch_out)
 
     # ── decoder inverted residuals (paper: t=6) ──────────────
     # after cat: 96+96→192, 32+32→64, 24+24→48, 16+16→32

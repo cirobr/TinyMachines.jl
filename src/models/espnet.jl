@@ -12,7 +12,7 @@ function ESPEncoderStage1(ch_in::Int = 3; activation = "prelu", edrop = 0.0)
     act_19 = activation == "prelu" ? PReLU(19) : activation
 
     ds1 = MeanPool((3, 3); stride=2, pad=1)
-    e1  = Chain(ConvK3(ch_in, 16; stride=2), BatchNorm(16), act_16)
+    e1  = Chain(Conv3(ch_in, 16; stride=2), BatchNorm(16), act_16)
     fusion1 = Chain(BatchNorm(19), act_19)
     edrop1 = Dropout(edrop)
 
@@ -147,17 +147,17 @@ function espnet(
     act_ch_out = activation == "prelu" ? PReLU(ch_out)     : activation
     act_2c     = activation == "prelu" ? PReLU(2 * ch_out) : activation
 
-    bridge1 = ConvK1(19,  ch_out)
-    bridge2 = ConvK1(131, ch_out)
-    bridge3 = ConvK1(256, ch_out)
+    bridge1 = Conv1(19,  ch_out)
+    bridge2 = Conv1(131, ch_out)
+    bridge3 = Conv1(256, ch_out)
 
-    d3_up = ConvTrK2(ch_out, ch_out)
+    d3_up = ConvTr2(ch_out, ch_out)
 
     d2_deep = if ch_out < 5
         Chain(
             BatchNorm(2 * ch_out), act_2c,
-            ConvK1(2 * ch_out, ch_out),
-            ConvK3(ch_out, ch_out),
+            Conv1(2 * ch_out, ch_out),
+            Conv3(ch_out, ch_out),
             BatchNorm(ch_out), act_ch_out,
         )
     else
@@ -167,9 +167,9 @@ function espnet(
         )
     end
 
-    d2_up = Chain(ConvTrK2(ch_out, ch_out), BatchNorm(ch_out), act_ch_out)
-    d1_conv = Chain(ConvK1(2 * ch_out, ch_out), BatchNorm(ch_out), act_ch_out)
-    d1_up = ConvTrK2(ch_out, ch_out)
+    d2_up = Chain(ConvTr2(ch_out, ch_out), BatchNorm(ch_out), act_ch_out)
+    d1_conv = Chain(Conv1(2 * ch_out, ch_out), BatchNorm(ch_out), act_ch_out)
+    d1_up = ConvTr2(ch_out, ch_out)
 
     dds = Chain(
         ddrop2 = Dropout(ddrops[2]),

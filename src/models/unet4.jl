@@ -35,16 +35,16 @@ function unet4(
     e4 = MCB(chs[3], chs[4], activation)
 
     # up convolutions
-    u3 = ConvTrK2(chs[4], chs[3], activation)
-    u2 = ConvTrK2(chs[3], chs[2], activation)
-    u1 = ConvTrK2(chs[2], chs[1], activation)
+    u3 = ConvTr2(chs[4], chs[3], activation)
+    u2 = ConvTr2(chs[3], chs[2], activation)
+    u1 = ConvTr2(chs[2], chs[1], activation)
 
     # decoder
     d3 = CB(chs[4], chs[3], activation)
     d2 = CB(chs[3], chs[2], activation)
     d1 = CB(chs[2], chs[1], activation)
     
-    d0 = ConvK1(chs[1], ch_out)
+    d0 = Conv1(chs[1], ch_out)
 
     # output chains
     encoder = Chain(e1=e1, e2=e2, e3=e3, e4=e4)

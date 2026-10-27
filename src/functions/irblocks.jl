@@ -8,7 +8,7 @@ function BRBlock(
     ch_exp = ch_in * t
 
     return Chain(
-        ConvK1(ch_in, ch_exp),
+        Conv1(ch_in, ch_exp),
         BatchNorm(ch_exp, activation),
         DepthwiseConv((3, 3), ch_exp => ch_exp;
                     stride=stride,
@@ -16,7 +16,7 @@ function BRBlock(
                     init=kaiming_normal(),
         ),
         BatchNorm(ch_exp, activation),
-        ConvK1(ch_exp, ch_out)
+        Conv1(ch_exp, ch_out)
     )
 end
 
@@ -27,7 +27,7 @@ function IRBlock1(
     activation::Function;      # activation function
     t::Int                     # BRBlock internal channel expansion factor
 )
-    skipconn = ch_in == ch_out ? identity : ConvK1(ch_in, ch_out)
+    skipconn = ch_in == ch_out ? identity : Conv1(ch_in, ch_out)
     return Parallel(
         +,
         BRBlock(ch_in, ch_out, activation; stride=1, t=t),

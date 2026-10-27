@@ -13,7 +13,7 @@ end
 
 function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     if ch_out < 5   # fallback channels
-        c1  = ConvK3(ch_in, ch_out; stride=2)
+        c1  = Conv3(ch_in, ch_out; stride=2)
         act = (activation == "prelu" ? PReLU(ch_out) : activation)
         return Chain(c1, BatchNorm(ch_out), act)
     end
@@ -21,12 +21,12 @@ function DownSampler(ch_in::Int, ch_out::Int; activation = identity)
     n  = ch_out ÷ 5
     n1 = ch_out - 4 * n
     
-    c1  = ConvK3(ch_in, n; stride=2)          # strided 3x3 reducer (no pointwise)
-    d1  = DilatedConvK3(n, n1; dilation=1)
-    d2  = DilatedConvK3(n, n;  dilation=2)
-    d4  = DilatedConvK3(n, n;  dilation=4)
-    d8  = DilatedConvK3(n, n;  dilation=8)
-    d16 = DilatedConvK3(n, n;  dilation=16)
+    c1  = Conv3(ch_in, n; stride=2)          # strided 3x3 reducer (no pointwise)
+    d1  = DilatedConv3(n, n1; dilation=1)
+    d2  = DilatedConv3(n, n;  dilation=2)
+    d4  = DilatedConv3(n, n;  dilation=4)
+    d8  = DilatedConv3(n, n;  dilation=8)
+    d16 = DilatedConv3(n, n;  dilation=16)
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
 
@@ -71,8 +71,8 @@ end
 
 function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = identity)
     if ch_out < 5   # fallback channels
-        c   = ConvK1(ch_in, ch_out)
-        d   = ConvK3(ch_out, ch_out)
+        c   = Conv1(ch_in, ch_out)
+        d   = Conv3(ch_out, ch_out)
         bn  = BatchNorm(ch_out)
         act = (activation == "prelu" ? PReLU(ch_out) : activation)
         return Chain(c, d, bn, act)
@@ -81,12 +81,12 @@ function ESPModule(ch_in::Int, ch_out::Int; add::Bool = true, activation = ident
     n  = ch_out ÷ 5
     n1 = ch_out - 4 * n
     
-    c1  = ConvK1(ch_in, n)
-    d1  = DilatedConvK3(n, n1; dilation=1)
-    d2  = DilatedConvK3(n, n;  dilation=2)
-    d4  = DilatedConvK3(n, n;  dilation=4)
-    d8  = DilatedConvK3(n, n;  dilation=8)
-    d16 = DilatedConvK3(n, n; dilation=16)
+    c1  = Conv1(ch_in, n)
+    d1  = DilatedConv3(n, n1; dilation=1)
+    d2  = DilatedConv3(n, n;  dilation=2)
+    d4  = DilatedConv3(n, n;  dilation=4)
+    d8  = DilatedConv3(n, n;  dilation=8)
+    d16 = DilatedConv3(n, n; dilation=16)
     bn  = BatchNorm(ch_out)
     act = (activation == "prelu" ? PReLU(ch_out) : activation)
     

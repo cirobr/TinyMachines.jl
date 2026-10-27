@@ -1,12 +1,12 @@
-function ConvK1(ch_in::Int, ch_out::Int, activation::Function=identity)
+function Conv1(ch_in::Int, ch_out::Int, activation::Function=identity)
     return Conv((1,1), ch_in => ch_out, activation;
                 init=kaiming_normal(),
     )
 end
-PointwiseConv = ConvK1
+PointwiseConv = Conv1
 
 
-function ConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
+function Conv2(ch_in::Int, ch_out::Int, activation::Function=identity)
     return Conv((2,2), ch_in => ch_out, activation;
                 stride=2,
                 pad=SamePad(),
@@ -15,7 +15,7 @@ function ConvK2(ch_in::Int, ch_out::Int, activation::Function=identity)
 end
 
 
-function ConvK3(ch_in::Int, ch_out::Int, activation::Function=identity;
+function Conv3(ch_in::Int, ch_out::Int, activation::Function=identity;
                 stride::Int=1)
     @assert stride ∈ [1,2] || error("Stride must be 1 or 2.")
     
@@ -27,7 +27,7 @@ function ConvK3(ch_in::Int, ch_out::Int, activation::Function=identity;
 end
 
 
-function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity)
+function ConvTr2(ch_in::Int, ch_out::Int, activation::Function=identity)
     return ConvTranspose((2,2), ch_in => ch_out, activation;
                         stride=2,
                         pad=SamePad(),
@@ -36,7 +36,7 @@ function ConvTrK2(ch_in::Int, ch_out::Int, activation::Function=identity)
 end
 
 
-function ConvTrK4(ch_in::Int, ch_out::Int, activation::Function=identity)
+function ConvTr4(ch_in::Int, ch_out::Int, activation::Function=identity)
     return ConvTranspose((4,4), ch_in => ch_out, activation;
                         stride=2,
                         pad=SamePad(),
@@ -45,7 +45,7 @@ function ConvTrK4(ch_in::Int, ch_out::Int, activation::Function=identity)
 end
 
 
-function DilatedConvK3(ch_in::Int, ch_out::Int, activation::Function=identity;
+function DilatedConv3(ch_in::Int, ch_out::Int, activation::Function=identity;
                        stride::Int=1,
                        dilation::Int=1)
     @assert stride ∈ [1,2] || error("Stride must be 1 or 2.")
