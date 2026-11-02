@@ -1,4 +1,5 @@
 ### v0.6.0
+* Compat Julia 1-10 - 1.14 pre.
 * unets: dropouts removed from skip path.
 * espnet: rewritten for better compatibility with original article.
 * mobileunet: refactor dropouts, added kwarg for network depth.
